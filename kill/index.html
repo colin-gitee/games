@@ -402,7 +402,7 @@ async function askCard(p,kind,msg,opt){          // 要 p 打出一张 kind（sh
   const ok=okCards(p,kind);let c=null;
   if(p.ai||HL){c=ok.find(x=>x.k===kind);if(!c){const alt=ok.filter(x=>x.k!=='yao'&&!(opt&&opt.soft&&VAL[x.k]>4)).sort((a,b)=>VAL[a.k]-VAL[b.k]);c=alt[0]||null}}
   else c=await UI.askCard(p,ok,msg,kind);
-  if(c)rm(p.hand,c);return c}
+  if(c){rm(p.hand,c);UI.render()}return c}
 async function needDodge(tgt,src,msg,pierce){  // tgt 需要一张闪：八卦阵 → 手牌
   if(tgt.eq.a&&tgt.eq.a.k==='bagua'&&!pierce){if(!G.deck.length&&G.disc.length){G.deck=shuffle(G.disc);G.disc=[]}const j=G.deck.pop();if(j){G.disc.push(j);const ok=red(j);log(`${tag(tgt)} 的八卦阵翻出 ${pt(j)}，${ok?'<em>算作一张闪</em>':'没有生效'}`);await UI.show([j],650,tgt,'八卦阵 '+(ok?'生效':'失效'));if(ok)return true}}
   const c=await askCard(tgt,'shan',msg);if(!c)return false;
@@ -453,7 +453,7 @@ async function takeFrom(p,tgt,steal){                       // 探囊取物 / �
   let c;if(z==='hand'){c=rnd(tgt.hand);rm(tgt.hand,c)}else{c=tgt.eq[z];delete tgt.eq[z]}
   if(steal){p.hand.push(c);log(`${tag(p)} 拿走了 ${tag(tgt)} 的${z==='hand'?'一张手牌':cn(c)}`)}else{toDisc(c);log(`${tag(tgt)} 的 ${cn(c)} 被弃掉`)}UI.render()}
 async function useCard(p,c,tgts,as){
-  rm(p.hand,c);const d=CARD[c.k],k=as==='sha'?'sha':c.k,tgt=tgts&&tgts[0];
+  rm(p.hand,c);UI.render();const d=CARD[c.k],k=as==='sha'?'sha':c.k,tgt=tgts&&tgts[0];
   log(`${tag(p)} ${tgts?'对 '+tgts.map(tag).join('、')+' ':''}${k!=='sha'&&d.t==='equip'?'装备':'使用'} ${k==='sha'&&c.k!=='sha'?pt(c)+' ':''}${cn(c)}${k==='sha'&&c.k!=='sha'?'（当杀）':''}`);UI.aim(tgts);await UI.show([c],900,p,nm(p)+(tgts?' ▸ '+tgts.map(nm).join('、'):k!=='sha'&&d.t==='equip'?' 装备':' 使用'));
   if(k!=='sha'&&d.t==='equip'){toDisc(p.eq[d.slot]);p.eq[d.slot]=c;UI.render();return}
   toDisc(c);
