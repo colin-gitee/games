@@ -486,7 +486,7 @@ function step(dt){
   }
 }
 function finish(win){
-  S.over=win?'win':'lose';S.dirty=true;sfx(win?'win':'lose');
+  S.over=win?'win':'lose';S.dirty=true;sfx(win?'win':'lose');if(typeof clearRun==='function')clearRun();
   if(win){S.stars=S.lives>=START_LIVES?3:S.lives>=START_LIVES/2?2:1;
     if(!(progress[S.L.id]>=S.stars)){progress[S.L.id]=S.stars;saveProgress()}}
 }
@@ -996,7 +996,8 @@ function render(){
     const gr=g.createLinearGradient(0,y,0,y+14);gr.addColorStop(0,'#ff8a7e');gr.addColorStop(1,'#c9342a');g.fillStyle=gr;g.beginPath();g.roundRect(x,y,Math.max(8,bw*k),14,7);g.fill();
     g.font='700 11px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.lineWidth=3;g.strokeStyle=OL;g.strokeText(S.th.mobs.boss[0],W/2,y+7.5);g.fillStyle='#fff';g.fillText(S.th.mobs.boss[0],W/2,y+7.5)}
   if(S.flash>0){g.fillStyle='rgba(190,230,255,'+Math.min(.5,S.flash*1.6)+')';g.fillRect(0,-PADY,W,VH)}
-  if(S.paused&&!S.over){g.fillStyle='rgba(8,4,16,.55)';g.fillRect(0,-PADY,W,VH);g.font="400 60px 'ZCOOL QingKe HuangYou',system-ui,sans-serif";g.textAlign='center';g.textBaseline='middle';g.lineWidth=8;g.strokeStyle=OL;g.strokeText('已暂停',W/2,H/2);g.fillStyle='#fff';g.fillText('已暂停',W/2,H/2)}
+  if(S.paused&&!S.over){g.fillStyle='rgba(8,4,16,.55)';g.fillRect(0,-PADY,W,VH);g.font="400 60px 'ZCOOL QingKe HuangYou',system-ui,sans-serif";g.textAlign='center';g.textBaseline='middle';g.lineWidth=8;g.strokeStyle=OL;const pt=S.restored?'已恢复上次对局':'已暂停';if(S.restored)g.font="400 "+Math.min(60,W/9|0)+"px 'ZCOOL QingKe HuangYou',system-ui,sans-serif";g.strokeText(pt,W/2,H/2);g.fillStyle='#fff';g.fillText(pt,W/2,H/2);
+    if(S.restored){g.font='700 '+Math.round(18*Math.max(1,Math.min(2,W/(cv.clientWidth||W))))+'px system-ui,sans-serif';g.lineWidth=4;g.strokeText('点一下地图继续',W/2,H/2+56);g.fillStyle='#ffd76a';g.fillText('点一下地图继续',W/2,H/2+56)}}
 }
 
 /* ---------- UI ---------- */
@@ -1023,12 +1024,36 @@ function buildMenu(theme){
     b.onclick=()=>openLevel(i);$('levels').appendChild(b)});
   try{localStorage.setItem('arcade-td-theme',theme)}catch(e){}
 }
-function openLevel(i){
-  startLevel(i);$('menu').hidden=true;$('game').hidden=false;$('overlay').hidden=true;
+/* ---------- 对局存档：退出后重新打开，回到上次的局面（塔、怪物、金币、波次、技能冷却） ---------- */
+const RUN='arcade-td-run';
+function saveRun(){
+  if(!S||S.over)return;
+  try{localStorage.setItem(RUN,JSON.stringify({v:1,i:S.i,port:PORT,gold:S.gold,lives:S.lives,wave:S.wave,active:S.active,waveT:S.waveT,queue:S.queue,autoT:S.autoT,time:S.time,speed:S.speed,auto:AUTO,spell:S.spell,
+    towers:S.towers.map(t=>({type:t.type,c:t.c,r:t.r,lv:t.lv,spent:t.spent,mode:t.mode||0,cd:t.cd})),
+    mobs:S.mobs.filter(m=>!m.dead).map(m=>({type:m.type,pi:m.pi||0,d:m.d,hp:m.hp,max:m.max,slow:m.slow,slowK:m.slowK,ox:m.ox,oy:m.oy,ph:m.ph}))}))}catch(e){}
+}
+function clearRun(){try{localStorage.removeItem(RUN)}catch(e){}}
+function readRun(){try{const d=JSON.parse(localStorage.getItem(RUN)||'null');return d&&d.v===1&&LEVELS[d.i]&&Array.isArray(d.towers)&&Array.isArray(d.mobs)&&d.wave<=LEVELS[d.i].waves?d:null}catch(e){return null}}
+function restore(d){
+  Object.assign(S,{gold:+d.gold||0,lives:Math.max(1,+d.lives||1),wave:+d.wave||0,active:!!d.active,waveT:+d.waveT||0,queue:Array.isArray(d.queue)?d.queue.filter(e=>MOBS[e.type]):[],autoT:+d.autoT||0,
+    time:+d.time||0,speed:[1,2,3].includes(d.speed)?d.speed:1,spell:{fire:+(d.spell&&d.spell.fire)||0,ice:+(d.spell&&d.spell.ice)||0},paused:true,restored:true});
+  AUTO=!!d.auto;
+  for(const t of d.towers){if(!TOWERS[t.type]||!canBuild(t.c,t.r))continue;const lv=Math.min(MAX_LV,Math.max(1,t.lv|0));
+    S.towers.push({type:t.type,c:t.c,r:t.r,x:(t.c+.5)*T,y:(t.r+.5)*T,lv,cd:+t.cd||0,ang:-.6,spent:+t.spent||TOWERS[t.type].cost,flash:0,born:S.time-1,mode:t.mode|0});S.grid[t.r*COLS+t.c]=3}
+  for(const m of d.mobs){const b=MOBS[m.type],path=S.P.paths[m.pi];if(!b||!path)continue;const q=posAt(path,+m.d||0),ox=+m.ox||0,oy=+m.oy||0;
+    S.mobs.push({type:m.type,path,pi:m.pi,d:+m.d||0,hp:+m.hp||1,max:+m.max||1,sp:b.sp*T,armor:b.armor,gold:b.gold,cost:b.cost,r:b.r,slow:+m.slow||0,slowK:+m.slowK||0,x:q[0]+ox,y:q[1]+oy,face:1,hit:0,ox,oy,ph:+m.ph||0,dead:false})}
+}
+setInterval(saveRun,1500);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveRun()});
+addEventListener('pagehide',saveRun);
+function openLevel(i,d){
+  if(d)setOrient(!!d.port);
+  startLevel(i);if(d)restore(d);else clearRun();
+  $('menu').hidden=true;$('game').hidden=false;$('overlay').hidden=true;
   $('game').style.setProperty('--accent',S.th.accent);$('lvName').textContent=S.th.name+' · '+S.L.name;
   buildTowerBtns();resize();syncUI();
 }
-function backToMenu(){const th=S?S.L.theme:'forest';S=null;$('game').hidden=true;$('menu').hidden=false;buildMenu(th)}
+function backToMenu(){const th=S?S.L.theme:'forest';S=null;clearRun();$('game').hidden=true;$('menu').hidden=false;buildMenu(th)}
 function icon(c,type,lv){const g=c.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,c.width,c.height);g.setTransform(1.25,0,0,1.25,0,0);drawTower(g,type,38,46,-.5,lv,0)}
 function buildTowerBtns(){
   const box=$('towerBtns');box.innerHTML='';
@@ -1068,7 +1093,9 @@ cv.addEventListener('pointermove',e=>{if(!S)return;if(e.pointerType==='mouse')S.
 cv.addEventListener('pointerleave',e=>{if(S&&e.pointerType==='mouse')S.hover=null});
 addEventListener('pointerup',()=>{touching=false});addEventListener('pointercancel',()=>{touching=false});
 cv.addEventListener('pointerdown',e=>{
-  audioInit();if(!S||S.over)return;const h=tileAt(e),{c,r}=h,touch=e.pointerType!=='mouse';touching=touch;
+  audioInit();if(!S||S.over)return;
+  if(S.paused&&S.restored){S.paused=false;S.restored=false;syncUI();return}   // 恢复的对局：点一下地图继续
+  const h=tileAt(e),{c,r}=h,touch=e.pointerType!=='mouse';touching=touch;
   if(S.cast==='fire'){
     if(touch&&!(S.pend&&Math.hypot(S.pend.x-h.x,S.pend.y-h.y)<T*1.5)){S.pend=S.hover=h}
     else{const q=touch?S.pend:h;castFire(q.x,q.y);S.pend=null;S.hover=touch?null:h}
@@ -1097,7 +1124,7 @@ $('upBtn').onclick=()=>{if(S.sel)upgrade(S.sel);syncUI()};
 $('sellBtn').onclick=()=>{if(S.sel)sell(S.sel);syncUI()};
 $('deselBtn').onclick=()=>{S.sel=null;syncUI()};
 $('speedBtn').onclick=()=>{S.speed=S.speed%3+1;syncUI()};
-$('pauseBtn').onclick=()=>{S.paused=!S.paused;syncUI()};
+$('pauseBtn').onclick=()=>{S.paused=!S.paused;S.restored=false;syncUI()};
 $('backBtn').onclick=backToMenu;$('ovMenu').onclick=backToMenu;
 $('ovRetry').onclick=()=>openLevel(S.i);$('ovNext').onclick=()=>openLevel(S.i+1);
 addEventListener('resize',resize);
@@ -1123,8 +1150,10 @@ function loop(ts){
 }
 let startTheme='forest';try{startTheme=localStorage.getItem('arcade-td-theme')||'forest'}catch(e){}
 buildMenu(THEMES[startTheme]?startTheme:'forest');
+try{localStorage.setItem('arcade-last','td')}catch(e){}
+{const d=readRun();if(d){try{openLevel(d.i,d)}catch(e){clearRun();backToMenu()}}}
 requestAnimationFrame(loop);
-window.TD={LEVELS,TOWERS,THEMES,MOBS,COLS:LC,ROWS:LR,T,PADY,flip,get PORT(){return PORT},castFire,castIce,prep,startLevel,place,upgrade,sell,nextWave,step,canBuild,upCost,render,drawBg,get S(){return S}};
+window.TD={saveRun,readRun,clearRun,openLevel,LEVELS,TOWERS,THEMES,MOBS,COLS:LC,ROWS:LR,T,PADY,flip,get PORT(){return PORT},castFire,castIce,prep,startLevel,place,upgrade,sell,nextWave,step,canBuild,upCost,render,drawBg,get S(){return S}};
 </script>
 <script>window.__busy=()=>!!(TD.S&&!TD.S.over);</script>
 <script src="../update.js"></script>
