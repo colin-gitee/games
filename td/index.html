@@ -57,6 +57,7 @@ svg.i{width:16px;height:16px;vertical-align:-3px;flex:none}
 .lv .lock{position:absolute;left:0;right:0;top:0;aspect-ratio:896/606;display:grid;place-items:center}
 .lv .lock svg{width:44px;height:44px;opacity:.85}
 .lv:disabled .no{background:#4a4356;color:#bbb}
+.lv.endless{border-color:var(--brass)}.lv.endless .no{background:linear-gradient(#ffe9a8,#d89a3a);font-size:24px}
 .howto{margin-top:26px;color:var(--dim);font-size:13px;background:#0005;border:1px solid var(--line);border-radius:12px;padding:12px 16px}
 .howto b{color:var(--text)}
 
@@ -92,7 +93,17 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
 .tw.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent),0 0 18px color-mix(in srgb,var(--accent) 60%,transparent);transform:translateY(-3px)}
 .tw.poor{filter:grayscale(.8) brightness(.8)} .tw.poor small{color:var(--blood)}
 #selPanel{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:max-content;z-index:4;max-width:calc(100% - 16px);box-shadow:0 10px 28px #000c;display:flex;align-items:center;gap:8px;background:linear-gradient(#2c2836,#1c1924);border:1px solid var(--brass);border-radius:14px;padding:6px 10px 6px 6px;flex-wrap:wrap}
-#selPanel.top{bottom:auto;top:10px}
+#selPanel.top,.fpanel.top{bottom:auto;top:10px}
+.fpanel{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:max-content;z-index:4;max-width:calc(100% - 16px);box-shadow:0 10px 28px #000c;display:flex;align-items:center;gap:8px;background:linear-gradient(#2c2836,#1c1924);border:1px solid var(--brass);border-radius:14px;padding:6px 10px 6px 14px}
+.fpanel .info small{display:block;color:var(--dim);font-size:12px}.fpanel button{white-space:nowrap}
+#techBtn{font-family:var(--display);font-size:18px;letter-spacing:.08em;border-color:var(--brass);color:var(--brass);padding:6px 14px;border-radius:14px}
+#techPanel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;width:min(380px,calc(100% - 16px));max-height:calc(100% - 16px);overflow:auto;background:linear-gradient(#2c2836,#1a1722);border:2px solid var(--brass);border-radius:16px;padding:10px 12px 12px;box-shadow:0 16px 40px #000d}
+.thead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.thead b{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:.1em;color:var(--brass)}
+.tsec{color:var(--dim);font-size:12px;margin:8px 0 4px;border-bottom:1px solid var(--line);padding-bottom:2px}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0}.trow b{font-size:14px}.trow i{font-style:normal;color:var(--brass);font-size:12px;margin-left:4px}
+.trow small{display:block;color:var(--dim);font-size:12px}.trow button{min-width:84px;white-space:nowrap;padding:7px 10px}
+.tnote{color:var(--dim);font-size:12px;margin-top:8px;line-height:1.5}
+.sp.buy:not(:disabled){border-color:var(--brass)}.sp.buy small{color:var(--brass);font-weight:700}
 #selPanel button{white-space:nowrap;flex:none}
 #selPanel canvas{width:48px;height:48px;border-radius:10px;background:radial-gradient(circle at 50% 35%,#4a4458,#1c1924);border:1px solid #000a}
 #selPanel .info{margin-right:auto}
@@ -105,6 +116,7 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
 .sp small{color:var(--dim);font-size:10px}
 .sp::after{content:'';position:absolute;inset:0;background:conic-gradient(#000c calc(var(--p,0)*1%),transparent 0);pointer-events:none}
 .sp:disabled{opacity:.8}
+.sp.buy::after{opacity:.55}
 .sp.on{border-color:#ff9a30;box-shadow:0 0 0 2px #ff9a30,0 0 16px #ff9a3088}
 #waveBtn{flex:1 1 170px;min-height:58px;font-family:var(--display);font-size:22px;letter-spacing:.08em;border-radius:14px}
 #waveBtn:not(:disabled){animation:pulse 1.6s ease-in-out infinite}
@@ -183,6 +195,8 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
   </div>
   <div class="stage" id="stage">
     <canvas id="cv"></canvas>
+    <div id="decoPanel" class="fpanel" hidden><div class="info"><b>障碍</b><small>清除后可以在这里放塔</small></div><button id="decoBtn" class="primary"></button><button id="decoX">✕</button></div>
+    <div id="techPanel" hidden></div>
     <div id="selPanel" hidden>
       <canvas id="selIcon" width="96" height="96"></canvas>
       <div class="info"><b id="selName"></b><small id="selStat"></small></div>
@@ -195,6 +209,7 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
   </div>
   <div class="bar">
     <div id="towerBtns"></div>
+    <button id="techBtn" hidden>强化</button>
     <div class="spells">
       <button class="sp" id="spFire" title="火雨 (Q)：点击地图落下陨石"><svg viewBox="0 0 24 24"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-10z" fill="#ff8a2a" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 12c1 2 2.5 2.5 2.5 4.5a2.5 2.5 0 0 1-5 0c0-1.5 1.5-2 2.5-4.5z" fill="#ffe14a"/></svg><span>火雨 <small>Q</small></span></button>
       <button class="sp" id="spIce" title="冰封 (W)：冻结全场怪物"><svg viewBox="0 0 24 24" fill="none" stroke="#9fe0ff" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M12 5.5l-2.5-2M12 5.5l2.5-2M12 18.5l-2.5 2M12 18.5l2.5 2"/></svg><span>冰封 <small>W</small></span></button>
@@ -247,8 +262,49 @@ const TOWERS={
 };
 const TOWER_KEYS=Object.keys(TOWERS);
 const LV_MULT=[1,1.7,2.8], UP_COST=[.8,1.5], SELL=.6, MAX_LV=3;
-const tDmg=t=>TOWERS[t.type].dmg*LV_MULT[t.lv-1];
-const tRange=t=>(TOWERS[t.type].range+.25*(t.lv-1))*T;
+const tech=k=>S&&S.tech?S.tech[k]:0;
+const tDmg=t=>TOWERS[t.type].dmg*LV_MULT[t.lv-1]*(1+TECH.atk.per*tech('atk'));
+const tRange=t=>(TOWERS[t.type].range+.25*(t.lv-1))*T*(1+TECH.rng.per*tech('rng'));
+const tRate=t=>TOWERS[t.type].rate/((1+TECH.spd.per*tech('spd'))*(S&&S.rage>0?1.5:1));
+
+/* ---------- 无尽模式 ----------
+   怪物：生命、速度、护甲随波次提高，到第 E_CAP 波封顶；封顶后只有数量继续增加（出怪间隔也更密）。
+   塔：三项全局强化（攻击 / 攻速 / 射程）各有等级上限。
+   金币出口：强化 → 清除障碍腾出空地 → 更多的塔；全部到顶后还有不封顶的消耗品：修复城堡、技能充能、战鼓。
+   消耗品同一波内每用一次涨价 50%，下一波恢复，所以钱再多也不能无限连放。 */
+const E_CAP=30, E_HP=.05;
+const TECH={
+  atk:{name:'攻击强化',max:10,base:120,g:1.45,per:.10,unit:'伤害'},
+  spd:{name:'攻速强化',max:10,base:140,g:1.45,per:.06,unit:'攻速'},
+  rng:{name:'射程强化',max:5, base:200,g:1.6, per:.04,unit:'射程'},
+};
+const endlessStats=w=>{const k=Math.min(w,E_CAP);return{lvl:k,hp:1+.25*(k-1)+E_HP*(k-1)*(k-1),spd:1+.01*k,arm:Math.floor(k/6)}};   // 生命前期涨得慢、后期快，和玩家的经济曲线对齐
+function genEndless(L,w){
+  const st=endlessStats(w),np=L.paths.length,ev=[];let t=0;const cm=1+.05*w,gm=1/((1+.04*w)*(1+.12*Math.max(0,w-E_CAP)));   // 数量和密度都不封顶：封顶后的压力来自这里
+  const add=(type,n,gap,fixed)=>{n=fixed?n:Math.round(n*cm);for(let i=0;i<n;i++){ev.push({t,type,hp:st.hp*L.hp,spd:st.spd,arm:st.arm,path:ev.length%np});t+=gap*gm}t+=1.2};
+  add('grunt',5+w*1.2,.8);
+  if(w%2===0)add('runner',3+w*.8,.5);
+  if(w%3===0)add('tank',1+w/3,1.6);
+  if(w%4===0||w%5===3)add('swarm',8+w,.3);
+  if(w%5===0)add('boss',1+Math.floor(w/10),4,true);
+  return ev;
+}
+const waveOf=n=>S.L.endless?genEndless(S.L,n+1):S.waves[n];
+const techCost=k=>S.tech[k]>=TECH[k].max?null:Math.round(TECH[k].base*Math.pow(TECH[k].g,S.tech[k]));
+const USE={fire:[50,8,'火雨充能'],ice:[60,8,'冰封充能'],drum:[100,12,'战鼓']};
+const useCost=k=>Math.round((USE[k][0]+USE[k][1]*S.wave)*Math.pow(1.5,S.uses[k]));
+const repairCost=()=>80+10*S.wave;
+const clearCost=()=>60+30*S.cleared.length;
+function pay(c){if(!S||!S.L.endless||S.over||c==null||S.gold<c)return false;S.gold-=c;S.dirty=true;return true}
+function buyTech(k){if(!pay(techCost(k)))return false;S.tech[k]++;sfx('up');for(const t of S.towers)S.fx.push({k:'ring',x:t.x,y:t.y+10,r:T*.7,t:0,life:.4,col:'#ffe9a0'});return true}
+function buyRepair(){if(S.lives>=START_LIVES||!pay(repairCost()))return false;S.lives++;sfx('up');S.fx.push({k:'pillar',x:S.P.base[0],y:S.P.base[1],t:0,life:.6},{k:'text',x:S.P.base[0],y:S.P.base[1]-50,txt:'+1',t:0,life:.9,col:'#7be05c'});return true}
+function buyRecharge(k){if(S.spell[k]<=0||!pay(useCost(k)))return false;S.spell[k]=0;S.uses[k]++;sfx('coin');return true}
+function buyDrum(){if(S.rage>0||!pay(useCost('drum')))return false;S.uses.drum++;S.rage=10;sfx('horn');S.fx.push({k:'text',x:W/2,y:H/2,txt:'战鼓！攻速 +50%',t:0,life:1.4,col:'#ffb040',big:true});return true}
+// 障碍格用横向坐标 [c,r] 记录，竖屏时换算
+const lcr=(c,r)=>PORT?[r,c]:[c,r];
+function applyCleared(){for(const[lc,lr]of S.cleared){const[c,r]=PORT?[lr,lc]:[lc,lr];if(S.grid[r*COLS+c]===2)S.grid[r*COLS+c]=0}}
+function buyClear(c,r){if(!S||c<0||c>=COLS||r<0||r>=ROWS||S.grid[r*COLS+c]!==2||!pay(clearCost()))return false;
+  S.cleared.push(lcr(c,r));S.grid[r*COLS+c]=0;S.deco=null;bgFor=null;smoke((c+.5)*T,(r+.5)*T,10,'#d8d0c0',70);burst((c+.5)*T,(r+.5)*T,'#c8b890',10,140);sfx('boom');return true}
 const upCost=t=>t.lv>=MAX_LV?null:Math.round(TOWERS[t.type].cost*UP_COST[t.lv-1]);
 
 // 关卡：paths 为格子坐标折线(可多条，终点必须相同＝城堡)；hp 为怪物生命倍率
@@ -265,6 +321,10 @@ const LEVELS=[
  {id:'c2',theme:'cave',name:'水晶回廊',waves:10,hp:2.0,gold:210,paths:[[[7,-1],[7,1],[2,1],[2,6],[12,6],[12,3],[9,3]]]},
  {id:'c3',theme:'cave',name:'双生裂隙',waves:11,hp:2.0,gold:240,boss:2,paths:[[[-1,4],[3,4],[3,1],[10,1],[10,4],[13,4]],[[6,9],[6,6],[10,6],[10,4],[13,4]]]},
  {id:'c4',theme:'cave',name:'熔岩王座',waves:12,hp:2.25,gold:260,boss:3,paths:[[[-1,1],[1,1],[1,7],[4,7],[4,1],[7,1],[7,7],[10,7],[10,1],[12,1],[12,5]]]},
+ // 无尽模式：每个主题一张图，波数无限（规则见下方「无尽模式」一节）
+ {id:'ef',theme:'forest',name:'无尽 · 密林深处',endless:true,waves:Infinity,hp:1,gold:300,paths:[[[-1,1],[3,1],[3,7],[6,7],[6,1],[9,1],[9,7],[12,7],[12,3]]]},
+ {id:'ed',theme:'desert',name:'无尽 · 烈日双路',endless:true,waves:Infinity,hp:.75,gold:340,paths:[[[-1,4],[2,4],[2,1],[6,1],[6,4],[12,4]],[[3,9],[3,6],[9,6],[9,4],[12,4]]]},
+ {id:'ec',theme:'cave',name:'无尽 · 深渊回旋',endless:true,waves:Infinity,hp:1.15,gold:300,paths:[[[-1,1],[12,1],[12,7],[1,7],[1,4],[9,4]]]},
 ];
 const START_LIVES=20;
 
@@ -301,7 +361,7 @@ function prep(L){
 function flip(){
   setOrient(!PORT);if(!S)return;
   const sw=o=>{const t=o.x;o.x=o.y;o.y=t};
-  S.P=prep(S.L);S.grid=S.P.grid.slice();
+  S.P=prep(S.L);S.grid=S.P.grid.slice();applyCleared();S.deco=null;
   for(const t of S.towers){sw(t);const c=t.c;t.c=t.r;t.r=c;t.ang=Math.PI/2-t.ang;S.grid[t.r*COLS+t.c]=3}
   for(const m of S.mobs){m.path=S.P.paths[m.pi||0];sw(m);const o=m.ox;m.ox=m.oy;m.oy=o}
   for(const q of S.shots){sw(q);const t=q.tx;q.tx=q.ty;q.ty=t}
@@ -312,6 +372,7 @@ function posAt(p,d){
   for(let i=0;i<p.seg.length;i++){if(d<=p.seg[i]||i===p.seg.length-1){const k=Math.min(1,d/p.seg[i]),a=p.pts[i],b=p.pts[i+1];return[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k]}d-=p.seg[i]}
 }
 function genWaves(L){
+  if(L.endless)return[];
   const out=[],np=L.paths.length;
   for(let w=1;w<=L.waves;w++){
     const ev=[];let t=0;const hp=L.hp*Math.pow(1.17,w-1);
@@ -329,10 +390,11 @@ function genWaves(L){
 
 /* ---------- 存档 ---------- */
 const SAVE='arcade-td-progress';
+let ebest={};try{ebest=JSON.parse(localStorage.getItem('arcade-td-endless')||'{}')||{}}catch(e){}
 let progress={};
 try{progress=JSON.parse(localStorage.getItem(SAVE)||'{}')||{}}catch(e){}
 const saveProgress=()=>{try{localStorage.setItem(SAVE,JSON.stringify(progress))}catch(e){}};
-function unlocked(i){const L=LEVELS[i],p=LEVELS[i-1];return !p||p.theme!==L.theme||progress[p.id]>0}
+function unlocked(i){const L=LEVELS[i],p=LEVELS[i-1];return !!L.endless||!p||p.theme!==L.theme||progress[p.id]>0}
 
 /* ---------- 音效：WebAudio 现场合成，无需音频文件 ---------- */
 const AU={ctx:null,on:true,last:{}};try{AU.on=localStorage.getItem('arcade-td-sound')!=='0'}catch(e){}
@@ -370,7 +432,7 @@ function startLevel(i){
   const L=LEVELS[i],P=prep(L);
   S={i,L,P,th:THEMES[L.theme],waves:genWaves(L),grid:P.grid.slice(),towers:[],mobs:[],shots:[],fx:[],decals:[],meteors:[],
      gold:L.gold,lives:START_LIVES,wave:0,queue:[],waveT:0,active:false,speed:S?S.speed:1,paused:false,over:null,
-     build:null,sel:null,hover:null,cast:null,spell:{fire:0,ice:0},autoT:0,time:0,shake:0,flash:0,dirty:true};
+     build:null,sel:null,hover:null,cast:null,spell:{fire:0,ice:0},tech:{atk:0,spd:0,rng:0},uses:{fire:0,ice:0,drum:0},rage:0,cleared:[],deco:null,autoT:0,time:0,shake:0,flash:0,dirty:true};
   return S;
 }
 function canBuild(c,r){return S&&c>=0&&c<COLS&&r>=0&&r<ROWS&&S.grid[r*COLS+c]===0}
@@ -390,12 +452,12 @@ function sell(t){const i=S.towers.indexOf(t);if(i<0||S.over)return;S.towers.spli
   S.fx.push({k:'text',x:t.x,y:t.y,txt:'+'+g,t:0,life:.8,col:'#ffd76a'})}
 function nextWave(){
   if(!S||S.active||S.over||S.wave>=S.L.waves)return false;
-  S.queue=S.waves[S.wave].slice();S.wave++;S.waveT=0;S.active=true;S.autoT=0;S.dirty=true;sfx('horn');
+  S.queue=waveOf(S.wave).slice();S.uses={fire:0,ice:0,drum:0};S.wave++;S.waveT=0;S.active=true;S.autoT=0;S.dirty=true;sfx('horn');
   S.fx.push({k:'text',x:W/2,y:H/2,txt:'第 '+S.wave+' 波',t:0,life:1.3,col:'#ffffff',big:true});return true;
 }
 function spawn(ev){
   const b=MOBS[ev.type],hp=Math.round(b.hp*ev.hp);
-  S.mobs.push({type:ev.type,path:S.P.paths[ev.path],pi:ev.path,d:0,hp,max:hp,sp:b.sp*T,armor:b.armor,gold:b.gold,cost:b.cost,r:b.r,
+  S.mobs.push({type:ev.type,path:S.P.paths[ev.path],pi:ev.path,d:0,hp,max:hp,sp:b.sp*T*(ev.spd||1),armor:b.armor+(ev.arm||0),gold:b.gold,cost:b.cost,r:b.r,
     slow:0,slowK:0,x:0,y:0,face:1,hit:0,ox:(Math.random()-.5)*14,oy:(Math.random()-.5)*14,ph:Math.random()*6,dead:false});
 }
 function hurt(m,dmg,pierce,crit){
@@ -408,7 +470,7 @@ function hurt(m,dmg,pierce,crit){
     if(boss){S.shake=.4;S.flash=.2;S.fx.push({k:'boom',x:m.x,y:m.y,r:T*1.6,t:0,life:.6});sfx('bossdie')}else sfx('coin');
     S.fx.push({k:'text',x:m.x,y:m.y-m.r-10,txt:'+'+m.gold,t:0,life:.8,col:'#ffd76a'},{k:'ring',x:m.x,y:m.y,r:m.r*1.8,t:0,life:.3,col:'#ffffff'})}
 }
-function splash(x,y,rad,fn){for(const m of S.mobs)if(!m.dead&&Math.hypot(m.x-x,m.y-y)<=rad+m.r*.5)fn(m)}
+function splash(x,y,rad,fn,max){let n=0;for(const m of S.mobs)if(!m.dead&&Math.hypot(m.x-x,m.y-y)<=rad+m.r*.5){fn(m);if(max&&++n>=max)break}}
 // 选目标：0 最前（最接近城堡）、1 最强（血最多）、2 最弱
 function pick(t){const R=tRange(t);let best=null,bv=-1e18;
   for(const m of S.mobs){if(m.dead||m.d<=0||Math.hypot(m.x-t.x,m.y-t.y)>R)continue;const v=t.mode===1?m.hp:t.mode===2?-m.hp:m.d/m.path.total;if(v>bv){bv=v;best=m}}return best}
@@ -431,14 +493,14 @@ function fire(t,m){
   }
 }
 // 技能：火雨（点地图落下 6 颗陨石）与冰封（全场冻结）
-function castFire(x,y){if(!S||S.over||S.spell.fire>0)return false;S.spell.fire=FIRE_CD;S.cast=null;const dmg=(28+10*S.wave)*S.L.hp;
+function castFire(x,y){if(!S||S.over||S.spell.fire>0)return false;S.spell.fire=FIRE_CD;S.cast=null;const dmg=(28+10*(S.L.endless?Math.min(S.wave,E_CAP)*1.4:S.wave))*S.L.hp;
   for(let i=0;i<6;i++)S.meteors.push({x:x+(i?(Math.random()-.5)*1.7*T:0),y:y+(i?(Math.random()-.5)*1.7*T:0),t:-i*.13,dmg});S.dirty=true;sfx('cast');return true}
 function castIce(){if(!S||S.over||S.spell.ice>0)return false;S.spell.ice=ICE_CD;
   for(const m of S.mobs){const boss=m.type==='boss';m.slowK=boss?.6:1;m.slow=boss?3:4;burst(m.x,m.y,'#d8f4ff',4,80)}
   S.fx.push({k:'icewave',x:W/2,y:H/2,t:0,life:.7});S.flash=.22;S.dirty=true;sfx('ice2');return true}
 function step(dt){
   if(!S||S.paused||S.over)return;
-  S.time+=dt;if(S.shake>0)S.shake-=dt;if(S.flash>0)S.flash-=dt;
+  S.time+=dt;if(S.shake>0)S.shake-=dt;if(S.flash>0)S.flash-=dt;if(S.rage>0){S.rage-=dt;if(S.rage<=0)S.dirty=true}
   if(S.spell.fire>0)S.spell.fire=Math.max(0,S.spell.fire-dt);if(S.spell.ice>0)S.spell.ice=Math.max(0,S.spell.ice-dt);
   if(!S.active&&S.autoT>0){S.autoT-=dt;if(S.autoT<=0)nextWave()}
   if(S.active){S.waveT+=dt;while(S.queue.length&&S.queue[0].t<=S.waveT)spawn(S.queue.shift())}
@@ -452,7 +514,7 @@ function step(dt){
   for(const t of S.towers){
     t.cd-=dt;if(t.flash>0)t.flash-=dt;
     if(t.cd>0)continue;
-    const best=pick(t);if(best){fire(t,best);t.cd=TOWERS[t.type].rate}
+    const best=pick(t);if(best){fire(t,best);t.cd=tRate(t)}
   }
   for(const s of S.shots){
     if(s.type!=='cannon'&&!s.m.dead){s.tx=s.m.x;s.ty=s.m.y}
@@ -463,9 +525,9 @@ function step(dt){
       else if(s.type==='frost')S.fx.push({k:'part',x:s.x+(Math.random()-.5)*7,y:s.y+(Math.random()-.5)*7,vx:0,vy:12,g:0,r:2.6,t:0,life:.32,col:'#d8f4ff'})}
     if(dist<=mv+4){s.done=true;const d=TOWERS[s.type];
       if(s.type==='archer'){if(!s.m.dead){hurt(s.m,s.dmg,false,s.crit);S.fx.push({k:'spark',x:s.tx,y:s.ty,t:0,life:.18,col:s.crit?'#ffe14a':'#ffffff',r:s.crit?22:11});if(s.crit)burst(s.tx,s.ty,'#ffe14a',5,130)}}
-      else if(s.type==='cannon'){splash(s.tx,s.ty,d.splash*T,m=>hurt(m,s.dmg));S.fx.push({k:'boom',x:s.tx,y:s.ty,r:d.splash*T,t:0,life:.4});
+      else if(s.type==='cannon'){splash(s.tx,s.ty,d.splash*T,m=>hurt(m,s.dmg),8);S.fx.push({k:'boom',x:s.tx,y:s.ty,r:d.splash*T,t:0,life:.4});   // 一发炮弹最多炸 8 个，否则怪越密炮越强，无尽模式永远打不穿
         S.decals.push({k:'scorch',x:s.tx,y:s.ty,r:d.splash*T*.7,t:0,life:5});burst(s.tx,s.ty,'#ffb040',9,170);smoke(s.tx,s.ty,4,'#6a6460',60);S.shake=Math.max(S.shake,.1);sfx('boom')}
-      else{splash(s.tx,s.ty,d.splash*T,m=>{hurt(m,s.dmg);if(m.slowK>=1&&m.slow>0)return;const k=d.slow+.08*(s.lv-1);if(k>=m.slowK||m.slow<=0){m.slowK=k}m.slow=d.slowT});
+      else{splash(s.tx,s.ty,d.splash*T,m=>{hurt(m,s.dmg);if(m.slowK>=1&&m.slow>0)return;const k=d.slow+.08*(s.lv-1);if(k>=m.slowK||m.slow<=0){m.slowK=k}m.slow=d.slowT},12);
         S.fx.push({k:'frost',x:s.tx,y:s.ty,r:d.splash*T,t:0,life:.45});S.decals.push({k:'ice',x:s.tx,y:s.ty,r:d.splash*T*.8,t:0,life:2.2});burst(s.tx,s.ty,'#cfefff',7,100);sfx('ice')}
     }else{s.x+=dx/dist*mv;s.y+=dy/dist*mv}
   }
@@ -481,7 +543,8 @@ function step(dt){
   if(S.active&&!S.queue.length&&!S.mobs.length){
     S.active=false;S.dirty=true;
     if(S.wave>=S.L.waves){finish(true);return}
-    const bonus=20+5*S.wave;S.gold+=bonus;if(AUTO)S.autoT=2.5;
+    const bonus=Math.min(250,20+5*S.wave);S.gold+=bonus;if(AUTO)S.autoT=2.5;
+    if(S.L.endless&&!(ebest[S.L.id]>=S.wave)){ebest[S.L.id]=S.wave;S.record=true;try{localStorage.setItem('arcade-td-endless',JSON.stringify(ebest))}catch(e){}}
     S.fx.push({k:'text',x:W/2,y:H/2,txt:'清除！ +'+bonus,t:0,life:1.6,col:'#ffd76a',big:true});
   }
 }
@@ -564,7 +627,7 @@ function drawCastle(g,x,y,accent){
 }
 function drawFlag(g,x,y,tm,col){const w=Math.sin(tm*5)*2.2;g.strokeStyle=OL;g.lineWidth=2;g.fillStyle=col;g.beginPath();g.moveTo(x+1,y);g.quadraticCurveTo(x+10,y-3+w,x+21,y+2-w);g.quadraticCurveTo(x+12,y+6+w,x+1,y+13);g.closePath();g.fill();g.stroke();
   g.fillStyle='rgba(255,255,255,.25)';g.beginPath();g.moveTo(x+2,y+1);g.quadraticCurveTo(x+10,y-2+w,x+19,y+2.5-w);g.lineTo(x+2,y+5);g.fill()}
-function drawBg(g,L){
+function drawBg(g,L,cleared){
   const P=prep(L),th=THEMES[L.theme],R=rng(hash(L.id)^0x9e37),rr=(a,b)=>a+R()*(b-a),Y0=-PADY,ry=()=>rr(Y0,H);
   g.lineJoin='round';g.lineCap='round';
   g.fillStyle=th.ground;g.fillRect(0,Y0,W,VH);
@@ -621,7 +684,8 @@ function drawBg(g,L){
     for(let k=0;k<3;k++){const q=posAt(p,T*.5+16+k*20);g.save();g.translate(q[0],q[1]);g.rotate(ang);
       g.fillStyle='rgba(239,90,78,'+(.95-k*.25)+')';g.strokeStyle='rgba(27,22,34,'+(.9-k*.25)+')';g.lineWidth=2.5;
       g.beginPath();poly(9,0,-6,-12,-1,0,-6,12)(g);g.fill();g.stroke();g.restore()}}
-  for(const d of P.deco.slice().sort((a,b)=>a.r-b.r))drawDeco(g,th.deco[d.k],(d.c+.5)*T,(d.r+.5)*T,d.s,th);
+  const gone=new Set((cleared||[]).map(([lc,lr])=>PORT?lr+','+lc:lc+','+lr));
+  for(const d of P.deco.slice().sort((a,b)=>a.r-b.r))if(!gone.has(d.c+','+d.r))drawDeco(g,th.deco[d.k],(d.c+.5)*T,(d.r+.5)*T,d.s,th);
   drawCastle(g,P.base[0],P.base[1],th.accent);
   // 光照与调色
   g.globalCompositeOperation='lighter';
@@ -929,7 +993,7 @@ function drawFx(g,f,tm){
 }
 function render(){
   if(!S)return;
-  if(bgFor!==S.L.id){bgCv=document.createElement('canvas');bgCv.width=cv.width;bgCv.height=cv.height;const g=bgCv.getContext('2d');g.setTransform(K,0,0,K,0,PADY*K);drawBg(g,S.L);bgFor=S.L.id}
+  if(bgFor!==S.L.id){bgCv=document.createElement('canvas');bgCv.width=cv.width;bgCv.height=cv.height;const g=bgCv.getContext('2d');g.setTransform(K,0,0,K,0,PADY*K);drawBg(g,S.L,S.cleared);bgFor=S.L.id}
   const g=ctx,tm=S.time,P=S.P,th=S.L.theme;g.setTransform(1,0,0,1,0,0);g.drawImage(bgCv,0,0);
   const sh=S.shake>0?Math.min(S.shake,.35)*16:0;g.setTransform(K,0,0,K,(Math.random()-.5)*sh*K,(PADY+(Math.random()-.5)*sh)*K);
   g.lineJoin='round';g.lineCap='round';
@@ -938,7 +1002,7 @@ function render(){
     if(d.k==='scorch'){const gr=g.createRadialGradient(d.x,d.y,0,d.x,d.y,d.r);gr.addColorStop(0,'rgba(20,12,8,'+.5*a+')');gr.addColorStop(.6,'rgba(30,18,10,'+.28*a+')');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.beginPath();g.ellipse(d.x,d.y,d.r,d.r*.72,0,0,7);g.fill()}
     else{const gr=g.createRadialGradient(d.x,d.y,0,d.x,d.y,d.r);gr.addColorStop(0,'rgba(215,245,255,'+.5*a+')');gr.addColorStop(.7,'rgba(150,215,255,'+.25*a+')');gr.addColorStop(1,'rgba(150,215,255,0)');g.fillStyle=gr;g.beginPath();g.ellipse(d.x,d.y,d.r,d.r*.72,0,0,7);g.fill();
       g.strokeStyle='rgba(255,255,255,'+.45*a+')';g.lineWidth=1.3;g.beginPath();for(let i=0;i<6;i++){const an=i*1.047+d.x;g.moveTo(d.x,d.y);g.lineTo(d.x+Math.cos(an)*d.r*.7,d.y+Math.sin(an)*d.r*.5)}g.stroke()}}
-  if(th==='cave'){g.globalCompositeOperation='lighter';for(const d of P.deco){if(S.th.deco[d.k]!=='crystal')continue;const x=(d.c+.5)*T,y=(d.r+.5)*T;glow(g,x,y-6,70,'#7a68ff',.1+.08*Math.sin(tm*2+d.c))}g.globalCompositeOperation='source-over'}
+  if(th==='cave'){g.globalCompositeOperation='lighter';for(const d of P.deco){if(S.th.deco[d.k]!=='crystal'||S.grid[d.r*COLS+d.c]!==2)continue;const x=(d.c+.5)*T,y=(d.r+.5)*T;glow(g,x,y-6,70,'#7a68ff',.1+.08*Math.sin(tm*2+d.c))}g.globalCompositeOperation='source-over'}
   // 可建造格：四角标记
   if(S.build){g.strokeStyle='rgba(255,255,255,.3)';g.lineWidth=2;const q=8,o=10;
     for(let i=0;i<S.grid.length;i++)if(S.grid[i]===0){const x=(i%COLS)*T,y=(i/COLS|0)*T;g.beginPath();
@@ -949,6 +1013,7 @@ function render(){
   const tag=(x,y,txt,bad)=>{g.font='700 '+Math.round(13*Math.max(1,Math.min(2,W/(cv.clientWidth||W))))+'px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';const w=g.measureText(txt).width+18;x=Math.max(w/2+4,Math.min(W-w/2-4,x));y=Math.min(H-14,y);
     g.fillStyle=bad?'rgba(120,20,16,.9)':'rgba(10,6,16,.86)';g.strokeStyle=bad?'#ef5a4e':'#e3b558';g.lineWidth=1.5;const hh=parseInt(g.font.slice(4))+10;g.beginPath();g.roundRect(x-w/2,y-hh/2,w,hh,hh/2);g.fill();g.stroke();g.fillStyle='#fff';g.fillText(txt,x,y)};
   if(S.sel)ring(S.sel.x,S.sel.y,tRange(S.sel),true);
+  if(S.deco){const{c,r}=S.deco;g.strokeStyle='#ffd76a';g.lineWidth=3;g.setLineDash([8,6]);g.lineDashOffset=-tm*20;g.beginPath();g.roundRect(c*T+3,r*T+3,T-6,T-6,10);g.stroke();g.setLineDash([])}
   if(S.build&&S.hover&&!S.cast){const{c,r}=S.hover,ok=canBuild(c,r)&&S.gold>=TOWERS[S.build].cost;
     if(c>=0&&c<COLS&&r>=0&&r<ROWS){g.fillStyle=ok?'rgba(140,255,120,.25)':'rgba(239,90,78,.3)';g.beginPath();g.roundRect(c*T+4,r*T+4,T-8,T-8,10);g.fill();
       ring((c+.5)*T,(r+.5)*T,TOWERS[S.build].range*T,ok);
@@ -995,6 +1060,7 @@ function render(){
   if(boss){const bw=320,x=W/2-bw/2,y=-PADY+8,k=Math.max(0,boss.hp/boss.max);g.fillStyle='rgba(10,6,16,.82)';g.strokeStyle='#e3b558';g.lineWidth=1.5;g.beginPath();g.roundRect(x-5,y-4,bw+10,22,11);g.fill();g.stroke();
     const gr=g.createLinearGradient(0,y,0,y+14);gr.addColorStop(0,'#ff8a7e');gr.addColorStop(1,'#c9342a');g.fillStyle=gr;g.beginPath();g.roundRect(x,y,Math.max(8,bw*k),14,7);g.fill();
     g.font='700 11px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.lineWidth=3;g.strokeStyle=OL;g.strokeText(S.th.mobs.boss[0],W/2,y+7.5);g.fillStyle='#fff';g.fillText(S.th.mobs.boss[0],W/2,y+7.5)}
+  if(S.rage>0){const a=.25+.1*Math.sin(tm*10);g.strokeStyle='rgba(255,150,40,'+a+')';g.lineWidth=14;g.strokeRect(0,-PADY,W,VH);tag(W/2,H-16,'战鼓 '+Math.ceil(S.rage)+'s')}
   if(S.flash>0){g.fillStyle='rgba(190,230,255,'+Math.min(.5,S.flash*1.6)+')';g.fillRect(0,-PADY,W,VH)}
   if(S.paused&&!S.over){g.fillStyle='rgba(8,4,16,.55)';g.fillRect(0,-PADY,W,VH);g.font="400 60px 'ZCOOL QingKe HuangYou',system-ui,sans-serif";g.textAlign='center';g.textBaseline='middle';g.lineWidth=8;g.strokeStyle=OL;const pt=S.restored?'已恢复上次对局':'已暂停';if(S.restored)g.font="400 "+Math.min(60,W/9|0)+"px 'ZCOOL QingKe HuangYou',system-ui,sans-serif";g.strokeText(pt,W/2,H/2);g.fillStyle='#fff';g.fillText(pt,W/2,H/2);
     if(S.restored){g.font='700 '+Math.round(18*Math.max(1,Math.min(2,W/(cv.clientWidth||W))))+'px system-ui,sans-serif';g.lineWidth=4;g.strokeText('点一下地图继续',W/2,H/2+56);g.fillStyle='#ffd76a';g.fillText('点一下地图继续',W/2,H/2+56)}}
@@ -1008,17 +1074,18 @@ function buildMenu(theme){
   $('menu').style.setProperty('--accent',THEMES[theme].accent);
   $('themes').innerHTML='';
   for(const k of THEME_KEYS){const th=THEMES[k],b=document.createElement('button');b.className='theme'+(k===theme?' on':'');b.style.setProperty('--c',th.accent);
-    const ls=LEVELS.filter(l=>l.theme===k),got=ls.reduce((a,l)=>a+(progress[l.id]||0),0);
+    const ls=LEVELS.filter(l=>l.theme===k&&!l.endless),got=ls.reduce((a,l)=>a+(progress[l.id]||0),0);
     const tx=document.createElement('div');tx.className='tx';tx.innerHTML=`<b>${th.name}</b><span>${th.tag}</span>`;
     const em=document.createElement('em');em.textContent='★ '+got+'/'+ls.length*3;
     b.append(thumb(ls[ls.length-1],448),tx,em);b.onclick=()=>buildMenu(k);$('themes').appendChild(b)}
   $('levels').innerHTML='';
   LEVELS.forEach((L,i)=>{if(L.theme!==theme)return;
     const b=document.createElement('button');b.className='lv';b.disabled=!unlocked(i);
-    const st=progress[L.id]||0,n=LEVELS.filter(l=>l.theme===theme).indexOf(L)+1;
+    const st=progress[L.id]||0,n=L.endless?'∞':LEVELS.filter(l=>l.theme===theme).indexOf(L)+1;if(L.endless)b.classList.add('endless');
     const no=document.createElement('div');no.className='no';no.textContent=n;
     const m=document.createElement('div');m.className='meta';
-    m.innerHTML=`<div><b>${L.name}</b><small>${b.disabled?'通关上一关后解锁':L.waves+' 波'+(L.paths.length>1?' · 双路进攻':'')}</small></div><span class="stars">${'★'.repeat(st)}<s>${'★'.repeat(3-st)}</s></span>`;
+    m.innerHTML=L.endless?`<div><b>${L.name}</b><small>波数无限，看你能守到第几波</small></div><span class="stars" style="font-size:13px;letter-spacing:0">${ebest[L.id]?'最高 '+ebest[L.id]+' 波':'未挑战'}</span>`
+      :`<div><b>${L.name}</b><small>${b.disabled?'通关上一关后解锁':L.waves+' 波'+(L.paths.length>1?' · 双路进攻':'')}</small></div><span class="stars">${'★'.repeat(st)}<s>${'★'.repeat(3-st)}</s></span>`;
     b.append(thumb(L,448),no,m);
     if(b.disabled){const lk=document.createElement('div');lk.className='lock';lk.innerHTML=LOCK;b.append(lk)}
     b.onclick=()=>openLevel(i);$('levels').appendChild(b)});
@@ -1028,9 +1095,9 @@ function buildMenu(theme){
 const RUN='arcade-td-run';
 function saveRun(){
   if(!S||S.over)return;
-  try{localStorage.setItem(RUN,JSON.stringify({v:1,i:S.i,port:PORT,gold:S.gold,lives:S.lives,wave:S.wave,active:S.active,waveT:S.waveT,queue:S.queue,autoT:S.autoT,time:S.time,speed:S.speed,auto:AUTO,spell:S.spell,
+  try{localStorage.setItem(RUN,JSON.stringify({v:1,i:S.i,port:PORT,gold:S.gold,lives:S.lives,wave:S.wave,active:S.active,waveT:S.waveT,queue:S.queue,autoT:S.autoT,time:S.time,speed:S.speed,auto:AUTO,spell:S.spell,tech:S.tech,uses:S.uses,rage:S.rage,cleared:S.cleared,
     towers:S.towers.map(t=>({type:t.type,c:t.c,r:t.r,lv:t.lv,spent:t.spent,mode:t.mode||0,cd:t.cd})),
-    mobs:S.mobs.filter(m=>!m.dead).map(m=>({type:m.type,pi:m.pi||0,d:m.d,hp:m.hp,max:m.max,slow:m.slow,slowK:m.slowK,ox:m.ox,oy:m.oy,ph:m.ph}))}))}catch(e){}
+    mobs:S.mobs.filter(m=>!m.dead).map(m=>({type:m.type,pi:m.pi||0,d:m.d,hp:m.hp,max:m.max,slow:m.slow,slowK:m.slowK,ox:m.ox,oy:m.oy,ph:m.ph,sp:m.sp,armor:m.armor}))}))}catch(e){}
 }
 function clearRun(){try{localStorage.removeItem(RUN)}catch(e){}}
 function readRun(){try{const d=JSON.parse(localStorage.getItem(RUN)||'null');return d&&d.v===1&&LEVELS[d.i]&&Array.isArray(d.towers)&&Array.isArray(d.mobs)&&d.wave<=LEVELS[d.i].waves?d:null}catch(e){return null}}
@@ -1038,10 +1105,12 @@ function restore(d){
   Object.assign(S,{gold:+d.gold||0,lives:Math.max(1,+d.lives||1),wave:+d.wave||0,active:!!d.active,waveT:+d.waveT||0,queue:Array.isArray(d.queue)?d.queue.filter(e=>MOBS[e.type]):[],autoT:+d.autoT||0,
     time:+d.time||0,speed:[1,2,3].includes(d.speed)?d.speed:1,spell:{fire:+(d.spell&&d.spell.fire)||0,ice:+(d.spell&&d.spell.ice)||0},paused:true,restored:true});
   AUTO=!!d.auto;
+  if(S.L.endless){const n=(v,m)=>Math.max(0,Math.min(m,v|0)),q=d.tech||{},u=d.uses||{};S.tech={atk:n(q.atk,TECH.atk.max),spd:n(q.spd,TECH.spd.max),rng:n(q.rng,TECH.rng.max)};S.uses={fire:n(u.fire,99),ice:n(u.ice,99),drum:n(u.drum,99)};S.rage=+d.rage||0;
+    S.cleared=(Array.isArray(d.cleared)?d.cleared:[]).filter(q=>Array.isArray(q)&&q.length===2);applyCleared()}
   for(const t of d.towers){if(!TOWERS[t.type]||!canBuild(t.c,t.r))continue;const lv=Math.min(MAX_LV,Math.max(1,t.lv|0));
     S.towers.push({type:t.type,c:t.c,r:t.r,x:(t.c+.5)*T,y:(t.r+.5)*T,lv,cd:+t.cd||0,ang:-.6,spent:+t.spent||TOWERS[t.type].cost,flash:0,born:S.time-1,mode:t.mode|0});S.grid[t.r*COLS+t.c]=3}
   for(const m of d.mobs){const b=MOBS[m.type],path=S.P.paths[m.pi];if(!b||!path)continue;const q=posAt(path,+m.d||0),ox=+m.ox||0,oy=+m.oy||0;
-    S.mobs.push({type:m.type,path,pi:m.pi,d:+m.d||0,hp:+m.hp||1,max:+m.max||1,sp:b.sp*T,armor:b.armor,gold:b.gold,cost:b.cost,r:b.r,slow:+m.slow||0,slowK:+m.slowK||0,x:q[0]+ox,y:q[1]+oy,face:1,hit:0,ox,oy,ph:+m.ph||0,dead:false})}
+    S.mobs.push({type:m.type,path,pi:m.pi,d:+m.d||0,hp:+m.hp||1,max:+m.max||1,sp:+m.sp||b.sp*T,armor:m.armor!=null?+m.armor:b.armor,gold:b.gold,cost:b.cost,r:b.r,slow:+m.slow||0,slowK:+m.slowK||0,x:q[0]+ox,y:q[1]+oy,face:1,hit:0,ox,oy,ph:+m.ph||0,dead:false})}
 }
 setInterval(saveRun,1500);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)saveRun()});
@@ -1064,17 +1133,19 @@ function buildTowerBtns(){
     b.append(c,t,kb);b.onclick=()=>{audioInit();S.build=S.build===k?null:k;S.sel=null;S.cast=null;S.pend=S.hover=null;syncUI()};box.appendChild(b)});
 }
 function wavePreview(){
-  if(S.wave>=S.L.waves)return'';const n={};for(const e of S.waves[S.wave])n[e.type]=(n[e.type]||0)+1;
-  return'下一波：'+Object.keys(n).map(k=>`<span><canvas data-mob="${k}" width="56" height="56"></canvas>${S.th.mobs[k][0]} ×${n[k]}</span>`).join('');
+  if(S.wave>=S.L.waves)return'';const n={};for(const e of waveOf(S.wave))n[e.type]=(n[e.type]||0)+1;
+  return'下一波：'+Object.keys(n).map(k=>`<span><canvas data-mob="${k}" width="56" height="56"></canvas>${S.th.mobs[k][0]} ×${n[k]}</span>`).join('')+(S.L.endless?(k=>`<span style="color:${k>=E_CAP?'#ff8a7e':'inherit'}">怪物强度 ${k}/${E_CAP}${k>=E_CAP?'（已封顶，之后只增加数量）':''}</span>`)(endlessStats(S.wave+1).lvl):'');
 }
 function syncUI(){
   if(!S)return;S.dirty=false;
-  $('hpV').textContent=S.lives;$('goldV').textContent=S.gold;$('waveV').textContent=S.wave+'/'+S.L.waves;$('waveBar').style.width=(S.wave/S.L.waves*100)+'%';
+  $('hpV').textContent=S.lives;$('goldV').textContent=S.gold;$('waveV').textContent=S.L.endless?'第 '+S.wave+' 波':S.wave+'/'+S.L.waves;$('waveBar').style.width=(S.L.endless?Math.min(1,S.wave/E_CAP):S.wave/S.L.waves)*100+'%';
+  $('techBtn').hidden=!S.L.endless;if(!S.L.endless||S.over)$('techPanel').hidden=true;if(!$('techPanel').hidden)renderTech();
+  const dk=S.deco;$('decoPanel').hidden=!dk;if(dk){const c=clearCost();$('decoBtn').innerHTML='清除 '+COIN+c;$('decoBtn').disabled=S.gold<c;$('decoPanel').classList.toggle('top',(dk.r+.5)*T>H*.55)}
   $('speedBtn').textContent='×'+S.speed;$('pauseBtn').textContent=S.paused?'继续':'暂停';$('autoBtn').textContent='自动 '+(AUTO?'开':'关');$('sndBtn').textContent='音效 '+(AU.on?'开':'关');
   for(const b of $('towerBtns').children){b.classList.toggle('on',S.build===b.dataset.k);b.classList.toggle('poor',S.gold<TOWERS[b.dataset.k].cost)}
   const t=S.sel;$('selPanel').hidden=!t;if(t)$('selPanel').classList.toggle('top',t.y>H*.55);
   if(t){const d=TOWERS[t.type],c=upCost(t);$('selName').textContent=d.name+' Lv'+t.lv;$('modeBtn').textContent='目标：'+MODES[t.mode||0];icon($('selIcon'),t.type,t.lv);
-    $('selStat').textContent=`伤害 ${Math.round(tDmg(t))} · 射程 ${(tRange(t)/T).toFixed(1)} · 间隔 ${d.rate}s`+(t.type==='archer'&&t.lv>=2?` · 暴击 ${t.lv>=3?25:15}%`:'');
+    $('selStat').textContent=`伤害 ${Math.round(tDmg(t))} · 射程 ${(tRange(t)/T).toFixed(1)} · 间隔 ${+tRate(t).toFixed(2)}s`+(t.type==='archer'&&t.lv>=2?` · 暴击 ${t.lv>=3?25:15}%`:'');
     $('upBtn').innerHTML=c==null?'已满级':'升级 '+COIN+c;$('upBtn').disabled=c==null||S.gold<c;$('sellBtn').innerHTML='出售 '+COIN+Math.round(t.spent*SELL)}
   const wb=$('waveBtn');wb.disabled=S.active||!!S.over;
   wb.textContent=S.active?`第 ${S.wave} 波进行中…`:S.wave>=S.L.waves?'已完成':`开始第 ${S.wave+1} 波 ▶`;
@@ -1082,9 +1153,9 @@ function syncUI(){
   for(const c of $('waveInfo').querySelectorAll('canvas')){const k=c.dataset.mob,g=c.getContext('2d'),r=MOBS[k].r,z=Math.min(1.5,21/r);g.scale(z,z);
     drawMob(g,{type:k,x:28/z,y:(k==='boss'?34:30)/z,r,face:1,hit:0,slow:0,hp:1,max:1,ph:0},S.th.mobs[k],0)}
   if(S.over&&$('overlay').hidden){const win=S.over==='win';$('overlay').hidden=false;$('ovBox').className='box'+(win?'':' lose');
-    $('ovTitle').textContent=win?'守住了！':'城堡失守';$('ovText').textContent=win?`剩余生命 ${S.lives}/${START_LIVES}`:`倒在第 ${S.wave} 波`;
+    $('ovTitle').textContent=win?'守住了！':'城堡失守';$('ovText').textContent=win?`剩余生命 ${S.lives}/${START_LIVES}`:S.L.endless?`守住了 ${S.wave-1} 波`+(S.record?' · 新纪录！':ebest[S.L.id]?` · 最高纪录 ${ebest[S.L.id]} 波`:''):`倒在第 ${S.wave} 波`;
     $('ovStars').innerHTML=win?'★'.repeat(S.stars)+'<s>'+'★'.repeat(3-S.stars)+'</s>':'';
-    const nx=LEVELS[S.i+1];$('ovNext').hidden=!(win&&nx&&unlocked(S.i+1));}
+    const nx=LEVELS[S.i+1];$('ovNext').hidden=!(win&&nx&&!nx.endless&&unlocked(S.i+1));}
 }
 function tileAt(ev){const r=cv.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width*W,y=(ev.clientY-r.top)/r.height*VH-PADY;return{c:Math.floor(x/T),r:Math.floor(y/T),x,y}}
 // 鼠标：悬停即预览，点击放置。触屏：第一下只显示预览（塔和射程），再点同一格才放置；按住拖动可以挪预览。
@@ -1102,7 +1173,9 @@ cv.addEventListener('pointerdown',e=>{
     syncUI();return}
   S.hover=h;
   const t=S.towers.find(t=>t.c===c&&t.r===r);
-  if(t){S.sel=S.sel===t?null:t;S.build=null;S.pend=null}
+  if(S.L.endless&&!t&&c>=0&&c<COLS&&r>=0&&r<ROWS&&S.grid[r*COLS+c]===2){S.deco=S.deco&&S.deco.c===c&&S.deco.r===r?null:{c,r};S.sel=null;S.build=null;S.pend=null;$('techPanel').hidden=true;if(touch)S.hover=null;syncUI();return}
+  S.deco=null;
+  if(t){S.sel=S.sel===t?null:t;S.build=null;S.pend=null;$('techPanel').hidden=true}
   else if(S.build){
     if(touch&&!(S.pend&&S.pend.c===c&&S.pend.r===r))S.pend=h;
     else{S.pend=null;
@@ -1117,9 +1190,26 @@ $('waveBtn').onclick=()=>{audioInit();nextWave();syncUI()};
 $('modeBtn').onclick=()=>{if(S.sel){S.sel.mode=((S.sel.mode||0)+1)%MODES.length;syncUI()}};
 $('autoBtn').onclick=()=>{AUTO=!AUTO;syncUI()};
 $('sndBtn').onclick=()=>{AU.on=!AU.on;try{localStorage.setItem('arcade-td-sound',AU.on?'1':'0')}catch(e){}if(AU.on)audioInit();syncUI()};
-$('spFire').onclick=()=>{audioInit();if(S.spell.fire<=0){S.cast=S.cast==='fire'?null:'fire';S.build=null;S.sel=null;S.pend=S.hover=null;syncUI()}};
-$('spIce').onclick=()=>{audioInit();castIce();syncUI()};
-function syncSpells(){for(const[k,id,cd]of[['fire','spFire',FIRE_CD],['ice','spIce',ICE_CD]]){const b=$(id),p=Math.ceil(S.spell[k]/cd*100);if(b._p!==p){b._p=p;b.style.setProperty('--p',p);b.disabled=p>0}}$('spFire').classList.toggle('on',S.cast==='fire')}
+$('spFire').onclick=()=>{audioInit();if(S.spell.fire>0&&S.L.endless){buyRecharge('fire');syncUI();return}if(S.spell.fire<=0){S.cast=S.cast==='fire'?null:'fire';S.build=null;S.sel=null;S.pend=S.hover=null;syncUI()}};
+$('spIce').onclick=()=>{audioInit();if(S.spell.ice>0&&S.L.endless)buyRecharge('ice');else castIce();syncUI()};
+function syncSpells(){for(const[k,id,cd,key]of[['fire','spFire',FIRE_CD,'Q'],['ice','spIce',ICE_CD,'W']]){const b=$(id),p=Math.ceil(S.spell[k]/cd*100),e=S.L.endless&&p>0,lab=e?'●'+useCost(k):key,dis=p>0&&!(e&&S.gold>=useCost(k)),sg=p+lab+dis;
+    if(b._s!==sg){b._s=sg;b.style.setProperty('--p',p);b.disabled=dis;b.querySelector('small').textContent=lab;b.classList.toggle('buy',e)}}$('spFire').classList.toggle('on',S.cast==='fire')}
+// 无尽模式的强化面板
+function renderTech(){
+  const row=(name,sub,cost,act,off)=>`<div class="trow"><div><b>${name}</b><small>${sub}</small></div><button class="primary" data-act="${act}" ${cost==null||off||S.gold<cost?'disabled':''}>${cost==null?'已满级':COIN+cost}</button></div>`;
+  let h='<div class="thead"><b>强化</b><button id="techX">✕</button></div><div class="tsec">永久强化（有上限）</div>';
+  for(const k in TECH){const q=TECH[k],lv=S.tech[k];h+=row(`${q.name} <i>Lv${lv}/${q.max}</i>`,`全部塔${q.unit} +${Math.round(q.per*lv*100)}%`+(lv<q.max?` → +${Math.round(q.per*(lv+1)*100)}%`:''),techCost(k),'t:'+k)}
+  h+='<div class="tsec">消耗品（不封顶，同一波内每用一次涨价 50%）</div>';
+  h+=row('修复城堡',`生命 +1（当前 ${S.lives}/${START_LIVES}）`,repairCost(),'repair',S.lives>=START_LIVES);
+  h+=row('战鼓',S.rage>0?`生效中，还剩 ${Math.ceil(S.rage)} 秒`:'全部塔攻速 +50%，持续 10 秒',useCost('drum'),'drum',S.rage>0);
+  h+=`<div class="tnote">技能冷却中可以直接点技能按钮花金币充能（火雨 ${COIN}${useCost('fire')} · 冰封 ${COIN}${useCost('ice')}）。点地图上的树、石头等障碍可以花 ${COIN}${clearCost()} 清除，腾出空地放塔。</div>`;
+  const p=$('techPanel');if(p._h!==h){p._h=h;p.innerHTML=h}
+}
+$('techBtn').onclick=()=>{audioInit();$('techPanel').hidden=!$('techPanel').hidden;S.sel=S.deco=null;$('techPanel')._h='';syncUI()};
+$('techPanel').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!S)return;if(b.id==='techX'){$('techPanel').hidden=true;return}
+  const a=b.dataset.act;if(!a)return;if(a.startsWith('t:'))buyTech(a.slice(2));else if(a==='repair')buyRepair();else if(a==='drum')buyDrum();syncUI()});
+$('decoBtn').onclick=()=>{if(S.deco)buyClear(S.deco.c,S.deco.r);syncUI()};
+$('decoX').onclick=()=>{S.deco=null;syncUI()};
 $('upBtn').onclick=()=>{if(S.sel)upgrade(S.sel);syncUI()};
 $('sellBtn').onclick=()=>{if(S.sel)sell(S.sel);syncUI()};
 $('deselBtn').onclick=()=>{S.sel=null;syncUI()};
@@ -1153,7 +1243,7 @@ buildMenu(THEMES[startTheme]?startTheme:'forest');
 try{localStorage.setItem('arcade-last','td')}catch(e){}
 {const d=readRun();if(d){try{openLevel(d.i,d)}catch(e){clearRun();backToMenu()}}}
 requestAnimationFrame(loop);
-window.TD={saveRun,readRun,clearRun,openLevel,LEVELS,TOWERS,THEMES,MOBS,COLS:LC,ROWS:LR,T,PADY,flip,get PORT(){return PORT},castFire,castIce,prep,startLevel,place,upgrade,sell,nextWave,step,canBuild,upCost,render,drawBg,get S(){return S}};
+window.TD={buyTech,buyRepair,buyDrum,buyRecharge,buyClear,techCost,useCost,clearCost,endlessStats,genEndless,TECH,E_CAP,get ebest(){return ebest},saveRun,readRun,clearRun,openLevel,LEVELS,TOWERS,THEMES,MOBS,COLS:LC,ROWS:LR,T,PADY,flip,get PORT(){return PORT},castFire,castIce,prep,startLevel,place,upgrade,sell,nextWave,step,canBuild,upCost,render,drawBg,get S(){return S}};
 </script>
 <script>window.__busy=()=>!!(TD.S&&!TD.S.over);</script>
 <script src="../update.js"></script>
