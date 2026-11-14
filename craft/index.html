@@ -339,7 +339,7 @@ function buildArt(){
 
 /* ---------- 渲染 ---------- */
 const cv=$('cv'),ctx=cv.getContext('2d');let DPR=1,Z=1,cam={x:0,y:0},shake=0,paused=false;
-function resize(){DPR=Math.min(2,window.devicePixelRatio||1);const w=cv.clientWidth||innerWidth,h=cv.clientHeight||innerHeight;cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);Z=Math.max(.8,Math.min(1.8,Math.min(w,h)/(T*12.5)));lightDirty=true}
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);const w=cv.clientWidth||innerWidth,h=cv.clientHeight||innerHeight;cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);Z=Math.max(1,Math.min(2,Math.min(w,h)/(T*10.5)));lightDirty=true}
 const vw=()=>cv.width/DPR/Z,vh=()=>cv.height/DPR/Z;
 function toWorld(sx,sy){return{x:cam.x+sx/Z,y:cam.y+sy/Z}}
 function chunk(cx,cy){
