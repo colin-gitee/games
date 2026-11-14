@@ -27,6 +27,7 @@ a.card:hover .cover img{transform:scale(1.07)}
 .cover::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 45%,#1d1a24 100%);pointer-events:none}
 .cover h2{position:absolute;left:18px;bottom:6px;z-index:1;margin:0;font-family:var(--display);font-weight:400;font-size:32px;letter-spacing:.1em;color:#fff;text-shadow:0 3px 0 #000,0 0 18px #000}
 .badge{position:absolute;top:12px;right:12px;z-index:1;font-size:12.5px;font-weight:700;color:#14110a;background:var(--c);border:2px solid #000a;border-radius:999px;padding:1px 12px;box-shadow:0 2px 0 #0008}
+.badge.last{right:auto;left:12px;background:#efe6d0}
 .body{padding:8px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
 .body p{margin:0;color:var(--dim);font-size:13.5px;flex:1}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
@@ -65,10 +66,11 @@ const GAMES=[
 ];
 
 const grid=document.getElementById('grid');
+let lastPlayed='';try{lastPlayed=localStorage.getItem('arcade-last')||''}catch(e){}
 for(const g of GAMES){
   let prog='';try{prog=g.progress?g.progress():''}catch(e){}
   const a=document.createElement('a');a.className='card';a.href=g.path;a.style.setProperty('--c',g.color);
-  a.innerHTML=`<div class="cover"><img src="${g.cover}" alt="${g.name} 游戏画面" loading="lazy"><h2>${g.name}</h2>${prog?`<span class="badge">${prog}</span>`:''}</div>
+  a.innerHTML=`<div class="cover"><img src="${g.cover}" alt="${g.name} 游戏画面" loading="lazy"><h2>${g.name}</h2>${prog?`<span class="badge">${prog}</span>`:''}${g.id===lastPlayed?'<span class="badge last">上次在玩</span>':''}</div>
     <div class="body"><p>${g.desc}</p>
     <div class="foot"><div class="tags">${g.tags.map(t=>`<span>${t}</span>`).join('')}</div><span class="play">开始 ▶</span></div></div>`;
   grid.appendChild(a);
