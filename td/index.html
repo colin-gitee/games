@@ -61,7 +61,7 @@ svg.i{width:16px;height:16px;vertical-align:-3px;flex:none}
 .howto b{color:var(--text)}
 
 /* ---------- 对局 ---------- */
-#game{height:100dvh;display:flex;flex-direction:column;background:radial-gradient(ellipse 80% 50% at 50% 0%,color-mix(in srgb,var(--accent) 16%,#17131f) 0%,var(--ink) 75%)}
+#game{height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;background:radial-gradient(ellipse 80% 50% at 50% 0%,color-mix(in srgb,var(--accent) 16%,#17131f) 0%,var(--ink) 75%)}
 .hud{display:flex;align-items:center;gap:8px;padding:8px 12px;flex-wrap:wrap;max-width:1220px;width:100%;margin:0 auto}
 .hud .name{font-family:var(--display);font-size:20px;letter-spacing:.08em;color:var(--accent);margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 0 #000}
 .chip{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(#2c2836,#1c1924);border:1px solid var(--line);border-radius:999px;padding:4px 14px 4px 8px;
@@ -109,7 +109,44 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
 #waveInfo{flex-basis:100%;color:var(--dim);font-size:12.5px;min-height:28px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 #waveInfo span{display:inline-flex;align-items:center;gap:4px}
 #waveInfo canvas{width:28px;height:28px}
-@media (max-width:560px){.tw em{display:none}.tw{flex-basis:44%;max-width:none}.hud .name{flex-basis:100%;order:-1}}
+/* ---------- 自适应 ---------- */
+@media (pointer:coarse){.pill{padding:6px 12px}.sp{min-height:52px}}
+/* 平板竖屏等中等宽度：塔卡片压紧一些 */
+@media (max-width:900px){.tw{flex:1 1 0;min-width:0;max-width:none;padding:4px 8px 4px 4px}.tw em{display:none}.tw canvas{width:42px;height:42px}#waveBtn{font-size:19px;min-height:52px}}
+/* 手机竖屏：顶栏两行，塔卡片改成上图下字四等分 */
+@media (max-width:640px){
+  .hud{gap:5px;padding:6px 8px}
+  .hud .name{font-size:16px;flex:1 1 40%;min-width:0}
+  .chip{padding:3px 10px 3px 6px;gap:4px}.chip b{font-size:13.5px;min-width:0}.chip .bar{display:none}
+  .pill{font-size:12px}
+  .stage{padding:0 4px}
+  .bar{gap:6px;padding:6px 8px 8px}
+  .tw{flex-direction:column;gap:0;padding:4px 2px 3px;text-align:center}
+  .tw b{font-size:12px}.tw kbd{display:none}
+  .sp{width:58px}
+  #waveBtn{flex:1 1 120px;font-size:18px;min-height:50px}
+  #waveInfo{font-size:11.5px;gap:6px;min-height:24px}#waveInfo canvas{width:22px;height:22px}
+  #selPanel{left:8px;right:8px;max-width:none}
+  #menu .wrap{padding:14px 12px 40px}
+  .themes{gap:8px}.theme{height:86px;border-radius:12px}.theme b{font-size:18px}.theme span{display:none}.theme em{top:6px;right:6px;font-size:11px;padding:0 7px}.theme .tx{padding:8px 10px}
+  .levels{grid-template-columns:repeat(2,1fr);gap:10px}.lv .meta{padding:8px 10px;flex-direction:column;align-items:flex-start;gap:2px}.lv .meta b{font-size:16px}.lv .no{width:28px;height:28px;font-size:16px;left:6px;top:6px}
+}
+/* 手机横屏（高度很矮）：状态栏放左侧、塔和技能放右侧，中间整高留给地图 */
+@media (orientation:landscape) and (max-height:560px){
+  #game{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:minmax(0,1fr)}
+  .hud{flex-direction:column;flex-wrap:nowrap;align-items:stretch;width:112px;max-width:none;margin:0;padding:6px;gap:5px;overflow-y:auto}
+  .hud .name{margin:0;flex:none;font-size:14px;white-space:normal;line-height:1.2}
+  .chip{justify-content:space-between;padding:3px 10px 3px 6px}.chip b{font-size:13.5px}.chip .bar{display:none}
+  .pill{text-align:center;padding:5px 4px;font-size:12px}
+  .stage{padding:4px 0}
+  .bar{flex-direction:column;flex-wrap:nowrap;width:132px;max-width:none;margin:0;padding:6px;gap:5px;overflow-y:auto}
+  .tw{flex:none;flex-direction:row;text-align:left;gap:6px;padding:3px 6px 3px 3px}
+  .tw canvas{width:34px;height:34px}.tw b{font-size:12px}.tw em,.tw kbd{display:none}
+  .sp{flex:1;width:auto;min-height:40px;padding:2px 0}.sp svg{width:22px;height:22px}.sp small{display:none}
+  #waveBtn{flex:none;min-height:46px;font-size:15px;letter-spacing:0}
+  #waveInfo{display:none}
+  #selPanel{left:auto;right:calc(100% + 8px);bottom:8px;max-width:62vw}
+}
 </style>
 </head>
 <body>
@@ -169,7 +206,10 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
    守卫前线 — 单文件塔防。结构：数据(主题/关卡/守卫/怪物) → 逻辑 step(dt) → 渲染 → UI。
    新增关卡：往 LEVELS 里加一项；新增主题：往 THEMES 里加一项。
    ===================================================================== */
-const COLS=14, ROWS=9, T=64, W=COLS*T, H=ROWS*T, PADY=30, VH=H+PADY;   // PADY：地图上方留出的一条边，给高塔和首领血条用
+const T=64, PADY=30, LC=14, LR=9;   // 关卡数据按横向 14×9 编写；PADY 是地图上方留出的一条边
+// 竖屏时整张地图沿对角线翻转成 9×14（见 setOrient / flip），以下几个量随之变化
+let COLS=LC, ROWS=LR, W=COLS*T, H=ROWS*T, VH=H+PADY, PORT=false;
+function setOrient(p){PORT=p;COLS=p?LR:LC;ROWS=p?LC:LR;W=COLS*T;H=ROWS*T;VH=H+PADY}   // PADY：地图上方留出的一条边，给高塔和首领血条用
 const $=id=>document.getElementById(id);
 
 const THEMES={
@@ -230,20 +270,39 @@ const hash=s=>{let h=7;for(const ch of s)h=h*31+ch.charCodeAt(0)|0;return h};
 /* ---------- 关卡预处理 ---------- */
 const prepCache={};
 function prep(L){
-  if(prepCache[L.id])return prepCache[L.id];
-  const grid=new Uint8Array(COLS*ROWS); // 0 空地 1 道路 2 装饰
-  const paths=L.paths.map(wp=>{
-    const pts=wp.map(([c,r])=>[(c+.5)*T,(r+.5)*T]),seg=[];let total=0;
-    for(let i=1;i<pts.length;i++){const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(l);total+=l;
-      const [c0,r0]=wp[i-1],[c1,r1]=wp[i],n=Math.max(Math.abs(c1-c0),Math.abs(r1-r0));
-      for(let k=0;k<=n;k++){const c=c0+Math.sign(c1-c0)*k,r=r0+Math.sign(r1-r0)*k;if(c>=0&&c<COLS&&r>=0&&r<ROWS)grid[r*COLS+c]=1}}
-    return{pts,seg,total};
-  });
-  const R=rng(hash(L.id)),deco=[];
-  for(let i=0;i<grid.length;i++)if(!grid[i]&&R()<.11){grid[i]=2;deco.push({c:i%COLS,r:i/COLS|0,k:R()*4|0,s:.85+R()*.35})}
-  const noise=Array.from(grid,()=>R());
-  const end=L.paths[0][L.paths[0].length-1];
-  return prepCache[L.id]={grid,paths,deco,noise,base:[(end[0]+.5)*T,(end[1]+.5)*T]};
+  const key=L.id+(PORT?'|p':'');if(prepCache[key])return prepCache[key];
+  let P=prepCache[L.id];
+  if(!P){
+    const grid=new Uint8Array(LC*LR); // 0 空地 1 道路 2 装饰
+    const paths=L.paths.map(wp=>{
+      const pts=wp.map(([c,r])=>[(c+.5)*T,(r+.5)*T]),seg=[];let total=0;
+      for(let i=1;i<pts.length;i++){const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(l);total+=l;
+        const [c0,r0]=wp[i-1],[c1,r1]=wp[i],n=Math.max(Math.abs(c1-c0),Math.abs(r1-r0));
+        for(let k=0;k<=n;k++){const c=c0+Math.sign(c1-c0)*k,r=r0+Math.sign(r1-r0)*k;if(c>=0&&c<LC&&r>=0&&r<LR)grid[r*LC+c]=1}}
+      return{pts,seg,total};
+    });
+    const R=rng(hash(L.id)),deco=[];
+    for(let i=0;i<grid.length;i++)if(!grid[i]&&R()<.11){grid[i]=2;deco.push({c:i%LC,r:i/LC|0,k:R()*4|0,s:.85+R()*.35})}
+    const noise=Array.from(grid,()=>R());
+    const end=L.paths[0][L.paths[0].length-1];
+    P=prepCache[L.id]={grid,paths,deco,noise,base:[(end[0]+.5)*T,(end[1]+.5)*T]};
+  }
+  if(!PORT)return P;
+  // 竖屏版：同一份数据沿对角线翻转，保证两种朝向下可建造的格子完全对应
+  const grid=new Uint8Array(LC*LR),noise=new Array(LC*LR);
+  for(let r=0;r<LR;r++)for(let c=0;c<LC;c++){grid[c*LR+r]=P.grid[r*LC+c];noise[c*LR+r]=P.noise[r*LC+c]}
+  return prepCache[key]={grid,noise,paths:P.paths.map(q=>({pts:q.pts.map(v=>[v[1],v[0]]),seg:q.seg,total:q.total})),deco:P.deco.map(d=>({...d,c:d.r,r:d.c})),base:[P.base[1],P.base[0]]};
+}
+// 对局中切换横竖屏：把整局状态翻转过去，不打断游戏
+function flip(){
+  setOrient(!PORT);if(!S)return;
+  const sw=o=>{const t=o.x;o.x=o.y;o.y=t};
+  S.P=prep(S.L);S.grid=S.P.grid.slice();
+  for(const t of S.towers){sw(t);const c=t.c;t.c=t.r;t.r=c;t.ang=Math.PI/2-t.ang;S.grid[t.r*COLS+t.c]=3}
+  for(const m of S.mobs){m.path=S.P.paths[m.pi||0];sw(m);const o=m.ox;m.ox=m.oy;m.oy=o}
+  for(const q of S.shots){sw(q);const t=q.tx;q.tx=q.ty;q.ty=t}
+  for(const f of S.fx){sw(f);if(f.vx!==undefined){const v=f.vx;f.vx=f.vy;f.vy=v}if(f.pts)f.pts=f.pts.map(v=>[v[1],v[0]])}
+  S.decals.forEach(sw);S.meteors.forEach(sw);S.hover=null;
 }
 function posAt(p,d){
   for(let i=0;i<p.seg.length;i++){if(d<=p.seg[i]||i===p.seg.length-1){const k=Math.min(1,d/p.seg[i]),a=p.pts[i],b=p.pts[i+1];return[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k]}d-=p.seg[i]}
@@ -332,7 +391,7 @@ function nextWave(){
 }
 function spawn(ev){
   const b=MOBS[ev.type],hp=Math.round(b.hp*ev.hp);
-  S.mobs.push({type:ev.type,path:S.P.paths[ev.path],d:0,hp,max:hp,sp:b.sp*T,armor:b.armor,gold:b.gold,cost:b.cost,r:b.r,
+  S.mobs.push({type:ev.type,path:S.P.paths[ev.path],pi:ev.path,d:0,hp,max:hp,sp:b.sp*T,armor:b.armor,gold:b.gold,cost:b.cost,r:b.r,
     slow:0,slowK:0,x:0,y:0,face:1,hit:0,ox:(Math.random()-.5)*14,oy:(Math.random()-.5)*14,ph:Math.random()*6,dead:false});
 }
 function hurt(m,dmg,pierce,crit){
@@ -823,7 +882,10 @@ function drawMob(g,m,def,time){
 /* ---------- 主渲染 ---------- */
 const cv=$('cv'),ctx=cv.getContext('2d');let bgCv=null,bgFor=null,K=1;
 function resize(){
-  if(!S)return;const st=$('stage'),aw=st.clientWidth-26,ah=st.clientHeight-14,cw=Math.max(200,Math.min(aw,ah*W/VH)),dpr=Math.min(2,window.devicePixelRatio||1);
+  if(!S)return;const st=$('stage'),aw=st.clientWidth-16,ah=st.clientHeight-12;
+  // 哪个朝向能把格子画得更大就用哪个（略偏向横向，避免临界尺寸来回切）
+  const tl=Math.min(aw/(LC*T),ah/(LR*T+PADY)),tp=Math.min(aw/(LR*T),ah/(LC*T+PADY));if((tp>tl*1.08)!==PORT)flip();
+  const cw=Math.max(160,Math.min(aw,ah*W/VH)),dpr=Math.min(2,window.devicePixelRatio||1);
   cv.style.width=cw+'px';cv.style.height=cw*VH/W+'px';K=Math.min(2,cw*dpr/W);cv.width=Math.round(W*K);cv.height=Math.round(VH*K);bgFor=null;
 }
 const AMB={forest:['rgba(240,255,150,',2.2],desert:['rgba(255,240,200,',1.6],cave:['rgba(170,150,255,',2]};
@@ -933,7 +995,7 @@ function render(){
 /* ---------- UI ---------- */
 const COIN='<svg class="i" viewBox="0 0 16 16" style="width:12px;height:12px;vertical-align:-1px"><circle cx="8" cy="8" r="6.5" fill="#e3b558" stroke="#000"/></svg>';
 const LOCK='<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.500" fill="#e8dcc0" stroke="#000" stroke-width="1.5"/><path d="M7.500 10V7a4.500 4.500 0 0 1 9 0v3" fill="none" stroke="#e8dcc0" stroke-width="2.500"/><circle cx="12" cy="15.5" r="1.800" fill="#000"/></svg>';
-function thumb(L,w){const c=document.createElement('canvas');c.width=w;c.height=Math.round(w*VH/W);const g=c.getContext('2d');g.scale(w/W,w/W);g.translate(0,PADY);drawBg(g,L);drawFlag(g,prep(L).base[0],prep(L).base[1]-40,0,'#ef5a4e');return c}
+function thumb(L,w){const po=PORT;setOrient(false);const c=document.createElement('canvas');c.width=w;c.height=Math.round(w*VH/W);const g=c.getContext('2d');g.scale(w/W,w/W);g.translate(0,PADY);drawBg(g,L);drawFlag(g,prep(L).base[0],prep(L).base[1]-40,0,'#ef5a4e');setOrient(po);return c}
 function buildMenu(theme){
   $('menu').style.setProperty('--accent',THEMES[theme].accent);
   $('themes').innerHTML='';
@@ -1044,7 +1106,7 @@ function loop(ts){
 let startTheme='forest';try{startTheme=localStorage.getItem('arcade-td-theme')||'forest'}catch(e){}
 buildMenu(THEMES[startTheme]?startTheme:'forest');
 requestAnimationFrame(loop);
-window.TD={LEVELS,TOWERS,THEMES,MOBS,COLS,ROWS,T,W,H,VH,PADY,castFire,castIce,prep,startLevel,place,upgrade,sell,nextWave,step,canBuild,upCost,render,drawBg,get S(){return S}};
+window.TD={LEVELS,TOWERS,THEMES,MOBS,COLS:LC,ROWS:LR,T,PADY,flip,get PORT(){return PORT},castFire,castIce,prep,startLevel,place,upgrade,sell,nextWave,step,canBuild,upCost,render,drawBg,get S(){return S}};
 </script>
 </body>
 </html>
