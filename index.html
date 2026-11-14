@@ -62,7 +62,18 @@ const GAMES=[
   {id:'td',name:'守卫前线',path:'td/index.html',cover:'td/cover.jpg',color:'#7fd060',
    desc:'塔防：在森林、沙漠、地底三片战场布置守卫，拦下沿路而来的怪物。共 12 关。',
    tags:['塔防','多关卡','单人'],
-   progress(){const p=JSON.parse(localStorage.getItem('arcade-td-progress')||'{}');const n=Object.values(p).reduce((a,b)=>a+b,0);return n?`★ ${n}/36`:''}},
+   progress(){const p=JSON.parse(localStorage.getItem('arcade-td-progress')||'{}');const n=Object.values(p).reduce((a,b)=>a+b,0);return n?`★ ${n}/36`:''}},  {id:'cards',name:'尖塔牌局',path:'cards/index.html',cover:'cards/cover.jpg',color:'#e08a5a',
+   desc:'卡牌爬塔：组一套牌，选路线、拿遗物，一层层打到第 15 层的熔岩魔王。每局都不一样。',
+   tags:['卡牌','肉鸽','单人'],
+   progress(){const s=JSON.parse(localStorage.getItem('arcade-cards-stats')||'null');return s&&s.best?(s.wins?`通关 ${s.wins} 次`:`最高第 ${s.best} 层`):''}},
+  {id:'survivor',name:'怪潮求生',path:'survivor/index.html',cover:'survivor/cover.jpg',color:'#ef7a5e',
+   desc:'割草：角色自动攻击，你只管走位。升级时三选一，把武器叠起来，撑过 10 分钟。',
+   tags:['动作','割草','单人'],
+   progress(){const b=JSON.parse(localStorage.getItem('arcade-sv-best')||'null');return b&&b.t?(b.win?'已通关':`最长 ${b.t/60|0}:${String(b.t%60|0).padStart(2,'0')}`):''}},
+  {id:'merge',name:'怪物泡泡',path:'merge/index.html',cover:'merge/cover.jpg',color:'#7cc8f0',
+   desc:'合成：把泡泡丢进罐子，两个一样的碰到一起变成更大的一级。随手来一把。',
+   tags:['休闲','合成','单人'],
+   progress(){const b=+localStorage.getItem('arcade-merge-best')||0;return b?`最高 ${b} 分`:''}},
 ];
 
 const grid=document.getElementById('grid');
