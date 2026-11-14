@@ -224,7 +224,7 @@ function finish(win){S.over=win?'win':'lose';S.dirty=true;if(S.t>best.t||(win&&!
 
 /* ---------- 绘制 ---------- */
 const cv=$('cv'),ctx=cv.getContext('2d');let DPR=1,Z=1,ground=null;
-function resize(){DPR=Math.min(2,window.devicePixelRatio||1);const w=cv.clientWidth||innerWidth,h=cv.clientHeight||innerHeight;cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);Z=Math.max(.55,Math.min(1.25,Math.min(w,h)/520))}
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);const w=cv.clientWidth||innerWidth,h=cv.clientHeight||innerHeight;cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);Z=Math.max(.7,Math.min(1.4,Math.min(w,h)/420))}
 function makeGround(){const c=document.createElement('canvas'),N=256;c.width=c.height=N;const g=c.getContext('2d');g.fillStyle='#3f8336';g.fillRect(0,0,N,N);let s=7;const R=()=>(s=(s*16807)%2147483647)/2147483647;
   for(let i=0;i<26;i++){const x=R()*N,y=R()*N,r=20+R()*40;g.fillStyle=R()<.5?'rgba(30,90,30,.14)':'rgba(170,230,110,.10)';for(const ox of[-N,0,N])for(const oy of[-N,0,N]){g.beginPath();g.arc(x+ox,y+oy,r,0,7);g.fill()}}
   g.lineWidth=2;g.lineCap='round';for(let i=0;i<70;i++){const x=R()*N,y=R()*N;g.strokeStyle=['#2f6f2c','#5aa648','#74c05c'][R()*3|0];for(const ox of[-N,0,N])for(const oy of[-N,0,N]){g.beginPath();g.moveTo(x+ox-3,y+oy);g.lineTo(x+ox-5,y+oy-6);g.moveTo(x+ox,y+oy);g.lineTo(x+ox,y+oy-8);g.moveTo(x+ox+3,y+oy);g.lineTo(x+ox+5,y+oy-6);g.stroke()}}
