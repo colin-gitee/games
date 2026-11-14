@@ -82,7 +82,8 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
 #overlay .btns button{padding:8px 18px}
 .primary{background:linear-gradient(color-mix(in srgb,var(--accent) 85%,#fff),var(--accent));border-color:#000a;color:#14110a;font-weight:700;text-shadow:0 1px 0 #ffffff55}
 .bar{position:relative;display:flex;gap:8px;padding:10px 12px 12px;align-items:stretch;flex-wrap:wrap;max-width:1220px;width:100%;margin:0 auto}
-.tw{position:relative;display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;text-align:left;flex:1 1 130px;max-width:210px;border-radius:14px}
+#towerBtns{display:flex;gap:8px;flex:4 1 480px;min-width:0}
+.tw{position:relative;display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;text-align:left;flex:1 1 0;min-width:0;max-width:210px;border-radius:14px}
 .tw canvas{width:48px;height:48px;flex:none;border-radius:10px;background:radial-gradient(circle at 50% 35%,#4a4458,#1c1924);border:1px solid #000a}
 .tw b{display:block;font-size:14px;line-height:1.25}
 .tw small{display:inline-flex;align-items:center;gap:3px;color:var(--brass);font-size:12.5px;font-weight:700}
@@ -112,7 +113,7 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
 /* ---------- 自适应 ---------- */
 @media (pointer:coarse){.pill{padding:6px 12px}.sp{min-height:52px}}
 /* 平板竖屏等中等宽度：塔卡片压紧一些 */
-@media (max-width:900px){.tw{flex:1 1 0;min-width:0;max-width:none;padding:4px 8px 4px 4px}.tw em{display:none}.tw canvas{width:42px;height:42px}#waveBtn{font-size:19px;min-height:52px}}
+@media (max-width:900px){#towerBtns{flex:1 1 100%}.tw{max-width:none;padding:4px 8px 4px 4px}.tw em{display:none}.tw canvas{width:42px;height:42px}#waveBtn{font-size:19px;min-height:52px}}
 /* 手机竖屏：顶栏两行，塔卡片改成上图下字四等分 */
 @media (max-width:640px){
   .hud{gap:5px;padding:6px 8px}
@@ -120,7 +121,7 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
   .chip{padding:3px 10px 3px 6px;gap:4px}.chip b{font-size:13.5px;min-width:0}.chip .bar{display:none}
   .pill{font-size:12px}
   .stage{padding:0 4px}
-  .bar{gap:6px;padding:6px 8px 8px}
+  .bar{gap:6px;padding:6px 8px 8px}#towerBtns{gap:6px}
   .tw{flex-direction:column;gap:0;padding:4px 2px 3px;text-align:center}
   .tw b{font-size:12px}.tw kbd{display:none}
   .sp{width:58px}
@@ -140,6 +141,7 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
   .pill{text-align:center;padding:5px 4px;font-size:12px}
   .stage{padding:4px 0}
   .bar{flex-direction:column;flex-wrap:nowrap;width:132px;max-width:none;margin:0;padding:6px;gap:5px;overflow-y:auto}
+  #towerBtns{flex:none;flex-direction:column;gap:5px}
   .tw{flex:none;flex-direction:row;text-align:left;gap:6px;padding:3px 6px 3px 3px}
   .tw canvas{width:34px;height:34px}.tw b{font-size:12px}.tw em,.tw kbd{display:none}
   .sp{flex:1;width:auto;min-height:40px;padding:2px 0}.sp svg{width:22px;height:22px}.sp small{display:none}
@@ -185,7 +187,7 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
     </div></div>
   </div>
   <div class="bar">
-    <div id="towerBtns" style="display:contents"></div>
+    <div id="towerBtns"></div>
     <div id="selPanel" hidden>
       <canvas id="selIcon" width="96" height="96"></canvas>
       <div class="info"><b id="selName"></b><small id="selStat"></small></div>
