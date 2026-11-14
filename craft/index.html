@@ -52,6 +52,16 @@ canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-acti
 .rec.off{opacity:.5}
 .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.btns>*{border-radius:9px;border:2px solid var(--slotb);background:var(--slot);padding:6px 14px;font-weight:700}
 .how{color:var(--dim);font-size:12.5px;line-height:1.7;margin:4px 0 6px}.how b{color:var(--text)}
+/* 手机竖屏：物品栏占满一行，血量和按钮挪到下面 */
+@media (max-width:520px){#hot{--s:calc((100vw - 39px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px))/10)}
+  #itemName{--hb:calc((100vw - 39px)/10)}
+  #life{top:calc((100vw - 39px)/10 + 14px + env(safe-area-inset-top,0px))}
+  #bagBtn{top:calc((100vw - 39px)/10 + 58px + env(safe-area-inset-top,0px))}#menuBtn{top:calc((100vw - 39px)/10 + 96px + env(safe-area-inset-top,0px))}}
+/* 手机横屏：背包左边格子、右边合成，一屏放下 */
+@media (orientation:landscape) and (max-height:560px){#bagOv .box{width:min(900px,100%);--s:min(40px,calc((100vh - 96px)/4.4))}
+  .bag2{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}.bag2 h3{margin-top:0}
+  .recs{max-height:calc(100vh - 110px);grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  #palWrap .grid{max-height:none}}
 #toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:8;background:rgba(30,36,84,.94);border:2px solid var(--slotb);border-radius:999px;padding:2px 14px;pointer-events:none;white-space:nowrap;font-weight:700}
 </style>
 </head>
@@ -68,10 +78,13 @@ canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-acti
 
 <div class="ov" id="bagOv" hidden><div class="box">
   <h2>背包<span><button class="xb" id="trashBtn" title="丢弃手上拿起的物品">丢弃</button> <button class="xb" id="bagX">✕</button></span></h2>
-  <div class="grid" id="grid"></div>
-  <h3 id="craftHint"></h3>
-  <div class="recs" id="recs"></div>
-  <div id="palWrap" hidden><h3>创造模式：点一下拿一组</h3><div class="grid" id="pal"></div></div>
+  <div class="bag2"><div>
+    <div class="grid" id="grid"></div>
+    <div id="palWrap" hidden><h3>创造模式：点一下拿一组</h3><div class="grid" id="pal"></div></div>
+  </div><div>
+    <h3 id="craftHint"></h3>
+    <div class="recs" id="recs"></div>
+  </div></div>
 </div></div>
 <div class="ov" id="menuOv" hidden><div class="box">
   <h2>方块拓荒<button class="xb" id="menuX">✕</button></h2>
