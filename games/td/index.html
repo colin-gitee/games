@@ -81,16 +81,16 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
 #overlay .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 #overlay .btns button{padding:8px 18px}
 .primary{background:linear-gradient(color-mix(in srgb,var(--accent) 85%,#fff),var(--accent));border-color:#000a;color:#14110a;font-weight:700;text-shadow:0 1px 0 #ffffff55}
-.bar{display:flex;gap:8px;padding:10px 12px 12px;align-items:stretch;flex-wrap:wrap;max-width:1220px;width:100%;margin:0 auto}
+.bar{position:relative;display:flex;gap:8px;padding:10px 12px 12px;align-items:stretch;flex-wrap:wrap;max-width:1220px;width:100%;margin:0 auto}
 .tw{position:relative;display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;text-align:left;flex:1 1 130px;max-width:210px;border-radius:14px}
 .tw canvas{width:48px;height:48px;flex:none;border-radius:10px;background:radial-gradient(circle at 50% 35%,#4a4458,#1c1924);border:1px solid #000a}
 .tw b{display:block;font-size:14px;line-height:1.25}
 .tw small{display:inline-flex;align-items:center;gap:3px;color:var(--brass);font-size:12.5px;font-weight:700}
-.tw em{display:block;font-style:normal;color:var(--dim);font-size:11px;line-height:1.2}
+.tw em{display:block;font-style:normal;color:var(--dim);font-size:11px;line-height:1.2;white-space:nowrap}
 .tw kbd{position:absolute;left:-4px;top:-6px;font:700 11px/1 system-ui;background:var(--stone);border:1px solid var(--line);border-radius:6px;padding:2px 5px;color:var(--dim)}
 .tw.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent),0 0 18px color-mix(in srgb,var(--accent) 60%,transparent);transform:translateY(-3px)}
 .tw.poor{filter:grayscale(.8) brightness(.8)} .tw.poor small{color:var(--blood)}
-#selPanel{flex:1 1 300px;display:flex;align-items:center;gap:8px;background:linear-gradient(#2c2836,#1c1924);border:1px solid var(--brass);border-radius:14px;padding:6px 10px 6px 6px;flex-wrap:wrap}
+#selPanel{position:absolute;right:12px;bottom:calc(100% + 8px);z-index:4;max-width:calc(100% - 24px);box-shadow:0 10px 28px #000c;display:flex;align-items:center;gap:8px;background:linear-gradient(#2c2836,#1c1924);border:1px solid var(--brass);border-radius:14px;padding:6px 10px 6px 6px;flex-wrap:wrap}
 #selPanel canvas{width:48px;height:48px;border-radius:10px;background:radial-gradient(circle at 50% 35%,#4a4458,#1c1924);border:1px solid #000a}
 #selPanel .info{margin-right:auto}
 #selPanel .info b{font-size:15px}
@@ -273,7 +273,7 @@ function unlocked(i){const L=LEVELS[i],p=LEVELS[i-1];return !p||p.theme!==L.them
 
 /* ---------- 音效：WebAudio 现场合成，无需音频文件 ---------- */
 const AU={ctx:null,on:true,last:{}};try{AU.on=localStorage.getItem('arcade-td-sound')!=='0'}catch(e){}
-function audioInit(){if(AU.ctx||!AU.on)return;const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+function audioInit(){if(AU.ctx){if(AU.ctx.state==='suspended')AU.ctx.resume();return}if(!AU.on)return;const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
   try{AU.ctx=new C();AU.out=AU.ctx.createGain();AU.out.gain.value=.45;AU.out.connect(AU.ctx.destination);
     const n=AU.ctx.sampleRate*.6|0,b=AU.ctx.createBuffer(1,n,AU.ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;AU.noise=b}catch(e){AU.ctx=null}}
 function tone(type,f0,f1,dur,vol,delay){const c=AU.ctx,t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(1,f1),t+dur);
