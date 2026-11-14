@@ -70,6 +70,10 @@ const GAMES=[
    desc:'割草闯关：五张带障碍的地图，角色自动攻击，你只管走位。捡道具、升级三选一，金币还能买永久强化。',
    tags:['动作','割草','单人'],
    progress(){const m=JSON.parse(localStorage.getItem('arcade-sv-meta')||'null');const n=m&&m.cleared?m.cleared.filter(Boolean).length:0;return n?`通关 ${n}/5`:''}},
+  {id:'kill',name:'群英杀',path:'kill/index.html',cover:'kill/cover.jpg',color:'#e0563e',
+   desc:'3 对 3 卡牌对战：选一位英雄，配上两个主印、两个辅印，带两名电脑队友用杀、闪、药和锦囊击倒对面三人。',
+   tags:['卡牌','3v3','单人'],
+   progress(){const s=JSON.parse(localStorage.getItem('arcade-kill-stats')||'null');return s?`${s.w} 胜 ${s.l} 负`:''}},
 ];
 
 const grid=document.getElementById('grid');
