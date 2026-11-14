@@ -1578,6 +1578,8 @@ function jumpTo(nf){
 document.getElementById('setBtn').onclick=()=>{ if(overlay.hidden && !BATTLE) openSettings(); };
 document.getElementById('saveBtn').onclick=()=>{ if(overlay.hidden && !BATTLE) save(false); };
 window.addEventListener('pagehide',()=>{ try{ if(G) writeSlot(0); }catch(e){} });
+setInterval(()=>{ try{ if(G && !BATTLE && !document.hidden) writeSlot(0); }catch(e){} }, 10000);   // 定时自动存档：即使被系统直接杀掉，重新打开也能回到刚才的位置
+try{ localStorage.setItem('arcade-last','mota'); }catch(e){}
 document.addEventListener('visibilitychange',()=>{ if(document.hidden){ try{ if(G) writeSlot(0); }catch(e){} } });
 document.getElementById('loadBtn').onclick=()=>{ if(overlay.hidden && !BATTLE) load(); };
 document.getElementById('resetBtn').onclick=()=>{ if(!overlay.hidden||BATTLE) return; dialog('重新开始？','当前进度会丢失（存档不受影响）。',[['选择世界并重新开始',null,()=>{chooseWorld();}],['取消',null,null]]); };
