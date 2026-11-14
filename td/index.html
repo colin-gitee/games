@@ -1126,5 +1126,7 @@ buildMenu(THEMES[startTheme]?startTheme:'forest');
 requestAnimationFrame(loop);
 window.TD={LEVELS,TOWERS,THEMES,MOBS,COLS:LC,ROWS:LR,T,PADY,flip,get PORT(){return PORT},castFire,castIce,prep,startLevel,place,upgrade,sell,nextWave,step,canBuild,upCost,render,drawBg,get S(){return S}};
 </script>
+<script>window.__busy=()=>!!(TD.S&&!TD.S.over);</script>
+<script src="../update.js"></script>
 </body>
 </html>
