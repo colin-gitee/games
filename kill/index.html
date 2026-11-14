@@ -43,7 +43,7 @@ h2 small{font:12px 'Noto Sans SC',sans-serif;color:var(--dim);letter-spacing:0}
 #startBar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;align-items:center;justify-content:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#140d0b 40%)}
 #startBar .btn{font-size:17px;padding:7px 28px}
 /* ---------- 对局 ---------- */
-#game{display:grid;gap:6px;grid-template-rows:auto auto 1fr auto auto auto;grid-template-areas:"top" "enemies" "stage" "allies" "mine" "hand"}
+#game{display:grid;gap:6px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto 1fr auto auto auto;grid-template-areas:"top" "enemies" "stage" "allies" "mine" "hand"}
 #top{grid-area:top;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--dim)}#top span{flex:1}
 #top .btn{padding:2px 12px;font-size:12.5px;color:var(--text)}
 .row{display:flex;gap:6px}
@@ -73,7 +73,7 @@ h2 small{font:12px 'Noto Sans SC',sans-serif;color:var(--dim);letter-spacing:0}
 #log{flex:1;min-width:0;max-height:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;font-size:12.5px;color:var(--dim)}
 #log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#log div:last-child{color:var(--text);font-size:13.5px}
 #log em{font-style:normal;color:var(--gold)}#log .e{color:#ff9a8e}#log .a{color:#8fe0d2}
-#mine{grid-area:mine;display:flex;gap:8px;align-items:center}#mine .pl{flex:0 1 190px}
+#mine{grid-area:mine;display:flex;gap:8px;align-items:center}#mine .pl{flex:0 1 190px;min-width:150px}
 #btns{flex:1;display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
 #handWrap{grid-area:hand;min-width:0}
 #msg{min-height:20px;font-size:13px;text-align:center;color:var(--gold);margin-bottom:4px}
@@ -98,7 +98,7 @@ h2 small{font:12px 'Noto Sans SC',sans-serif;color:var(--dim);letter-spacing:0}
 #endOv h3{font-size:44px;justify-content:center}
 /* 手机横屏：队友竖排在左，自己和按钮在右 */
 @media (orientation:landscape) and (max-height:560px){
-  #game{grid-template-columns:150px 1fr 150px;grid-template-rows:auto auto 1fr auto;grid-template-areas:"top top top" "allies enemies mine" "allies stage mine" "hand hand hand"}
+  #game{grid-template-columns:150px minmax(0,1fr) 150px;grid-template-rows:auto auto 1fr auto;grid-template-areas:"top top top" "allies enemies mine" "allies stage mine" "hand hand hand"}
   #allies{flex-direction:column}#allies .pl{flex:none}
   #mine{flex-direction:column;align-items:stretch}#mine .pl{flex:none}#btns{justify-content:center;align-content:flex-start}
   #hand{height:84px;padding-top:8px}.card{width:54px;height:74px}.card em{font-size:19px}.card b{font-size:15px}
@@ -376,7 +376,7 @@ const UI={
       const hp=Math.max(0,p.hp);
       el.innerHTML=`<div class="av" style="--c:${h.c}">${h.n[0]}</div><div class="inf"><b>${h.n}${p.id?'':'<u>你</u>'}</b><span class="hp">${'♥'.repeat(hp)}<s>${'♥'.repeat(Math.max(0,p.max-hp))}</s></span><span class="meta">牌 ${p.hand.length}${p.eq.w?`<q>${CARD[p.eq.w.k].n}</q>`:''}${p.eq.a?`<q>${CARD[p.eq.a.k].n}</q>`:''}</span><span class="sl">${p.main.map(k=>`<i>${MAIN[k].n[0]}</i>`).join('')}${p.sub.map(k=>`<i class="s">${SUB[k].n[0]}</i>`).join('')}</span></div>`}
     const me=G.ps[0],hand=$('hand'),n=me.hand.length;
-    const cw=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cw'))||0,w=hand.clientWidth||340,one=(hand.firstElementChild&&hand.firstElementChild.offsetWidth)||62;
+    const w=hand.clientWidth||340,one=(hand.firstElementChild&&hand.firstElementChild.offsetWidth)||62;
     hand.style.setProperty('--ov',Math.min(4,n>1?(w-one*n)/(n-1):4)+'px');
     hand.innerHTML=me.hand.map(c=>{let cls='';
       if(ui.mode==='play')cls=ui.sel===c.id?'sel':(!ui.skill&&cantUse(me,c)?'off':'');
