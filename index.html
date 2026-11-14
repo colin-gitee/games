@@ -6,29 +6,40 @@
 <title>小游戏大厅</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Noto+Sans+SC:wght@400;700&display=swap">
 <style>
-:root{--ink:#0e0c12;--stone:#1d1a24;--line:#4a4356;--text:#e8dcc0;--dim:#9d93a8;--brass:#d8a94a;
+:root{--ink:#0e0c12;--stone:#1d1a24;--line:#4a4356;--text:#efe6d0;--dim:#a79db3;--brass:#e3b558;
   --display:'ZCOOL QingKe HuangYou','Noto Sans SC',system-ui,sans-serif;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;min-height:100dvh;background:var(--ink) radial-gradient(ellipse at 50% 0%,#2b2236 0%,var(--ink) 60%) no-repeat;color:var(--text);
+body{margin:0;min-height:100dvh;color:var(--text);
+  background:var(--ink) radial-gradient(ellipse 90% 55% at 50% 0%,#33264a 0%,var(--ink) 70%) no-repeat;
   font:15px/1.6 'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
-  padding:calc(28px + env(safe-area-inset-top,0px)) 16px 48px}
-main{max-width:1040px;margin:0 auto}
-h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,7vw,52px);margin:0;letter-spacing:.1em;color:var(--brass);text-shadow:0 0 24px rgba(216,169,74,.25)}
-.sub{color:var(--dim);margin:4px 0 28px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.card{display:flex;flex-direction:column;background:var(--stone);border:1px solid var(--line);border-radius:14px;overflow:hidden;color:inherit;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
-a.card:hover,a.card:focus-visible{transform:translateY(-4px);border-color:var(--c,var(--brass));box-shadow:0 10px 30px rgba(0,0,0,.45);outline:none}
-.cover{aspect-ratio:16/9;display:block;width:100%;background:#000}
-.body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
-.body h2{margin:0;font-family:var(--display);font-weight:400;font-size:24px;letter-spacing:.08em;color:var(--c,var(--brass))}
+  padding:calc(32px + env(safe-area-inset-top,0px)) 16px 56px}
+main{max-width:1080px;margin:0 auto}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(40px,8vw,64px);margin:0;letter-spacing:.12em;line-height:1.1;
+  background:linear-gradient(#ffe9a8,#d89a3a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #000a)}
+.sub{color:var(--dim);margin:8px 0 30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+.card{position:relative;display:flex;flex-direction:column;background:var(--stone);border:2px solid #000a;border-radius:20px;overflow:hidden;color:inherit;text-decoration:none;
+  box-shadow:0 8px 24px #0009;transition:transform .18s,box-shadow .18s,border-color .18s}
+a.card:hover,a.card:focus-visible{transform:translateY(-6px);border-color:var(--c);box-shadow:0 0 0 2px var(--c),0 18px 44px color-mix(in srgb,var(--c) 35%,#000);outline:none}
+.cover{position:relative;aspect-ratio:16/10;overflow:hidden;background:#000}
+.cover img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+a.card:hover .cover img{transform:scale(1.07)}
+.cover::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 45%,#1d1a24 100%);pointer-events:none}
+.cover h2{position:absolute;left:18px;bottom:6px;z-index:1;margin:0;font-family:var(--display);font-weight:400;font-size:32px;letter-spacing:.1em;color:#fff;text-shadow:0 3px 0 #000,0 0 18px #000}
+.badge{position:absolute;top:12px;right:12px;z-index:1;font-size:12.5px;font-weight:700;color:#14110a;background:var(--c);border:2px solid #000a;border-radius:999px;padding:1px 12px;box-shadow:0 2px 0 #0008}
+.body{padding:8px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
 .body p{margin:0;color:var(--dim);font-size:13.5px;flex:1}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
-.tags span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 9px;color:var(--dim)}
-.foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
-.play{background:var(--c,var(--brass));color:#14110a;font-weight:700;border-radius:999px;padding:4px 18px}
-.prog{font-size:12.5px;color:var(--dim)}
-.card.soon{opacity:.55;border-style:dashed}
-footer{margin-top:36px;color:var(--dim);font-size:12.5px;text-align:center}
+.tags span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 10px;color:var(--dim);background:#0004}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.play{font-family:var(--display);font-size:19px;letter-spacing:.1em;color:#14110a;border:2px solid #000a;border-radius:999px;padding:3px 22px;
+  background:linear-gradient(color-mix(in srgb,var(--c) 80%,#fff),var(--c));box-shadow:0 3px 0 #0009,inset 0 1px 0 #fff6;white-space:nowrap}
+.card.soon{border-style:dashed;border-color:var(--line);box-shadow:none;background:#0003}
+.card.soon .cover{background:repeating-linear-gradient(45deg,#1a1722 0 14px,#16131d 14px 28px);display:grid;place-items:center}
+.card.soon .cover::after{display:none}
+.card.soon .q{font-family:var(--display);font-size:84px;color:var(--line)}
+.card.soon h2{position:static;margin:0;font-family:var(--display);font-weight:400;font-size:24px;letter-spacing:.1em;color:var(--dim)}
+footer{margin-top:40px;color:var(--dim);font-size:12.5px;text-align:center}
 </style>
 </head>
 <body>
@@ -41,46 +52,28 @@ footer{margin-top:36px;color:var(--dim);font-size:12.5px;text-align:center}
 
 <script>
 /* 新增游戏：在 GAMES 里加一项即可。
-   path  游戏入口（相对路径）；cover 封面 SVG（viewBox 0 0 320 180）；progress() 可选，返回一句进度文字 */
+   path 游戏入口；cover 封面图（建议 16:10 的实机截图）；progress() 可选，返回一句进度文字 */
 const GAMES=[
-  {id:'mota',name:'魔塔 · 五界',path:'games/mota/index.html',color:'#d8a94a',
+  {id:'mota',name:'魔塔 · 五界',path:'games/mota/index.html',cover:'games/mota/cover.jpg',color:'#e3b558',
    desc:'经典魔塔玩法：五个世界、每界 50 层，算好每一场战斗，从魔塔一路打到深海。',
    tags:['策略','RPG','单人'],
-   progress(){let u=JSON.parse(localStorage.getItem('mota-unlocked')||'null');return u?`已解锁 ${u.length}/5 界`:''},
-   cover:`<rect width="320" height="180" fill="#17131f"/>
-     <g fill="#2a2633" stroke="#4a4356"><rect x="120" y="30" width="80" height="150"/><rect x="108" y="18" width="104" height="16"/>
-     <rect x="108" y="6" width="14" height="14"/><rect x="138" y="6" width="14" height="14"/><rect x="168" y="6" width="14" height="14"/><rect x="198" y="6" width="14" height="14"/></g>
-     <g fill="#d8a94a"><rect x="150" y="52" width="20" height="26" rx="10"/><rect x="150" y="98" width="20" height="26" rx="10"/></g>
-     <rect x="146" y="146" width="28" height="34" rx="14" fill="#5a4030"/>
-     <circle cx="56" cy="44" r="18" fill="#e8dcc0" opacity=".85"/><circle cx="63" cy="40" r="16" fill="#17131f"/>
-     <g fill="#c9433b"><path d="M250 150l12-22 12 22z"/><circle cx="262" cy="124" r="7"/></g>
-     <g fill="#4f8fd6"><path d="M60 140l10-14 10 14-10 14z"/></g>`},
-  {id:'td',name:'守卫前线',path:'games/td/index.html',color:'#6fbf5f',
+   progress(){const u=JSON.parse(localStorage.getItem('mota-unlocked')||'null');return u?`已解锁 ${u.length}/5 界`:''}},
+  {id:'td',name:'守卫前线',path:'games/td/index.html',cover:'games/td/cover.jpg',color:'#7fd060',
    desc:'塔防：在森林、沙漠、地底三片战场布置守卫，拦下沿路而来的怪物。共 12 关。',
    tags:['塔防','多关卡','单人'],
-   progress(){const p=JSON.parse(localStorage.getItem('arcade-td-progress')||'{}');const n=Object.values(p).reduce((a,b)=>a+b,0);return n?`★ ${n}/36`:''},
-   cover:`<rect width="107" height="180" fill="#3d7a3a"/><rect x="107" width="107" height="180" fill="#d9b66c"/><rect x="214" width="106" height="180" fill="#2b2740"/>
-     <path d="M-10 120H70V50H160V130H250V60H330" fill="none" stroke="#00000033" stroke-width="30" stroke-linejoin="round"/>
-     <path d="M-10 120H70V50H160V130H250V60H330" fill="none" stroke="#cfae74" stroke-width="24" stroke-linejoin="round"/>
-     <g><circle cx="30" cy="60" r="16" fill="#2b7436"/><circle cx="30" cy="50" r="11" fill="#3a8e44"/></g>
-     <g fill="#3f8a4a"><rect x="182" y="26" width="9" height="34" rx="4.5"/><rect x="172" y="36" width="7" height="14" rx="3.5"/><rect x="194" y="32" width="7" height="16" rx="3.5"/></g>
-     <g fill="#8a7af0"><path d="M280 150l6-30 6 30z"/><path d="M290 150l5-20 5 20z"/></g>
-     <g><rect x="98" y="84" width="30" height="18" rx="4" fill="#8f8a9a"/><circle cx="113" cy="80" r="10" fill="#5fae4e"/><circle cx="113" cy="76" r="6" fill="#f2d2b0"/></g>
-     <g><rect x="198" y="92" width="30" height="18" rx="4" fill="#8f8a9a"/><circle cx="213" cy="88" r="10" fill="#5fb6e6"/><path d="M206 84l7-16 7 16z" fill="#5fb6e6"/></g>
-     <g stroke="#00000066"><ellipse cx="60" cy="120" rx="11" ry="9" fill="#7bd65a"/><ellipse cx="160" cy="96" rx="10" ry="9" fill="#b5462f"/><rect x="238" y="80" width="22" height="22" rx="4" fill="#7d8794"/></g>`},
+   progress(){const p=JSON.parse(localStorage.getItem('arcade-td-progress')||'{}');const n=Object.values(p).reduce((a,b)=>a+b,0);return n?`★ ${n}/36`:''}},
 ];
 
 const grid=document.getElementById('grid');
 for(const g of GAMES){
   let prog='';try{prog=g.progress?g.progress():''}catch(e){}
   const a=document.createElement('a');a.className='card';a.href=g.path;a.style.setProperty('--c',g.color);
-  a.innerHTML=`<svg class="cover" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${g.cover}</svg>
-    <div class="body"><h2>${g.name}</h2><p>${g.desc}</p>
-    <div class="tags">${g.tags.map(t=>`<span>${t}</span>`).join('')}</div>
-    <div class="foot"><span class="prog">${prog}</span><span class="play">开始 ▶</span></div></div>`;
+  a.innerHTML=`<div class="cover"><img src="${g.cover}" alt="${g.name} 游戏画面" loading="lazy"><h2>${g.name}</h2>${prog?`<span class="badge">${prog}</span>`:''}</div>
+    <div class="body"><p>${g.desc}</p>
+    <div class="foot"><div class="tags">${g.tags.map(t=>`<span>${t}</span>`).join('')}</div><span class="play">开始 ▶</span></div></div>`;
   grid.appendChild(a);
 }
-grid.insertAdjacentHTML('beforeend',`<div class="card soon"><svg class="cover" viewBox="0 0 320 180"><rect width="320" height="180" fill="#17131f"/><text x="160" y="104" text-anchor="middle" font-size="56" fill="#4a4356">?</text></svg>
+grid.insertAdjacentHTML('beforeend',`<div class="card soon"><div class="cover"><span class="q">?</span></div>
   <div class="body"><h2>敬请期待</h2><p>下一款小游戏正在路上。</p></div></div>`);
 </script>
 </body>

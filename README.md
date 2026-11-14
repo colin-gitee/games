@@ -7,6 +7,7 @@ index.html            游戏大厅（首页）
 games/
   mota/index.html     魔塔 · 五界（说明见 games/mota/README.md）
   td/index.html       守卫前线（塔防）
+  */cover.jpg         大厅卡片用的封面截图
 ```
 
 ## 游戏列表
@@ -31,7 +32,7 @@ games/
 
 ## 如何新增
 
-- **新游戏**：放到 `games/<名字>/index.html`，然后在首页 `index.html` 的 `GAMES` 数组里加一项（名称、路径、简介、封面 SVG）。
+- **新游戏**：放到 `games/<名字>/index.html`，再放一张实机截图 `cover.jpg`（约 16:10），然后在首页 `index.html` 的 `GAMES` 数组里加一项（名称、路径、封面、简介）。
 - **塔防新关卡**：在 `games/td/index.html` 的 `LEVELS` 里加一项（主题、路径折线、波数、生命倍率、初始金币）。
 - **塔防新主题**：在 `THEMES` 里加一项（配色、装饰、五种怪物的名字和颜色）。
 
