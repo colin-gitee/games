@@ -54,11 +54,11 @@ footer{margin-top:40px;color:var(--dim);font-size:12.5px;text-align:center}
 /* 新增游戏：在 GAMES 里加一项即可。
    path 游戏入口；cover 封面图（建议 16:10 的实机截图）；progress() 可选，返回一句进度文字 */
 const GAMES=[
-  {id:'mota',name:'魔塔 · 五界',path:'games/mota/index.html',cover:'games/mota/cover.jpg',color:'#e3b558',
+  {id:'mota',name:'魔塔 · 五界',path:'mota/index.html',cover:'mota/cover.jpg',color:'#e3b558',
    desc:'经典魔塔玩法：五个世界、每界 50 层，算好每一场战斗，从魔塔一路打到深海。',
    tags:['策略','RPG','单人'],
    progress(){const u=JSON.parse(localStorage.getItem('mota-unlocked')||'null');return u?`已解锁 ${u.length}/5 界`:''}},
-  {id:'td',name:'守卫前线',path:'games/td/index.html',cover:'games/td/cover.jpg',color:'#7fd060',
+  {id:'td',name:'守卫前线',path:'td/index.html',cover:'td/cover.jpg',color:'#7fd060',
    desc:'塔防：在森林、沙漠、地底三片战场布置守卫，拦下沿路而来的怪物。共 12 关。',
    tags:['塔防','多关卡','单人'],
    progress(){const p=JSON.parse(localStorage.getItem('arcade-td-progress')||'{}');const n=Object.values(p).reduce((a,b)=>a+b,0);return n?`★ ${n}/36`:''}},

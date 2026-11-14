@@ -3,11 +3,10 @@
 浏览器里直接玩的小游戏合集。打开 `index.html`（或 GitHub Pages 链接）进入大厅，点哪个玩哪个。纯静态文件，无需构建、无需登录。
 
 ```
-index.html            游戏大厅（首页）
-games/
-  mota/index.html     魔塔 · 五界（说明见 games/mota/README.md）
-  td/index.html       守卫前线（塔防）
-  */cover.jpg         大厅卡片用的封面截图
+index.html          游戏大厅（首页）
+mota/index.html     魔塔 · 五界（说明见 mota/README.md）
+td/index.html       守卫前线（塔防）
+*/cover.jpg         大厅卡片用的封面截图
 ```
 
 ## 游戏列表
@@ -41,10 +40,10 @@ games/
 
 ## 如何新增
 
-- **新游戏**：放到 `games/<名字>/index.html`，再放一张实机截图 `cover.jpg`（约 16:10），然后在首页 `index.html` 的 `GAMES` 数组里加一项（名称、路径、封面、简介）。
-- **塔防新关卡**：在 `games/td/index.html` 的 `LEVELS` 里加一项（主题、路径折线、波数、生命倍率、初始金币）。
+- **新游戏**：放到 `<名字>/index.html`，再放一张实机截图 `cover.jpg`（约 16:10），然后在首页 `index.html` 的 `GAMES` 数组里加一项（名称、路径、封面、简介）。
+- **塔防新关卡**：在 `td/index.html` 的 `LEVELS` 里加一项（主题、路径折线、波数、生命倍率、初始金币）。
 - **塔防新主题**：在 `THEMES` 里加一项（配色、装饰、五种怪物的名字和颜色）。
 
 ## 存档
 
-所有游戏的进度都在浏览器 localStorage 里。魔塔搬到 `games/mota/` 后存档键没变，同一域名下原有存档继续有效。
+所有游戏的进度都在浏览器 localStorage 里。魔塔搬到 `mota/` 后存档键没变，同一域名下原有存档继续有效。
