@@ -595,7 +595,7 @@ function drawMob(g,m,col,time){
 /* ---------- 主渲染 ---------- */
 const cv=$('cv'),ctx=cv.getContext('2d');let bgCv=null,bgFor=null,K=1;
 function resize(){
-  if(!S)return;const st=$('stage'),aw=st.clientWidth-22,ah=st.clientHeight-10,cw=Math.max(200,Math.min(aw,ah*W/H)),dpr=Math.min(2,window.devicePixelRatio||1);
+  if(!S)return;const st=$('stage'),aw=st.clientWidth-26,ah=st.clientHeight-14,cw=Math.max(200,Math.min(aw,ah*W/H)),dpr=Math.min(2,window.devicePixelRatio||1);
   cv.style.width=cw+'px';cv.style.height=cw*H/W+'px';K=Math.min(2,cw*dpr/W);cv.width=Math.round(W*K);cv.height=Math.round(H*K);bgFor=null;
 }
 const AMB={forest:['rgba(240,255,150,',2.2],desert:['rgba(255,240,200,',1.6],cave:['rgba(170,150,255,',2]};
@@ -735,6 +735,7 @@ $('pauseBtn').onclick=()=>{S.paused=!S.paused;syncUI()};
 $('backBtn').onclick=backToMenu;$('ovMenu').onclick=backToMenu;
 $('ovRetry').onclick=()=>openLevel(S.i);$('ovNext').onclick=()=>openLevel(S.i+1);
 addEventListener('resize',resize);
+if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe($('stage'));   // 底栏换行/选中面板出现时画布跟着缩放
 addEventListener('keydown',e=>{
   if(!S)return;
   if(e.key>='1'&&e.key<='4'){const k=TOWER_KEYS[e.key-1];S.build=S.build===k?null:k;S.sel=null}
