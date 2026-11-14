@@ -1079,7 +1079,8 @@ cv.addEventListener('pointerdown',e=>{
   else if(S.build){
     if(touch&&!(S.pend&&S.pend.c===c&&S.pend.r===r))S.pend=h;
     else{S.pend=null;
-      if(canBuild(c,r)){if(!place(S.build,c,r))S.fx.push({k:'text',x:(c+.5)*T,y:(r+.5)*T,txt:'金币不足',t:0,life:.8,col:'#ff8a80'})}
+      if(canBuild(c,r)){if(place(S.build,c,r))S.build=null;   // 放完即取消选择，想再放就再点一次塔按钮
+        else S.fx.push({k:'text',x:(c+.5)*T,y:(r+.5)*T,txt:'金币不足',t:0,life:.8,col:'#ff8a80'})}
       else S.fx.push({k:'text',x:(c+.5)*T,y:(r+.5)*T,txt:'这里不能放',t:0,life:.8,col:'#ff8a80'})}}
   else S.sel=null;
   if(touch&&!S.pend)S.hover=null;
