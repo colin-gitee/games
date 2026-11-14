@@ -91,7 +91,8 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
 .tw kbd{position:absolute;left:-4px;top:-6px;font:700 11px/1 system-ui;background:var(--stone);border:1px solid var(--line);border-radius:6px;padding:2px 5px;color:var(--dim)}
 .tw.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent),0 0 18px color-mix(in srgb,var(--accent) 60%,transparent);transform:translateY(-3px)}
 .tw.poor{filter:grayscale(.8) brightness(.8)} .tw.poor small{color:var(--blood)}
-#selPanel{position:absolute;right:12px;bottom:calc(100% + 8px);z-index:4;max-width:calc(100% - 24px);box-shadow:0 10px 28px #000c;display:flex;align-items:center;gap:8px;background:linear-gradient(#2c2836,#1c1924);border:1px solid var(--brass);border-radius:14px;padding:6px 10px 6px 6px;flex-wrap:wrap}
+#selPanel{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:max-content;z-index:4;max-width:calc(100% - 16px);box-shadow:0 10px 28px #000c;display:flex;align-items:center;gap:8px;background:linear-gradient(#2c2836,#1c1924);border:1px solid var(--brass);border-radius:14px;padding:6px 10px 6px 6px;flex-wrap:wrap}
+#selPanel.top{bottom:auto;top:10px}
 #selPanel canvas{width:48px;height:48px;border-radius:10px;background:radial-gradient(circle at 50% 35%,#4a4458,#1c1924);border:1px solid #000a}
 #selPanel .info{margin-right:auto}
 #selPanel .info b{font-size:15px}
@@ -127,7 +128,7 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
   .sp{width:58px}
   #waveBtn{flex:1 1 120px;font-size:18px;min-height:50px}
   #waveInfo{font-size:11.5px;gap:6px;min-height:24px}#waveInfo canvas{width:22px;height:22px}
-  #selPanel{left:8px;right:8px;max-width:none}
+  #selPanel{padding:5px 8px 5px 5px;gap:6px}#selPanel canvas{width:40px;height:40px}#selPanel button{padding:7px 10px}
   #menu .wrap{padding:14px 12px 40px}
   .themes{gap:8px}.theme{height:86px;border-radius:12px}.theme b{font-size:18px}.theme span{display:none}.theme em{top:6px;right:6px;font-size:11px;padding:0 7px}.theme .tx{padding:8px 10px}
   .levels{grid-template-columns:repeat(2,1fr);gap:10px}.lv .meta{padding:8px 10px;flex-direction:column;align-items:flex-start;gap:2px}.lv .meta b{font-size:16px}.lv .no{width:28px;height:28px;font-size:16px;left:6px;top:6px}
@@ -147,7 +148,6 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
   .sp{flex:1;width:auto;min-height:40px;padding:2px 0}.sp svg{width:22px;height:22px}.sp small{display:none}
   #waveBtn{flex:none;min-height:46px;font-size:15px;letter-spacing:0}
   #waveInfo{display:none}
-  #selPanel{left:auto;right:calc(100% + 8px);bottom:8px;max-width:62vw}
 }
 </style>
 </head>
@@ -181,6 +181,11 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
   </div>
   <div class="stage" id="stage">
     <canvas id="cv"></canvas>
+    <div id="selPanel" hidden>
+      <canvas id="selIcon" width="96" height="96"></canvas>
+      <div class="info"><b id="selName"></b><small id="selStat"></small></div>
+      <button id="modeBtn" title="切换攻击目标"></button><button id="upBtn" class="primary"></button><button id="sellBtn"></button><button id="deselBtn">✕</button>
+    </div>
     <div id="overlay" hidden><div class="box" id="ovBox">
       <h2 id="ovTitle"></h2><div id="ovText"></div><div class="stars" id="ovStars"></div>
       <div class="btns"><button id="ovNext" class="primary">下一关 ▶</button><button id="ovRetry">重玩</button><button id="ovMenu">选关</button></div>
@@ -188,11 +193,6 @@ canvas#cv{display:block;border-radius:14px;border:3px solid #000;outline:2px sol
   </div>
   <div class="bar">
     <div id="towerBtns"></div>
-    <div id="selPanel" hidden>
-      <canvas id="selIcon" width="96" height="96"></canvas>
-      <div class="info"><b id="selName"></b><small id="selStat"></small></div>
-      <button id="modeBtn" title="切换攻击目标"></button><button id="upBtn" class="primary"></button><button id="sellBtn"></button><button id="deselBtn">✕</button>
-    </div>
     <div class="spells">
       <button class="sp" id="spFire" title="火雨 (Q)：点击地图落下陨石"><svg viewBox="0 0 24 24"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-10z" fill="#ff8a2a" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 12c1 2 2.5 2.5 2.5 4.5a2.5 2.5 0 0 1-5 0c0-1.5 1.5-2 2.5-4.5z" fill="#ffe14a"/></svg><span>火雨 <small>Q</small></span></button>
       <button class="sp" id="spIce" title="冰封 (W)：冻结全场怪物"><svg viewBox="0 0 24 24" fill="none" stroke="#9fe0ff" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M12 5.5l-2.5-2M12 5.5l2.5-2M12 18.5l-2.5 2M12 18.5l2.5 2"/></svg><span>冰封 <small>W</small></span></button>
@@ -304,7 +304,7 @@ function flip(){
   for(const m of S.mobs){m.path=S.P.paths[m.pi||0];sw(m);const o=m.ox;m.ox=m.oy;m.oy=o}
   for(const q of S.shots){sw(q);const t=q.tx;q.tx=q.ty;q.ty=t}
   for(const f of S.fx){sw(f);if(f.vx!==undefined){const v=f.vx;f.vx=f.vy;f.vy=v}if(f.pts)f.pts=f.pts.map(v=>[v[1],v[0]])}
-  S.decals.forEach(sw);S.meteors.forEach(sw);S.hover=null;
+  S.decals.forEach(sw);S.meteors.forEach(sw);S.hover=S.pend=null;
 }
 function posAt(p,d){
   for(let i=0;i<p.seg.length;i++){if(d<=p.seg[i]||i===p.seg.length-1){const k=Math.min(1,d/p.seg[i]),a=p.pts[i],b=p.pts[i+1];return[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k]}d-=p.seg[i]}
@@ -944,11 +944,14 @@ function render(){
       g.moveTo(x+T-o,y+T-o-q);g.lineTo(x+T-o,y+T-o);g.lineTo(x+T-o-q,y+T-o);g.moveTo(x+o+q,y+T-o);g.lineTo(x+o,y+T-o);g.lineTo(x+o,y+T-o-q);g.stroke()}}
   const ring=(x,y,r,ok,c)=>{const gr=g.createRadialGradient(x,y,r*.5,x,y,r);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(1,c?'rgba(255,140,50,.28)':ok?'rgba(255,255,255,.2)':'rgba(239,90,78,.25)');
     g.fillStyle=gr;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.strokeStyle=c||(ok?'rgba(255,255,255,.85)':'rgba(239,90,78,.9)');g.lineWidth=2.5;g.setLineDash([10,7]);g.lineDashOffset=-tm*24;g.stroke();g.setLineDash([])};
+  const tag=(x,y,txt,bad)=>{g.font='700 13px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';const w=g.measureText(txt).width+18;x=Math.max(w/2+4,Math.min(W-w/2-4,x));y=Math.min(H-14,y);
+    g.fillStyle=bad?'rgba(120,20,16,.9)':'rgba(10,6,16,.86)';g.strokeStyle=bad?'#ef5a4e':'#e3b558';g.lineWidth=1.5;g.beginPath();g.roundRect(x-w/2,y-12,w,24,12);g.fill();g.stroke();g.fillStyle='#fff';g.fillText(txt,x,y)};
   if(S.sel)ring(S.sel.x,S.sel.y,tRange(S.sel),true);
   if(S.build&&S.hover&&!S.cast){const{c,r}=S.hover,ok=canBuild(c,r)&&S.gold>=TOWERS[S.build].cost;
     if(c>=0&&c<COLS&&r>=0&&r<ROWS){g.fillStyle=ok?'rgba(140,255,120,.25)':'rgba(239,90,78,.3)';g.beginPath();g.roundRect(c*T+4,r*T+4,T-8,T-8,10);g.fill();
       ring((c+.5)*T,(r+.5)*T,TOWERS[S.build].range*T,ok);
-      if(canBuild(c,r)){g.globalAlpha=.65;drawTower(g,S.build,(c+.5)*T,(r+.5)*T,-.6,1,0,tm);g.globalAlpha=1}}}
+      if(canBuild(c,r)){g.globalAlpha=.65;drawTower(g,S.build,(c+.5)*T,(r+.5)*T,-.6,1,0,tm);g.globalAlpha=1}
+      if(S.pend)tag((c+.5)*T,(r+1)*T+16,ok?'再点一次放置':canBuild(c,r)?'金币不足':'这里不能放',!ok)}}
   drawFlag(g,P.base[0],P.base[1]-40,tm,'#ef5a4e');
   const list=[...S.towers.map(t=>({y:t.y,t})),...S.mobs.map(m=>({y:m.y,m}))].sort((a,b)=>a.y-b.y);
   for(const o of list){
@@ -983,7 +986,7 @@ function render(){
   const am=AMB[th];for(let i=0;i<24;i++){const px=((i*197.3+tm*(8+i%5*4))%W+W)%W,py=((i*89.7+Math.sin(tm*.6+i)*30+tm*(i%3-1)*5)%VH+VH)%VH-PADY,a=.25+.25*Math.sin(tm*2+i*1.7);
     g.fillStyle=am[0]+a+')';g.beginPath();g.arc(px,py,am[1],0,7);g.fill()}
   // 技能瞄准圈
-  if(S.cast==='fire'&&S.hover&&S.hover.x!=null)ring(S.hover.x,S.hover.y,T*1.5,true,'rgba(255,150,60,.95)');
+  if(S.cast==='fire'&&S.hover&&S.hover.x!=null){ring(S.hover.x,S.hover.y,T*1.5,true,'rgba(255,150,60,.95)');if(S.pend)tag(S.hover.x,S.hover.y+T*1.5+16,'再点一次释放')}
   g.setTransform(K,0,0,K,0,PADY*K);
   // 首领血条
   const boss=S.mobs.find(m=>m.type==='boss');
@@ -1031,7 +1034,7 @@ function buildTowerBtns(){
     const c=document.createElement('canvas');c.width=c.height=96;icon(c,k,1);
     const t=document.createElement('span');t.innerHTML=`<b>${d.name}</b><small>${COIN}${d.cost}</small><em>${d.desc}</em>`;
     const kb=document.createElement('kbd');kb.textContent=i+1;
-    b.append(c,t,kb);b.onclick=()=>{audioInit();S.build=S.build===k?null:k;S.sel=null;S.cast=null;syncUI()};box.appendChild(b)});
+    b.append(c,t,kb);b.onclick=()=>{audioInit();S.build=S.build===k?null:k;S.sel=null;S.cast=null;S.pend=S.hover=null;syncUI()};box.appendChild(b)});
 }
 function wavePreview(){
   if(S.wave>=S.L.waves)return'';const n={};for(const e of S.waves[S.wave])n[e.type]=(n[e.type]||0)+1;
@@ -1042,7 +1045,7 @@ function syncUI(){
   $('hpV').textContent=S.lives;$('goldV').textContent=S.gold;$('waveV').textContent=S.wave+'/'+S.L.waves;$('waveBar').style.width=(S.wave/S.L.waves*100)+'%';
   $('speedBtn').textContent='×'+S.speed;$('pauseBtn').textContent=S.paused?'继续':'暂停';$('autoBtn').textContent='自动 '+(AUTO?'开':'关');$('sndBtn').textContent='音效 '+(AU.on?'开':'关');
   for(const b of $('towerBtns').children){b.classList.toggle('on',S.build===b.dataset.k);b.classList.toggle('poor',S.gold<TOWERS[b.dataset.k].cost)}
-  const t=S.sel;$('selPanel').hidden=!t;
+  const t=S.sel;$('selPanel').hidden=!t;if(t)$('selPanel').classList.toggle('top',t.y>H*.55);
   if(t){const d=TOWERS[t.type],c=upCost(t);$('selName').textContent=d.name+' Lv'+t.lv;$('modeBtn').textContent='目标：'+MODES[t.mode||0];icon($('selIcon'),t.type,t.lv);
     $('selStat').textContent=`伤害 ${Math.round(tDmg(t))} · 射程 ${(tRange(t)/T).toFixed(1)} · 间隔 ${d.rate}s`+(t.type==='archer'&&t.lv>=2?` · 暴击 ${t.lv>=3?25:15}%`:'');
     $('upBtn').innerHTML=c==null?'已满级':'升级 '+COIN+c;$('upBtn').disabled=c==null||S.gold<c;$('sellBtn').innerHTML='出售 '+COIN+Math.round(t.spent*SELL)}
@@ -1057,24 +1060,34 @@ function syncUI(){
     const nx=LEVELS[S.i+1];$('ovNext').hidden=!(win&&nx&&unlocked(S.i+1));}
 }
 function tileAt(ev){const r=cv.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width*W,y=(ev.clientY-r.top)/r.height*VH-PADY;return{c:Math.floor(x/T),r:Math.floor(y/T),x,y}}
-cv.addEventListener('pointermove',e=>{if(S)S.hover=tileAt(e)});
-cv.addEventListener('pointerleave',()=>{if(S)S.hover=null});
+// 鼠标：悬停即预览，点击放置。触屏：第一下只显示预览（塔和射程），再点同一格才放置；按住拖动可以挪预览。
+let touching=false;
+cv.addEventListener('pointermove',e=>{if(!S)return;if(e.pointerType==='mouse')S.hover=tileAt(e);else if(touching&&(S.build||S.cast)){S.hover=S.pend=tileAt(e)}});
+cv.addEventListener('pointerleave',e=>{if(S&&e.pointerType==='mouse')S.hover=null});
+addEventListener('pointerup',()=>{touching=false});addEventListener('pointercancel',()=>{touching=false});
 cv.addEventListener('pointerdown',e=>{
-  audioInit();if(!S||S.over)return;const h=tileAt(e),{c,r}=h;S.hover=h;
-  if(S.cast==='fire'){castFire(h.x,h.y);if(e.pointerType!=='mouse')S.hover=null;syncUI();return}
+  audioInit();if(!S||S.over)return;const h=tileAt(e),{c,r}=h,touch=e.pointerType!=='mouse';touching=touch;
+  if(S.cast==='fire'){
+    if(touch&&!(S.pend&&Math.hypot(S.pend.x-h.x,S.pend.y-h.y)<T*1.5)){S.pend=S.hover=h}
+    else{const q=touch?S.pend:h;castFire(q.x,q.y);S.pend=null;S.hover=touch?null:h}
+    syncUI();return}
+  S.hover=h;
   const t=S.towers.find(t=>t.c===c&&t.r===r);
-  if(t){S.sel=S.sel===t?null:t;S.build=null}
-  else if(S.build){if(canBuild(c,r)){if(!place(S.build,c,r))S.fx.push({k:'text',x:(c+.5)*T,y:(r+.5)*T,txt:'金币不足',t:0,life:.8,col:'#ff8a80'})}
-    else S.fx.push({k:'text',x:(c+.5)*T,y:(r+.5)*T,txt:'这里不能放',t:0,life:.8,col:'#ff8a80'})}
+  if(t){S.sel=S.sel===t?null:t;S.build=null;S.pend=null}
+  else if(S.build){
+    if(touch&&!(S.pend&&S.pend.c===c&&S.pend.r===r))S.pend=h;
+    else{S.pend=null;
+      if(canBuild(c,r)){if(!place(S.build,c,r))S.fx.push({k:'text',x:(c+.5)*T,y:(r+.5)*T,txt:'金币不足',t:0,life:.8,col:'#ff8a80'})}
+      else S.fx.push({k:'text',x:(c+.5)*T,y:(r+.5)*T,txt:'这里不能放',t:0,life:.8,col:'#ff8a80'})}}
   else S.sel=null;
-  if(e.pointerType!=='mouse')S.hover=null;
+  if(touch&&!S.pend)S.hover=null;
   syncUI();
 });
 $('waveBtn').onclick=()=>{audioInit();nextWave();syncUI()};
 $('modeBtn').onclick=()=>{if(S.sel){S.sel.mode=((S.sel.mode||0)+1)%MODES.length;syncUI()}};
 $('autoBtn').onclick=()=>{AUTO=!AUTO;syncUI()};
 $('sndBtn').onclick=()=>{AU.on=!AU.on;try{localStorage.setItem('arcade-td-sound',AU.on?'1':'0')}catch(e){}if(AU.on)audioInit();syncUI()};
-$('spFire').onclick=()=>{audioInit();if(S.spell.fire<=0){S.cast=S.cast==='fire'?null:'fire';S.build=null;S.sel=null;syncUI()}};
+$('spFire').onclick=()=>{audioInit();if(S.spell.fire<=0){S.cast=S.cast==='fire'?null:'fire';S.build=null;S.sel=null;S.pend=S.hover=null;syncUI()}};
 $('spIce').onclick=()=>{audioInit();castIce();syncUI()};
 function syncSpells(){for(const[k,id,cd]of[['fire','spFire',FIRE_CD],['ice','spIce',ICE_CD]]){const b=$(id),p=Math.ceil(S.spell[k]/cd*100);if(b._p!==p){b._p=p;b.style.setProperty('--p',p);b.disabled=p>0}}$('spFire').classList.toggle('on',S.cast==='fire')}
 $('upBtn').onclick=()=>{if(S.sel)upgrade(S.sel);syncUI()};
@@ -1092,7 +1105,7 @@ addEventListener('keydown',e=>{
   else if(e.key==='q'||e.key==='Q'){if(S.spell.fire<=0){S.cast=S.cast==='fire'?null:'fire';S.build=null}}
   else if(e.key==='w'||e.key==='W')castIce();
   else if(e.key===' '){e.preventDefault();nextWave()}
-  else if(e.key==='Escape'){S.build=null;S.sel=null;S.cast=null}
+  else if(e.key==='Escape'){S.build=null;S.sel=null;S.cast=null;S.pend=null}
   else if(e.key==='p'||e.key==='P')S.paused=!S.paused;
   else return;
   syncUI();
