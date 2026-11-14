@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>群英杀 · 3v3</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Noto+Sans+SC:wght@400;700&display=swap">
+<style>
+:root{--ink:#140d0b;--panel:#2a1a14;--line:#5a3a26;--text:#f3e6cc;--dim:#b9a58a;--gold:#e8bc5a;--red:#d8493a;--teal:#4fb8a8;--paper:#f4ead2;
+  --display:'ZCOOL QingKe HuangYou','Noto Sans SC',system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+body{color:var(--text);font:14px/1.45 'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+  background:var(--ink) radial-gradient(ellipse 100% 70% at 50% 40%,#5a2418 0%,#2a120d 55%,var(--ink) 100%)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit;text-decoration:none}
+.scr{position:fixed;inset:0;padding:calc(8px + env(safe-area-inset-top,0px)) calc(8px + env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) calc(8px + env(safe-area-inset-left,0px))}
+.btn{border:2px solid #000a;border-radius:999px;padding:5px 16px;font-weight:700;background:linear-gradient(#4a2e20,#2e1c14);box-shadow:0 2px 0 #0008,inset 0 1px 0 #fff2;white-space:nowrap}
+.btn.pri{background:linear-gradient(#f3cf7a,#d49a34);color:#2a1606}
+.btn:disabled{opacity:.4}
+/* ---------- 配置页 ---------- */
+#setup{overflow:auto;-webkit-overflow-scrolling:touch}
+#setup main{max-width:760px;margin:0 auto;padding-bottom:70px}
+h1{font-family:var(--display);font-weight:400;font-size:44px;letter-spacing:.14em;margin:4px 0 0;line-height:1.1;background:linear-gradient(#ffe9a8,#d89a3a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #000a)}
+.sub{color:var(--dim);margin:2px 0 10px;font-size:13px}
+h2{font-family:var(--display);font-weight:400;font-size:20px;letter-spacing:.1em;color:var(--gold);margin:16px 0 6px;display:flex;justify-content:space-between;align-items:baseline}
+h2 small{font:12px 'Noto Sans SC',sans-serif;color:var(--dim);letter-spacing:0}
+.heroes{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.hero{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 6px;border-radius:12px;border:2px solid var(--line);background:#0004}
+.hero small{color:var(--dim);font-size:11px}
+.on{border-color:var(--gold)!important;background:#e8bc5a22!important;box-shadow:0 0 0 1px var(--gold),0 0 14px #e8bc5a55}
+.av{width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:26px;color:#fff;text-shadow:0 2px 0 #0009;
+  background:radial-gradient(circle at 35% 28%,color-mix(in srgb,var(--c) 60%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 55%,#000));border:2px solid #000a;box-shadow:0 0 0 2px var(--ring,#c9a45c),0 3px 6px #0009}
+#heroDesc{margin-top:8px;padding:8px 12px;border-radius:10px;background:#0005;border:1px solid var(--line);font-size:13px;min-height:40px}
+#heroDesc b{color:var(--gold)}
+.seals{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px}
+.seal{text-align:left;padding:6px 10px;border-radius:10px;border:2px solid var(--line);background:#0004;display:block}
+.seal b{display:flex;justify-content:space-between;align-items:baseline;font-size:14px}.seal b i{font-style:normal;font-size:11px;color:var(--teal);font-weight:400}
+.seal span{display:block;color:var(--dim);font-size:12px;line-height:1.35}
+.seal.m b{color:var(--gold)}.seal.s b{color:#8fe0d2}
+#startBar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;align-items:center;justify-content:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#140d0b 40%)}
+#startBar .btn{font-size:17px;padding:7px 28px}
+/* ---------- 对局 ---------- */
+#game{display:grid;gap:6px;grid-template-rows:auto auto 1fr auto auto auto;grid-template-areas:"top" "enemies" "stage" "allies" "mine" "hand"}
+#top{grid-area:top;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--dim)}#top span{flex:1}
+#top .btn{padding:2px 12px;font-size:12.5px;color:var(--text)}
+.row{display:flex;gap:6px}
+#enemies{grid-area:enemies}#allies{grid-area:allies}
+.pl{position:relative;flex:1;min-width:0;display:flex;align-items:center;gap:7px;padding:6px 7px;border-radius:12px;border:2px solid #000a;background:linear-gradient(#3a241a,#24150f);box-shadow:0 3px 8px #0008;text-align:left;transition:transform .15s,box-shadow .15s,opacity .3s}
+.pl.e{--ring:#d8493a}.pl.a{--ring:#4fb8a8}
+.pl .inf{min-width:0;flex:1;display:flex;flex-direction:column;line-height:1.25}
+.pl b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pl b u{text-decoration:none;font-size:10px;margin-left:4px;padding:0 5px;border-radius:999px;background:var(--teal);color:#06231f}
+.hp{color:var(--red);font-size:13px;letter-spacing:1px;white-space:nowrap}.hp s{color:#fff3;text-decoration:none}
+.meta{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta q{quotes:none;color:#f0d9a0;border:1px solid #f0d9a055;border-radius:4px;padding:0 3px;margin-left:2px}
+.sl{display:flex;gap:2px;margin-top:1px}.sl i{font-style:normal;font-size:9.5px;line-height:13px;width:13px;text-align:center;border-radius:3px;background:#e8bc5a33;color:var(--gold)}.sl i.s{background:#4fb8a833;color:#8fe0d2}
+.pl.act{box-shadow:0 0 0 2px var(--gold),0 0 16px #e8bc5a88}
+.pl.tg{box-shadow:0 0 0 3px #fff,0 0 18px #fff;animation:pulse .7s infinite alternate;cursor:pointer}
+.pl.dead{opacity:.32;filter:grayscale(1)}
+.pl.hit{animation:hit .4s}.pl.heal{animation:heal .5s}
+@keyframes pulse{to{transform:scale(1.04)}}
+@keyframes hit{0%{transform:translateX(0);filter:brightness(3) saturate(2)}25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}100%{transform:none;filter:none}}
+@keyframes heal{0%{filter:brightness(1.8) hue-rotate(60deg)}100%{filter:none}}
+.float{position:absolute;left:50%;top:0;z-index:5;transform:translateX(-50%);font-family:var(--display);font-size:22px;white-space:nowrap;pointer-events:none;text-shadow:0 2px 0 #000,0 0 8px #000;animation:float 1s forwards}
+.float.d{color:#ff6a5a;font-size:30px}.float.h{color:#7fe08a}.float.s{color:var(--gold)}
+@keyframes float{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}20%{opacity:1;transform:translate(-50%,-6px) scale(1.15)}100%{opacity:0;transform:translate(-50%,-34px)}}
+#stage{grid-area:stage;min-height:0;display:flex;gap:10px;align-items:center;justify-content:center;border-radius:14px;background:#0003;border:1px dashed #ffffff14;padding:6px 10px;overflow:hidden}
+#show{flex:none;display:flex;gap:4px;align-items:center;min-width:64px;justify-content:center}
+#show .card{animation:pop .3s}
+@keyframes pop{0%{transform:scale(.3) rotate(-12deg);opacity:0}70%{transform:scale(1.12)}100%{transform:none;opacity:1}}
+#log{flex:1;min-width:0;max-height:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;font-size:12.5px;color:var(--dim)}
+#log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#log div:last-child{color:var(--text);font-size:13.5px}
+#log em{font-style:normal;color:var(--gold)}#log .e{color:#ff9a8e}#log .a{color:#8fe0d2}
+#mine{grid-area:mine;display:flex;gap:8px;align-items:center}#mine .pl{flex:0 1 190px}
+#btns{flex:1;display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+#handWrap{grid-area:hand;min-width:0}
+#msg{min-height:20px;font-size:13px;text-align:center;color:var(--gold);margin-bottom:4px}
+#hand{display:flex;justify-content:center;height:98px;padding-top:12px}
+.card{position:relative;flex:none;width:62px;height:86px;border-radius:8px;border:2px solid #1a0f0a;background:linear-gradient(160deg,#fbf3df,#e9dab8);color:#2a1a10;box-shadow:0 3px 6px #0009;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:5px;transition:transform .12s,opacity .12s}
+#hand .card{margin-left:var(--ov,4px)}#hand .card:first-child{margin-left:0}
+.card i{position:absolute;left:4px;top:2px;font-style:normal;font-size:11px;line-height:1.05;text-align:center;font-weight:700}.card i.r{color:#c8281e}
+.card em{font-style:normal;font-size:24px;line-height:1;margin-bottom:2px}
+.card b{font-family:var(--display);font-weight:400;font-size:17px;line-height:1.05;letter-spacing:.02em;text-align:center}
+.card::after{content:'';position:absolute;left:0;right:0;top:0;height:5px;border-radius:5px 5px 0 0;background:var(--k,#888)}
+.k-sha{--k:#c8281e}.k-shan{--k:#2e7bc8}.k-yao{--k:#3f9a4a}.t-trick{--k:#7a4ab8}.t-equip{--k:#a8742a}
+.card.sel{transform:translateY(-14px);box-shadow:0 0 0 2px var(--gold),0 8px 14px #000c;z-index:2}
+.card.off{opacity:.45}
+.card.ok{box-shadow:0 0 0 2px #fff,0 0 12px #fff}
+.card.sm{width:46px;height:64px}.card.sm em{font-size:17px}.card.sm b{font-size:13px}
+#toast{position:fixed;left:50%;top:38%;transform:translateX(-50%);z-index:9;background:#000c;border:1px solid var(--gold);border-radius:999px;padding:4px 16px;pointer-events:none;white-space:nowrap}
+.ov{position:fixed;inset:0;z-index:8;display:grid;place-items:center;background:#000a;padding:16px}
+.box{background:linear-gradient(#3a241a,#22140e);border:2px solid var(--gold);border-radius:16px;padding:14px 16px;width:min(380px,100%);max-height:90vh;overflow:auto;box-shadow:0 14px 40px #000}
+.box h3{font-family:var(--display);font-weight:400;font-size:24px;letter-spacing:.1em;margin:0 0 6px;color:var(--gold);display:flex;gap:10px;align-items:center}
+.box p{margin:6px 0;font-size:13px}.box p b{color:var(--gold)}.box p.s b{color:#8fe0d2}.box p small{color:var(--teal)}
+.box .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center}
+#endOv h3{font-size:44px;justify-content:center}
+/* 手机横屏：队友竖排在左，自己和按钮在右 */
+@media (orientation:landscape) and (max-height:560px){
+  #game{grid-template-columns:150px 1fr 150px;grid-template-rows:auto auto 1fr auto;grid-template-areas:"top top top" "allies enemies mine" "allies stage mine" "hand hand hand"}
+  #allies{flex-direction:column}#allies .pl{flex:none}
+  #mine{flex-direction:column;align-items:stretch}#mine .pl{flex:none}#btns{justify-content:center;align-content:flex-start}
+  #hand{height:84px;padding-top:8px}.card{width:54px;height:74px}.card em{font-size:19px}.card b{font-size:15px}
+  #msg{margin-bottom:0}
+}
+@media (min-width:900px) and (min-height:600px){#game{max-width:900px;margin:0 auto}.card{width:74px;height:102px}.card em{font-size:30px}.card b{font-size:20px}#hand{height:116px}}
+</style>
+</head>
+<body>
+<div id="setup" class="scr"><main>
+  <h1>群英杀</h1>
+  <p class="sub">3 对 3 身份明牌：你带两名电脑队友，对面三名电脑。把对面三人全部击倒就赢。<span id="stat"></span></p>
+  <h2>选英雄<small>每位英雄自带一个技能</small></h2>
+  <div class="heroes" id="heroes"></div>
+  <div id="heroDesc"></div>
+  <h2>主印 <small id="mainN"></small></h2>
+  <div class="seals" id="mains"></div>
+  <h2>辅印 <small id="subN"></small></h2>
+  <div class="seals" id="subs"></div>
+  <h2>牌<small>点开看每种牌的作用</small></h2>
+  <div class="seals" id="cardHelp"></div>
+</main>
+<div id="startBar"><a class="btn" href="../index.html">‹ 大厅</a><button class="btn pri" id="startBtn">开始对局</button></div>
+</div>
+
+<div id="game" class="scr" hidden>
+  <div id="top"><span id="topInfo"></span><button class="btn" id="spdBtn">速度 ×1</button><button class="btn" id="quitBtn">退出</button></div>
+  <div id="enemies" class="row"></div>
+  <div id="stage"><div id="show"></div><div id="log"></div></div>
+  <div id="allies" class="row"></div>
+  <div id="mine"><div id="btns"></div></div>
+  <div id="handWrap"><div id="msg"></div><div id="hand"></div></div>
+</div>
+<div id="toast" hidden></div>
+<div class="ov" id="infoOv" hidden><div class="box" id="infoBox"></div></div>
+<div class="ov" id="pickOv" hidden><div class="box" id="pickBox"></div></div>
+<div class="ov" id="endOv" hidden><div class="box"><h3 id="endT"></h3><p id="endP" style="text-align:center"></p><div class="btns"><button class="btn pri" id="againBtn">再来一局</button><button class="btn" id="cfgBtn">换英雄 / 换印</button></div></div></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   群英杀 — 3v3 卡牌对战。结构：数据(牌/英雄/印) → 规则引擎(async，一步步 await 界面或电脑的选择) → 电脑 AI → 界面。
+   座位 0 是玩家，0/2/4 一队，1/3/5 一队，按座位号轮流行动。
+   加英雄：HERO 里加一项，技能效果在引擎里按 p.hero 判断；加印：MAIN / SUB 里加一项，同样在引擎里用 has() / roll() 接上。
+   ===================================================================== */
+const HL=!!window.__HEADLESS;                       // 无界面模式（自动测试用）：玩家也由电脑代打，不等待动画
+const $=id=>document.getElementById(id);
+const SUITS=['♠','♥','♣','♦'],RANK=[,'A',2,3,4,5,6,7,8,9,10,'J','Q','K'];
+const CARD={
+ sha:{n:'杀',t:'basic',ic:'⚔️',num:26,d:'对一名敌人使用，对方要打出【闪】，否则受到 1 点伤害。每回合只能用一张。'},
+ shan:{n:'闪',t:'basic',ic:'💨',num:16,d:'被【杀】或【万箭齐发】指定时打出，抵消它。'},
+ yao:{n:'药',t:'basic',ic:'🍑',num:9,d:'回复 1 点体力。自己或队友濒死时也可以打出来救人。'},
+ juedou:{n:'决斗',t:'trick',ic:'🤺',num:4,d:'与一名敌人轮流打出【杀】，对方先出；谁先出不了，谁受到 1 点伤害。'},
+ wanjian:{n:'万箭齐发',t:'trick',ic:'🏹',num:2,d:'所有敌人各打出一张【闪】，否则受到 1 点伤害。'},
+ langyan:{n:'烽火狼烟',t:'trick',ic:'🔥',num:2,d:'所有敌人各打出一张【杀】，否则受到 1 点伤害。'},
+ wuzhong:{n:'无中生有',t:'trick',ic:'🎁',num:5,d:'摸两张牌。'},
+ tannang:{n:'探囊取物',t:'trick',ic:'🖐️',num:4,d:'拿走一名敌人的一张牌（随机手牌，或指定装备）。'},
+ fudi:{n:'釜底抽薪',t:'trick',ic:'🪓',num:5,d:'弃掉一名敌人的一张牌（随机手牌，或指定装备）。'},
+ xiuyang:{n:'休养生息',t:'trick',ic:'🍵',num:2,d:'己方所有受伤的角色各回复 1 点体力。'},
+ liannu:{n:'连弩',t:'equip',slot:'w',ic:'🎯',num:2,d:'武器：出【杀】不限次数。'},
+ pojia:{n:'破甲刀',t:'equip',slot:'w',ic:'🗡️',num:2,d:'武器：你的【杀】无视对方的防具。'},
+ bagua:{n:'八卦阵',t:'equip',slot:'a',ic:'☯️',num:3,d:'防具：需要出【闪】时先翻一张牌，红色就算出了【闪】。'},
+ tengjia:{n:'藤甲',t:'equip',slot:'a',ic:'🛡️',num:2,d:'防具：【万箭齐发】和【烽火狼烟】对你无效。'},
+};
+const HERO={
+ xiangyu:{n:'项羽',hp:4,c:'#b8442e',sk:'霸王',d:'你的【杀】需要两张【闪】才能抵消。',main:['m_qianggong','m_pojia'],sub:['s_baoji','s_fanji']},
+ liubang:{n:'刘邦',hp:4,c:'#c9962e',sk:'纳贤',d:'摸牌阶段多摸一张牌。',main:['m_tiebi','m_miaoshou'],sub:['s_shouhu','s_huichun']},
+ hanxin:{n:'韩信',hp:4,c:'#5a78c8',sk:'点兵',d:'每回合可以多用一张【杀】。',main:['m_jubao','m_shixue'],sub:['s_lianji','s_baoji']},
+ mulan:{n:'花木兰',hp:4,c:'#c85a8a',sk:'巾帼',d:'受到伤害后摸一张牌。',main:['m_fanshang','m_tiebi'],sub:['s_fanji','s_shouhu']},
+ huatuo:{n:'华佗',hp:3,c:'#4a9a6a',sk:'青囊',d:'出牌阶段限一次：弃一张手牌，让己方一名受伤的角色回复 1 点体力。',main:['m_jubao','m_xuming'],sub:['s_huichun','s_lingshan']},
+ libai:{n:'李白',hp:4,c:'#7a8ad8',sk:'剑歌',d:'用【杀】造成伤害后摸一张牌。',main:['m_qianggong','m_shixue'],sub:['s_lianji','s_zhuiji']},
+ jingke:{n:'荆轲',hp:3,c:'#6a6a7a',sk:'刺秦',d:'【杀】的目标体力不比你少时，伤害 +1。',main:['m_jubao','m_xuming'],sub:['s_baoji','s_jiaoxie']},
+ yingzheng:{n:'嬴政',hp:3,c:'#3a3a48',sk:'一统',d:'使用锦囊牌时摸一张牌。',main:['m_miaoshou','m_tiebi'],sub:['s_shouhu','s_zhuiji']},
+ yuji:{n:'虞姬',hp:3,c:'#d86a6a',sk:'剑舞',d:'【闪】可以当【杀】用，【杀】可以当【闪】用。',main:['m_jubao','m_fanshang'],sub:['s_lingshan','s_lianji']},
+ yuefei:{n:'岳飞',hp:4,c:'#a83a3a',sk:'精忠',d:'自己受伤时，【杀】的伤害 +1。',main:['m_jubao','m_shixue'],sub:['s_huichun','s_baoji']},
+ diaochan:{n:'貂蝉',hp:3,c:'#b86ac8',sk:'闭月',d:'回合结束时摸一张牌。',main:['m_jubao','m_tiebi'],sub:['s_jiaoxie','s_lingshan']},
+ zhuge:{n:'诸葛亮',hp:3,c:'#3a8aa8',sk:'空城',d:'没有手牌时，不能成为【杀】和【决斗】的目标。',main:['m_miaoshou','m_jubao'],sub:['s_tanlang','s_fanji']},
+};
+// 主印：必定生效。辅印：按几率触发，等级 1–50，50 级 79%。
+const MAIN={
+ m_qianggong:{n:'强攻印',d:'每回合可以多用一张【杀】。'},
+ m_shixue:{n:'嗜血印',d:'【杀】造成伤害后回复 1 点体力，每回合一次。'},
+ m_tiebi:{n:'铁壁印',d:'体力上限 +1。'},
+ m_jubao:{n:'聚宝印',d:'摸牌阶段多摸一张牌。'},
+ m_fanshang:{n:'反伤印',d:'被【杀】打伤后，对方也受到 1 点伤害，每轮一次。'},
+ m_miaoshou:{n:'妙手印',d:'每回合第一次用锦囊牌时摸一张牌。'},
+ m_pojia:{n:'破甲印',d:'你的【杀】无视对方的防具。'},
+ m_xuming:{n:'续命印',d:'第一次濒死时，体力直接回到 2 点。每局一次。'},
+};
+const SUB={
+ s_baoji:{n:'暴击印',d:'【杀】造成伤害时，伤害 +1。每回合最多一次。'},
+ s_lianji:{n:'连击印',d:'【杀】造成伤害后，摸一张牌。'},
+ s_zhuiji:{n:'追击印',d:'【杀】被【闪】抵消后，本回合可以再用一张【杀】。'},
+ s_jiaoxie:{n:'缴械印',d:'【杀】造成伤害后，弃掉对方一张随机手牌。'},
+ s_lingshan:{n:'灵闪印',d:'打出【闪】后，摸一张牌。'},
+ s_fanji:{n:'反击印',d:'受到伤害后，摸一张牌。'},
+ s_shouhu:{n:'守护印',d:'一次受到 2 点以上伤害时，伤害 -1。'},
+ s_huichun:{n:'回春印',d:'回合开始时体力不超过 2，回复 1 点体力。'},
+ s_tanlang:{n:'贪狼印',d:'摸牌阶段多摸一张牌。'},
+};
+const SUB_MAX=50,subChance=lv=>Math.round(30+lv*.98)/100;   // 1 级 31%，50 级 79%
+const SUB_LV=SUB_MAX;                                       // 所有辅印直接满级
+
+/* ---------- 工具 ---------- */
+let G=null,speed=1,logs=[];
+const sleep=ms=>HL?Promise.resolve():new Promise(r=>setTimeout(r,ms*speed));
+const rnd=a=>a[Math.random()*a.length|0];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const nm=p=>HERO[p.hero].n,tag=p=>`<span class="${p.team?'e':'a'}">${nm(p)}</span>`,cn=c=>`<em>【${CARD[c.k].n}】</em>`;
+const has=(p,k)=>p.hero===k||p.main.includes(k)||p.sub.includes(k);
+const foes=p=>G.ps.filter(q=>!q.dead&&q.team!==p.team),mates=p=>G.ps.filter(q=>!q.dead&&q.team===p.team);
+const red=c=>c.s%2===1;
+function log(t){logs.push(t);if(logs.length>40)logs.shift();UI.log()}
+function roll(p,k){if(!p.sub.includes(k)||Math.random()>=subChance(SUB_LV))return false;UI.fx(p,SUB[k].n,'s');log(`${tag(p)} 的<em>${SUB[k].n}</em>触发`);return true}
+function mainFx(p,k){UI.fx(p,MAIN[k].n,'s');log(`${tag(p)} 的<em>${MAIN[k].n}</em>生效`)}
+function draw(p,n){for(let i=0;i<n;i++){if(!G.deck.length){if(!G.disc.length)break;G.deck=shuffle(G.disc);G.disc=[]}p.hand.push(G.deck.pop())}UI.render()}
+function toDisc(cs){for(const c of [].concat(cs))if(c)G.disc.push(c)}
+const rm=(arr,c)=>{const i=arr.indexOf(c);if(i>=0)arr.splice(i,1)};
+
+/* ---------- 规则 ---------- */
+const slashLimit=p=>1+(p.hero==='hanxin'?1:0)+(has(p,'m_qianggong')?1:0)+(p.f.bonus||0);
+const isSha=(p,c)=>c.k==='sha'||p.hero==='yuji'&&c.k==='shan';
+const okCards=(p,kind)=>p.hand.filter(c=>c.k===kind||p.hero==='yuji'&&(kind==='sha'&&c.k==='shan'||kind==='shan'&&c.k==='sha'));
+const hidden=q=>q.hero==='zhuge'&&!q.hand.length;           // 空城
+const cardsOf=q=>q.hand.length+(q.eq.w?1:0)+(q.eq.a?1:0);
+// 这张牌能指定谁；不需要目标返回 null
+function targets(p,c){
+  if(isSha(p,c)||c.k==='juedou')return foes(p).filter(q=>!hidden(q));
+  if(c.k==='tannang'||c.k==='fudi')return foes(p).filter(q=>cardsOf(q)>0);
+  return null}
+// 现在不能用的原因；能用返回 ''
+function cantUse(p,c){
+  if(isSha(p,c)){if((p.f.sha||0)>=slashLimit(p)&&!(p.eq.w&&p.eq.w.k==='liannu'))return'这回合不能再用【杀】了';return targets(p,c).length?'':'没有可以指定的目标'}
+  if(c.k==='shan')return'【闪】只能在被攻击时打出';
+  if(c.k==='yao')return p.hp<p.max?'':'体力是满的';
+  const t=targets(p,c);return t&&!t.length?'没有可以指定的目标':''}
+
+async function askCard(p,kind,msg){            // 要 p 打出一张 kind（sha / shan / yao），可以不出
+  const ok=okCards(p,kind);let c=null;
+  if(p.ai||HL)c=ok.find(x=>x.k===kind)||ok[0]||null;
+  else c=await UI.askCard(p,ok,msg,kind);
+  if(c)rm(p.hand,c);return c}
+async function needDodge(tgt,src,msg,pierce){  // tgt 需要一张闪：八卦阵 → 手牌
+  if(tgt.eq.a&&tgt.eq.a.k==='bagua'&&!pierce){if(!G.deck.length&&G.disc.length){G.deck=shuffle(G.disc);G.disc=[]}const j=G.deck.pop();if(j){G.disc.push(j);const ok=red(j);log(`${tag(tgt)} 的八卦阵翻出 ${SUITS[j.s]}${RANK[j.r]}，${ok?'<em>算作一张闪</em>':'没有生效'}`);await UI.show([j],450);if(ok)return true}}
+  const c=await askCard(tgt,'shan',msg);if(!c)return false;
+  toDisc(c);log(`${tag(tgt)} 打出 ${cn(c)}${c.k!=='shan'?'（当闪）':''}`);await UI.show([c],420);
+  if(roll(tgt,'s_lingshan'))draw(tgt,1);return true}
+async function heal(p,n){if(p.dead||p.hp>=p.max)return;p.hp=Math.min(p.max,p.hp+n);UI.fx(p,'+'+n,'h','heal');UI.render();await sleep(300)}
+async function damage(src,tgt,n,kind){
+  if(tgt.dead||G.over)return;
+  if(n>1&&roll(tgt,'s_shouhu'))n--;
+  tgt.hp-=n;log(`${tag(tgt)} 受到 <em>${n}</em> 点伤害`);UI.fx(tgt,'-'+n,'d','hit');UI.render();await sleep(480);
+  if(tgt.hp<=0)await dying(tgt,src);
+  if(G.over)return;
+  if(src&&!src.dead&&kind==='sha'){
+    if(src.hero==='libai')draw(src,1);
+    if(roll(src,'s_lianji'))draw(src,1);
+    if(has(src,'m_shixue')&&!src.f.leech&&src.hp<src.max){src.f.leech=1;mainFx(src,'m_shixue');await heal(src,1)}
+    if(!tgt.dead&&tgt.hand.length&&roll(src,'s_jiaoxie')){const c=rnd(tgt.hand);rm(tgt.hand,c);toDisc(c);log(`${tag(tgt)} 被弃掉 ${cn(c)}`);UI.render()}}
+  if(!tgt.dead){
+    if(tgt.hero==='mulan')draw(tgt,1);
+    if(roll(tgt,'s_fanji'))draw(tgt,1);
+    if(kind==='sha'&&src&&!src.dead&&has(tgt,'m_fanshang')&&!tgt.f.reflect){tgt.f.reflect=1;mainFx(tgt,'m_fanshang');await damage(tgt,src,1,'reflect')}}
+}
+async function dying(p,src){
+  if(has(p,'m_xuming')&&!p.revived){p.revived=1;p.hp=2;mainFx(p,'m_xuming');UI.render();await sleep(400);return}
+  log(`${tag(p)} 濒死`);
+  const order=[p,...G.ps.slice(p.id+1).concat(G.ps.slice(0,p.id)).filter(q=>!q.dead&&q.team===p.team)];
+  for(const q of order){while(p.hp<=0){const c=await askCard(q,'yao',q===p?'你濒死了，要用【药】吗':`${nm(p)} 濒死，要用【药】救吗`);if(!c)break;toDisc(c);p.hp++;log(`${tag(q)} 用 ${cn(c)} 救了 ${tag(p)}`);UI.fx(p,'+1','h','heal');UI.render();await UI.show([c],400)}if(p.hp>0)return}
+  p.dead=true;toDisc(p.hand);toDisc([p.eq.w,p.eq.a]);p.hand=[];p.eq={};log(`${tag(p)} <em>阵亡</em>`);UI.render();await sleep(600);
+  if(!mates(p).length){G.over=p.team===0?'lose':'win';return}
+  if(src&&src!==p&&!src.dead){log(`${tag(src)} 击倒对手，摸两张牌`);draw(src,2)}
+}
+async function useSlash(src,tgt){
+  src.f.sha=(src.f.sha||0)+1;
+  const need=src.hero==='xiangyu'?2:1,pierce=src.eq.w&&src.eq.w.k==='pojia'||has(src,'m_pojia');let got=0;
+  while(got<need&&await needDodge(tgt,src,`${nm(src)} 对你出【杀】，请出【闪】${need>1?`（要 ${need} 张，第 ${got+1} 张）`:''}`,pierce))got++;
+  if(got>=need){log(`${tag(tgt)} 躲开了`);if(roll(src,'s_zhuiji'))src.f.bonus=(src.f.bonus||0)+1;return}
+  let n=1;if(src.hero==='jingke'&&tgt.hp>=src.hp)n++;if(src.hero==='yuefei'&&src.hp<src.max)n++;
+  if(!src.f.crit&&roll(src,'s_baoji')){src.f.crit=1;n++}
+  await damage(src,tgt,n,'sha')}
+async function takeFrom(p,tgt,steal){                       // 探囊取物 / 釜底抽薪
+  const opts=[];if(tgt.hand.length)opts.push('hand');if(tgt.eq.w)opts.push('w');if(tgt.eq.a)opts.push('a');if(!opts.length)return;
+  let z=opts[opts.length-1];if(!p.ai&&!HL&&opts.length>1){z=await UI.askZone(tgt,opts,steal);if(G.over)return}
+  let c;if(z==='hand'){c=rnd(tgt.hand);rm(tgt.hand,c)}else{c=tgt.eq[z];delete tgt.eq[z]}
+  if(steal){p.hand.push(c);log(`${tag(p)} 拿走了 ${tag(tgt)} 的${z==='hand'?'一张手牌':cn(c)}`)}else{toDisc(c);log(`${tag(tgt)} 的 ${cn(c)} 被弃掉`)}UI.render()}
+async function useCard(p,c,tgt){
+  rm(p.hand,c);const d=CARD[c.k],k=c.k==='shan'?'sha':c.k;
+  log(`${tag(p)} ${tgt?'对 '+tag(tgt)+' ':''}${d.t==='equip'?'装备':'使用'} ${cn(c)}${c.k==='shan'?'（当杀）':''}`);UI.aim(p,tgt);await UI.show([c],620);
+  if(d.t==='equip'){toDisc(p.eq[d.slot]);p.eq[d.slot]=c;UI.render();return}
+  toDisc(c);
+  if(d.t==='trick'){if(p.hero==='yingzheng')draw(p,1);if(has(p,'m_miaoshou')&&!p.f.trick){p.f.trick=1;mainFx(p,'m_miaoshou');draw(p,1)}}
+  if(k==='sha')await useSlash(p,tgt);
+  else if(k==='yao')await heal(p,1);
+  else if(k==='wuzhong')draw(p,2);
+  else if(k==='xiuyang'){for(const q of mates(p))await heal(q,1)}
+  else if(k==='tannang'||k==='fudi')await takeFrom(p,tgt,k==='tannang');
+  else if(k==='juedou'){let a=tgt,b=p;for(;;){const x=await askCard(a,'sha',`${nm(b)} 与你决斗，请出【杀】`);if(!x){await damage(b,a,1,'duel');break}toDisc(x);log(`${tag(a)} 打出 ${cn(x)}`);await UI.show([x],420);[a,b]=[b,a]}}
+  else if(k==='wanjian'||k==='langyan'){for(const q of foes(p)){if(G.over||p.dead)break;if(q.dead)continue;
+      if(q.eq.a&&q.eq.a.k==='tengjia'){log(`${tag(q)} 有藤甲，不受影响`);continue}
+      let ok;if(k==='wanjian')ok=await needDodge(q,p,'万箭齐发，请出【闪】',false);
+      else{const x=await askCard(q,'sha','烽火狼烟，请出【杀】');ok=!!x;if(x){toDisc(x);log(`${tag(q)} 打出 ${cn(x)}`);await UI.show([x],380)}}
+      if(!ok)await damage(p,q,1,'aoe')}}
+  UI.render()}
+async function useSkill(p,c,tgt){                           // 华佗 · 青囊
+  p.f.skill=1;rm(p.hand,c);toDisc(c);log(`${tag(p)} 发动<em>青囊</em>，弃掉 ${cn(c)} 为 ${tag(tgt)} 疗伤`);UI.aim(p,tgt);await UI.show([c],500);await heal(tgt,1)}
+const handLimit=p=>Math.max(0,p.hp);
+async function turn(p){
+  p.f={};save();UI.turn(p);log(`—— ${tag(p)} 的回合 ——`);await sleep(350);
+  if(p.hp<=2&&p.hp<p.max&&roll(p,'s_huichun'))await heal(p,1);
+  let n=2;if(p.hero==='liubang')n++;if(has(p,'m_jubao'))n++;if(roll(p,'s_tanlang'))n++;
+  draw(p,n);await sleep(350);
+  if(p.ai||HL)for(let i=0;i<60&&!G.over&&!p.dead;i++){const a=aiPick(p);if(!a)break;await sleep(520);if(a.skill)await useSkill(p,a.card,a.tgt);else await useCard(p,a.card,a.tgt)}
+  else while(!G.over&&!p.dead){const a=await UI.playPhase(p);if(a.type==='end'||G.over)break;if(a.type==='skill')await useSkill(p,a.card,a.tgt);else await useCard(p,a.card,a.tgt)}
+  if(G.over||p.dead)return;
+  if(p.hero==='diaochan')draw(p,1);
+  const over=p.hand.length-handLimit(p);
+  if(over>0){const cs=p.ai||HL?aiJunk(p).slice(0,over):await UI.askDiscard(p,over);if(G.over)return;for(const c of cs)rm(p.hand,c);toDisc(cs);log(`${tag(p)} 弃掉 ${cs.length} 张牌`);UI.render();await sleep(300)}
+}
+let running=null;
+async function run(){
+  while(!G.over){const p=G.ps[G.turn];if(!p.dead)await turn(p);if(G.over)break;G.turn=(G.turn+1)%6;if(!G.turn)G.round++;if(HL&&G.round>150){G.over='draw';break}}
+  if(G.over!=='quit')finish()}
+
+/* ---------- 电脑 ---------- */
+const VAL={yao:6,shan:5,sha:4,wuzhong:3.5,juedou:3,wanjian:3,langyan:3,fudi:2.5,tannang:2.5,xiuyang:2,liannu:1.5,pojia:1.5,bagua:1.5,tengjia:1.5};
+function aiJunk(p){let sha=0;return p.hand.map(c=>({c,v:VAL[c.k]-(c.k==='sha'&&++sha>2?2:0)})).sort((a,b)=>a.v-b.v).map(x=>x.c)}   // 手牌按“最舍得丢”排序
+function aiPick(p){
+  const H=p.hand,f=k=>H.find(c=>c.k===k),fs=foes(p);if(!fs.length)return null;
+  for(const c of H){const d=CARD[c.k];if(d.t==='equip'&&(!p.eq[d.slot]||c.k==='liannu'&&p.eq.w.k!=='liannu'))return{card:c}}
+  let c;if(c=f('wuzhong'))return{card:c};
+  if(p.hp<p.max&&(c=f('yao')))return{card:c};
+  const hurt=mates(p).filter(q=>q.hp<q.max).sort((a,b)=>a.hp-b.hp);
+  if(p.hero==='huatuo'&&!p.f.skill&&hurt.length&&H.length){const j=aiJunk(p)[0];if(j.k!=='yao'||hurt[0].hp<=1)return{skill:1,card:j,tgt:hurt[0]}}
+  if(hurt.length&&(c=f('xiuyang')))return{card:c};
+  for(const k of['fudi','tannang'])if(c=f(k)){const t=targets(p,c).sort((a,b)=>(b.eq.a?9:0)+(b.eq.w?5:0)+b.hand.length-((a.eq.a?9:0)+(a.eq.w?5:0)+a.hand.length))[0];if(t)return{card:c,tgt:t}}
+  if(c=f('wanjian')||f('langyan'))return{card:c};
+  const weak=(a,b)=>a.hp-b.hp||a.hand.length-b.hand.length;
+  if(c=f('juedou')){const t=targets(p,c).sort((a,b)=>a.hand.length-b.hand.length)[0];if(t&&(okCards(p,'sha').length>1||t.hand.length<=2))return{card:c,tgt:t}}
+  c=f('sha')||(p.hero==='yuji'&&H.filter(x=>x.k==='shan').length>1?f('shan'):null);
+  if(c&&!cantUse(p,c))return{card:c,tgt:targets(p,c).sort(weak)[0]};
+  return null}
+
+/* ---------- 开局 / 存档 ---------- */
+const K_RUN='arcade-kill-run',K_LO='arcade-kill-loadout',K_ST='arcade-kill-stats';
+const jget=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}},jset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let LO=jget(K_LO,{hero:'hanxin',main:[],sub:[]});if(!HERO[LO.hero])LO.hero='hanxin';LO.main=(LO.main||[]).filter(k=>MAIN[k]).slice(0,2);LO.sub=(LO.sub||[]).filter(k=>SUB[k]).slice(0,2);
+function mkPlayer(id,hero,main,sub){const p={id,team:id%2,hero,main,sub,ai:id!==0,hand:[],eq:{},f:{},dead:false};p.max=HERO[hero].hp+(main.includes('m_tiebi')?1:0);p.hp=p.max;return p}
+function newGame(lo){
+  let id=0;const deck=[];for(const k in CARD)for(let i=0;i<CARD[k].num;i++)deck.push({id:id++,k,s:id%4,r:1+(id*7)%13});
+  const pool=shuffle(Object.keys(HERO).filter(h=>h!==lo.hero));
+  G={ps:[],deck:shuffle(deck),disc:[],turn:0,round:1,over:null};
+  for(let i=0;i<6;i++){const h=i?pool[i-1]:lo.hero;G.ps.push(i?mkPlayer(i,h,HERO[h].main.slice(),HERO[h].sub.slice()):mkPlayer(0,h,lo.main.slice(),lo.sub.slice()))}
+  for(const p of G.ps)for(let i=0;i<4;i++)p.hand.push(G.deck.pop());
+  logs=[];return G}
+function save(){if(!HL&&G&&!G.over)jset(K_RUN,G)}             // 每个回合开始时存一次；重开后从这个回合的开头继续
+function finish(){
+  try{localStorage.removeItem(K_RUN)}catch(e){}
+  if(HL)return;const st=jget(K_ST,{w:0,l:0});if(G.over==='win')st.w++;else st.l++;jset(K_ST,st);UI.end(st)}
+
+/* ---------- 界面 ---------- */
+let ui={mode:'idle'};
+const cardHTML=(c,cls)=>{const d=CARD[c.k];return`<button class="card t-${d.t} k-${c.k} ${cls||''}" data-c="${c.id}"><i class="${red(c)?'r':''}">${RANK[c.r]}<br>${SUITS[c.s]}</i><em>${d.ic}</em><b>${d.n}</b></button>`};
+const UI={
+  log(){if(HL)return;$('log').innerHTML=logs.slice(-5).map(t=>`<div>${t}</div>`).join('')},
+  fx(p,txt,cls,anim){if(HL)return;const el=$('pl'+p.id);if(!el)return;const s=document.createElement('span');s.className='float '+cls;s.textContent=txt;if(el.querySelector('.float'))s.style.top='-22px';el.append(s);setTimeout(()=>s.remove(),1000);
+    if(anim){el.classList.remove('hit','heal');void el.offsetWidth;el.classList.add(anim);setTimeout(()=>el.classList.remove(anim),520)}},
+  aim(p,t){},
+  async show(cs,ms){if(HL)return;$('show').innerHTML=cs.map(c=>cardHTML(c,'sm')).join('');await sleep(ms)},
+  turn(p){if(HL)return;UI.render()},
+  render(){if(HL||!G)return;
+    $('topInfo').textContent=`第 ${G.round} 轮 · 牌堆 ${G.deck.length}`;
+    for(const p of G.ps){const el=$('pl'+p.id),h=HERO[p.hero];if(!el)continue;
+      el.className='pl '+(p.team?'e':'a')+(p.dead?' dead':'')+(G.turn===p.id&&!p.dead?' act':'')+(ui.tgts&&ui.tgts.includes(p.id)?' tg':'');
+      const hp=Math.max(0,p.hp);
+      el.innerHTML=`<div class="av" style="--c:${h.c}">${h.n[0]}</div><div class="inf"><b>${h.n}${p.id?'':'<u>你</u>'}</b><span class="hp">${'♥'.repeat(hp)}<s>${'♥'.repeat(Math.max(0,p.max-hp))}</s></span><span class="meta">牌 ${p.hand.length}${p.eq.w?`<q>${CARD[p.eq.w.k].n}</q>`:''}${p.eq.a?`<q>${CARD[p.eq.a.k].n}</q>`:''}</span><span class="sl">${p.main.map(k=>`<i>${MAIN[k].n[0]}</i>`).join('')}${p.sub.map(k=>`<i class="s">${SUB[k].n[0]}</i>`).join('')}</span></div>`}
+    const me=G.ps[0],hand=$('hand'),n=me.hand.length;
+    const cw=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cw'))||0,w=hand.clientWidth||340,one=(hand.firstElementChild&&hand.firstElementChild.offsetWidth)||62;
+    hand.style.setProperty('--ov',Math.min(4,n>1?(w-one*n)/(n-1):4)+'px');
+    hand.innerHTML=me.hand.map(c=>{let cls='';
+      if(ui.mode==='play')cls=ui.sel===c.id?'sel':(!ui.skill&&cantUse(me,c)?'off':'');
+      else if(ui.mode==='ask')cls=ui.valid.includes(c)?'ok':'off';
+      else if(ui.mode==='discard')cls=ui.multi.includes(c)?'sel':'';
+      else cls='off';return cardHTML(c,cls)}).join('');
+    $('msg').textContent=ui.msg||'';
+    let b='';
+    if(ui.mode==='play'){if(me.hero==='huatuo'&&!me.f.skill)b+=`<button class="btn" data-a="skill">${ui.skill?'取消青囊':'青囊'}</button>`;
+      if(ui.sel!=null&&!ui.tgts&&!ui.skill)b+=`<button class="btn pri" data-a="go">出牌</button>`;b+=`<button class="btn" data-a="end">结束回合</button>`}
+    else if(ui.mode==='ask')b=`<button class="btn" data-a="pass">不出</button>`;
+    else if(ui.mode==='discard')b=`<button class="btn pri" data-a="disc" ${ui.multi.length===ui.need?'':'disabled'}>弃牌 ${ui.multi.length}/${ui.need}</button>`;
+    $('btns').innerHTML=b},
+  done(v){const r=ui.res;ui={mode:'idle'};UI.render();if(r)r(v)},
+  playPhase(p){return new Promise(r=>{ui={mode:'play',sel:null,tgts:null,skill:false,res:r,msg:'你的回合：点一张牌，再点目标'};UI.render()})},
+  async askCard(p,ok,msg,kind){if(!ok.length){$('msg').textContent=msg.replace(/，.*/,'')+'——你没有'+`【${CARD[kind].n}】`;await sleep(650);return null}
+    return new Promise(r=>{ui={mode:'ask',valid:ok,res:r,msg};UI.render()})},
+  askDiscard(p,n){return new Promise(r=>{ui={mode:'discard',multi:[],need:n,res:r,msg:`手牌超过体力值，请弃掉 ${n} 张`};UI.render()})},
+  askZone(t,opts,steal){return new Promise(r=>{ui={mode:'zone',res:r,msg:''};UI.render();const L={hand:`随机一张手牌（共 ${t.hand.length} 张）`,w:t.eq.w&&'武器 · '+CARD[t.eq.w.k].n,a:t.eq.a&&'防具 · '+CARD[t.eq.a.k].n};
+    $('pickBox').innerHTML=`<h3>${steal?'拿走':'弃掉'} ${nm(t)} 的哪张牌</h3><div class="btns">${opts.map(o=>`<button class="btn" data-z="${o}">${L[o]}</button>`).join('')}</div>`;$('pickOv').hidden=false;
+    $('pickBox').onclick=e=>{const z=e.target.dataset.z;if(z){$('pickOv').hidden=true;UI.done(z)}}})},
+  info(p){const h=HERO[p.hero];$('infoBox').innerHTML=`<h3><span class="av" style="--c:${h.c}">${h.n[0]}</span>${h.n}</h3><p><b>${h.sk}</b>　${h.d}</p>`+
+    p.main.map(k=>`<p><b>${MAIN[k].n}</b>（主印）　${MAIN[k].d}</p>`).join('')+p.sub.map(k=>`<p class="s"><b>${SUB[k].n}</b>（辅印 Lv.${SUB_LV}）　<small>${Math.round(subChance(SUB_LV)*100)}% 几率</small>：${SUB[k].d}</p>`).join('')+
+    ['w','a'].filter(z=>p.eq[z]).map(z=>`<p><b>${CARD[p.eq[z].k].n}</b>　${CARD[p.eq[z].k].d}</p>`).join('')+`<div class="btns"><button class="btn pri" data-x="1">知道了</button></div>`;$('infoOv').hidden=false},
+  end(st){$('endT').textContent=G.over==='win'?'胜 利':'落 败';$('endP').textContent=`用了 ${G.round} 轮 · 累计 ${st.w} 胜 ${st.l} 负`;$('endOv').hidden=false},
+};
+function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,1400)}
+function mount(){                                           // 把六个角色面板放到各自的位置
+  $('enemies').innerHTML='';$('allies').innerHTML='';const old=$('pl0');if(old)old.remove();
+  for(const p of G.ps){const el=document.createElement('button');el.id='pl'+p.id;el.dataset.p=p.id;if(p.id===0)$('mine').prepend(el);else(p.team?$('enemies'):$('allies')).append(el)}
+  $('setup').hidden=true;$('endOv').hidden=true;$('game').hidden=false;$('show').innerHTML='';ui={mode:'idle'};UI.render();UI.log()}
+function start(resume){if(!resume)newGame(LO);mount();running=run()}
+async function quit(){if(G&&!G.over){G.over='quit';$('pickOv').hidden=true;UI.done(ui.mode==='play'?{type:'end'}:ui.mode==='discard'?[]:ui.mode==='zone'?'hand':null);await running}try{localStorage.removeItem(K_RUN)}catch(e){}G=null;$('game').hidden=true;$('endOv').hidden=true;$('setup').hidden=false;setupUI()}
+
+if(!HL){
+  $('game').addEventListener('click',e=>{
+    const me=G&&G.ps[0],cb=e.target.closest('.card[data-c]'),pb=e.target.closest('.pl'),ab=e.target.closest('[data-a]');
+    if(ab){const a=ab.dataset.a;
+      if(a==='end')UI.done({type:'end'});else if(a==='pass')UI.done(null);else if(a==='disc')UI.done(ui.multi);
+      else if(a==='go')UI.done({type:'card',card:me.hand.find(c=>c.id===ui.sel)});
+      else if(a==='skill'){ui.skill=!ui.skill;ui.sel=null;ui.tgts=null;ui.msg=ui.skill?'青囊：先点一张要弃掉的手牌，再点受伤的己方角色':'你的回合：点一张牌，再点目标';UI.render()}
+      return}
+    if(cb&&cb.parentNode.id==='hand'){const c=me.hand.find(x=>x.id==cb.dataset.c);if(!c)return;
+      if(ui.mode==='ask'){if(ui.valid.includes(c))UI.done(c);return}
+      if(ui.mode==='discard'){if(ui.multi.includes(c))rm(ui.multi,c);else if(ui.multi.length<ui.need)ui.multi.push(c);UI.render();return}
+      if(ui.mode!=='play')return;
+      if(ui.sel===c.id){ui.sel=null;ui.tgts=null;ui.msg='你的回合：点一张牌，再点目标';UI.render();return}
+      if(ui.skill){const t=mates(me).filter(q=>q.hp<q.max);if(!t.length){toast('己方没有人受伤');return}ui.sel=c.id;ui.tgts=t.map(q=>q.id);ui.msg='点一名发光的己方角色，为他回复 1 点体力';UI.render();return}
+      const why=cantUse(me,c);if(why){toast(why);return}
+      const t=targets(me,c);ui.sel=c.id;ui.tgts=t?t.map(q=>q.id):null;ui.msg=CARD[c.k].n+'：'+(c.k==='shan'?'当【杀】使用。':CARD[c.k].d)+(t?' 点一个发光的目标。':' 点「出牌」。');UI.render();return}
+    if(pb&&G){const p=G.ps[pb.dataset.p];
+      if(ui.mode==='play'&&ui.tgts&&ui.tgts.includes(p.id)){const card=me.hand.find(c=>c.id===ui.sel);UI.done({type:ui.skill?'skill':'card',card,tgt:p})}
+      else UI.info(p)}
+  });
+  $('infoOv').onclick=e=>{if(e.target===$('infoOv')||e.target.dataset.x)$('infoOv').hidden=true};
+  $('spdBtn').onclick=()=>{speed=speed===1?.45:1;$('spdBtn').textContent='速度 ×'+(speed===1?1:2);jset('arcade-kill-speed',speed)};
+  $('quitBtn').onclick=()=>{if(confirm('退出这一局？本局不计胜负。'))quit()};
+  $('againBtn').onclick=()=>start(false);$('cfgBtn').onclick=()=>quit();
+  $('startBtn').onclick=()=>{if(LO.main.length<2||LO.sub.length<2){toast('还要选满 2 个主印和 2 个辅印');return}start(false)};
+  addEventListener('resize',()=>UI.render());
+}
+function setupUI(){
+  const st=jget(K_ST,{w:0,l:0});$('stat').textContent=st.w+st.l?`　战绩 ${st.w} 胜 ${st.l} 负`:'';
+  $('heroes').innerHTML=Object.keys(HERO).map(k=>{const h=HERO[k];return`<button class="hero${LO.hero===k?' on':''}" data-h="${k}"><span class="av" style="--c:${h.c}">${h.n[0]}</span><b>${h.n}</b><small>体力 ${h.hp}</small></button>`}).join('');
+  const h=HERO[LO.hero];$('heroDesc').innerHTML=`<b>${h.n} · ${h.sk}</b>　${h.d}`;
+  $('mainN').textContent=`必定生效 · 已选 ${LO.main.length}/2`;$('subN').textContent=`全部 Lv.${SUB_LV}（最高 ${SUB_MAX} 级）· ${Math.round(subChance(SUB_LV)*100)}% 触发 · 已选 ${LO.sub.length}/2`;
+  $('mains').innerHTML=Object.keys(MAIN).map(k=>`<button class="seal m${LO.main.includes(k)?' on':''}" data-m="${k}"><b>${MAIN[k].n}</b><span>${MAIN[k].d}</span></button>`).join('');
+  $('subs').innerHTML=Object.keys(SUB).map(k=>`<button class="seal s${LO.sub.includes(k)?' on':''}" data-s="${k}"><b>${SUB[k].n}<i>Lv.${SUB_LV} · ${Math.round(subChance(SUB_LV)*100)}%</i></b><span>${SUB[k].d}</span></button>`).join('');
+  $('cardHelp').innerHTML=Object.keys(CARD).map(k=>`<div class="seal"><b>${CARD[k].ic} ${CARD[k].n}<i>×${CARD[k].num}</i></b><span>${CARD[k].d}</span></div>`).join('');
+  $('startBtn').disabled=false}
+if(!HL){
+  $('setup').addEventListener('click',e=>{const b=e.target.closest('[data-h],[data-m],[data-s]');if(!b)return;const d=b.dataset;
+    if(d.h)LO.hero=d.h;
+    for(const[key,arr]of[[d.m,LO.main],[d.s,LO.sub]])if(key){if(arr.includes(key))rm(arr,key);else{if(arr.length>=2)arr.shift();arr.push(key)}}
+    jset(K_LO,LO);setupUI()});
+  try{localStorage.setItem('arcade-last','kill')}catch(e){}
+  speed=jget('arcade-kill-speed',1)===.45?.45:1;$('spdBtn').textContent='速度 ×'+(speed===1?1:2);
+  const sv=jget(K_RUN,null);
+  if(sv&&sv.ps&&sv.ps.length===6&&!sv.over){G=sv;for(const p of G.ps)p.f=p.f||{};logs=['读取了上次的对局，从这个回合的开头继续'];start(true)}else setupUI();
+}
+window.__busy=()=>!!(G&&!G.over);
+window.HK={get G(){return G},newGame,run,HERO,MAIN,SUB,CARD,subChance,aiPick,cantUse,targets};
+</script>
+<script src="../update.js" data-mode="ask"></script>
+</body>
+</html>
