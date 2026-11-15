@@ -224,6 +224,127 @@ img.ph{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;ob
 #hand .card{box-shadow:0 4px 10px #000b,inset 0 0 0 1.5px #c9a45a}
 #show .who{background:linear-gradient(#2a1a0ccc,#0a0604cc);border-color:#f2cf6e;box-shadow:0 2px 8px #000a}
 #game::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(#0000 60%,#0007),radial-gradient(ellipse at 50% 45%,transparent 60%,#0006)}
+
+/* ---------- 美化二：按钮、人物 ---------- */
+#btns .btn{background:linear-gradient(#c8402e,#7a1a12);border:2px solid #f2cf6e;color:#fff1cf;text-shadow:0 1px 2px #000;letter-spacing:.12em}
+#btns .btn.pri,#btns .btn[data-a=end]{background:linear-gradient(#ffe69a,#e0a030 55%,#a86a10);color:#3a1c04;text-shadow:0 1px 0 #fff8}
+#btns .btn[data-a=end]{background:linear-gradient(#7ad8c0,#2a9a82 55%,#14604e);color:#fff;text-shadow:0 1px 2px #000;border-color:#e8fff6}
+#btns .btn.on2{background:linear-gradient(#7ad8c0,#2a9a82);color:#06231f}
+#btns .btn[data-a=sk]{background:radial-gradient(circle at 36% 26%,#ffb080,#d0402a 45%,#6a1008 100%);border:3px solid #f2cf6e;box-shadow:0 0 0 2px #5a1a0acc,0 5px 10px #000a,inset 0 2px 3px #fff8,inset 0 -6px 10px #4008;color:#fff1cf;text-shadow:0 1px 3px #000,0 0 6px #ff9a6a;font-size:15px}
+#btns .btn[data-a=sk].on2{background:radial-gradient(circle at 36% 26%,#b8ffe8,#2aa88a 50%,#0a4a3a);border-color:#fff;box-shadow:0 0 18px 4px #6ae0d0,inset 0 2px 3px #fff8}
+#btns .btn[data-a=sk]:hover{filter:brightness(1.15)}
+#top .tb{background:linear-gradient(#6a2a1acc,#2a0e08cc);border:1.5px solid #f2cf6e;color:#ffe9b8;text-shadow:0 1px 2px #000;box-shadow:0 2px 6px #0008,inset 0 1px 0 #fff4}
+.pl .face{box-shadow:inset 0 0 0 1px #0008,inset 0 0 18px #0008}
+.pl .nmv{font-size:calc(var(--cw)*.16);text-shadow:0 1px 0 #000,0 0 6px #000,0 0 10px var(--ring2)}
+.pl .tm{filter:drop-shadow(0 2px 2px #000) drop-shadow(0 0 4px var(--ring))}
+.pl .hpn{font-size:calc(var(--cw)*.19)}
+.pl.me{box-shadow:0 0 0 1px #000,0 0 0 3px #b8902e,0 0 14px 2px #e2b84c88,0 8px 18px #000b,inset 0 0 0 1px #f2cf6e99,inset 0 0 14px #0009}
+.pl.e .face::after{background:linear-gradient(transparent 50%,#000a),linear-gradient(#a0140c22,transparent 40%)}
+.pl.a .face::after{background:linear-gradient(transparent 50%,#000a),linear-gradient(#0a7a8a22,transparent 40%)}
+
+#cust{display:grid;gap:6px}.crow{display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:6px 8px;border-radius:10px;border:2px solid var(--line);background:#0004}
+.crow.e{border-color:#8a2a20}.crow.a{border-color:#1f6a72}.crow b{flex:none;width:78px;font-size:13px}.crow.e b{color:#ffb0a4}.crow.a b{color:#9ae8f0}
+.crow select{flex:1 1 92px;min-width:0;padding:4px 6px;border-radius:7px;border:1px solid #8a6a3a;background:#2a1a10;color:var(--text);font:inherit;font-size:12px}
+#custReset{margin-top:2px;justify-self:start}
+
+/* ---------- 美化三：血量条、头像框、手牌台 ---------- */
+.pl .hpb{position:absolute;left:3px;right:3px;bottom:calc(20% + 2px);height:12px;z-index:3;display:flex;gap:1.5px;align-items:center;justify-content:center;padding:1px 2px;border-radius:6px;background:linear-gradient(#000b,#000a);border:1px solid #f2cf6e66;box-shadow:0 1px 3px #000a}
+.pl .hpb s{flex:1;max-width:12px;height:8px;clip-path:polygon(50% 0,100% 38%,50% 100%,0 38%);background:#3a2420;opacity:.8}
+.pl .hpb s.on{background:linear-gradient(135deg,#ff9a8a,#e0301e 55%,#8a1008);opacity:1;filter:drop-shadow(0 0 2px #ff4a3a)}
+.pl .hpb.mid s.on{background:linear-gradient(135deg,#ffe29a,#e8a030 55%,#8a5a10);filter:drop-shadow(0 0 2px #ffb04a)}
+.pl .hpb.low s.on{background:linear-gradient(135deg,#ffb0a0,#ff2a1a 55%,#a00a00);animation:lowhp .7s infinite alternate}
+.pl .eqs{bottom:calc(20% + 17px)}
+.pl .face::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,transparent 55%,#0007 100%),linear-gradient(115deg,#fff3 0%,transparent 28%)}
+.pl::before{content:'';position:absolute;inset:2px;z-index:4;border-radius:4px;border:1px solid #f2cf6e88;pointer-events:none;box-shadow:inset 0 0 0 1px #0006}
+.pl.dead::before,.pl.hit::before{display:none}
+#hand::before{content:'';position:absolute;left:-2vw;right:-2vw;bottom:calc(var(--bb) * -1);height:calc(100% + var(--bb) + 2vh);z-index:-1;background:linear-gradient(#0000,#1a0f0888 35%,#0c0604cc);pointer-events:none;border-radius:20px 20px 0 0}
+.pl .bar{height:20%}
+
+.pl .hpb{height:15px;bottom:calc(20% + 1px)}
+.pl .hpb s{height:11px;max-width:13px;background:#241512;opacity:1}
+.pl .hpb s.on{background:linear-gradient(160deg,#ffd0c4 0%,#ff4a36 35%,#e0301e 70%,#b01a10);filter:none}
+.pl .hpb.mid s.on{background:linear-gradient(160deg,#fff0c0 0%,#ffc04a 35%,#e8a030 70%,#b0701a)}
+.pl .hpb.low s.on{background:linear-gradient(160deg,#ffe0d8 0%,#ff4a36 40%,#ff1a0a 100%)}
+.pl .eqs{bottom:calc(20% + 19px)}
+.pl .hpb s.on{filter:brightness(1.25) saturate(1.4)}.pl .hpb s:not(.on){background:#3a2420;box-shadow:inset 0 0 0 1px #fff2}
+
+/* ================= 古风水墨 ================= */
+:root{--paper:#f4ebd3;--paper2:#e6d7b2;--ink:#241a10;--cin:#b8281e;--cin2:#7a1812;--jade:#2a7a70;--gold2:#b8923a}
+body,#game{background:#cfc2a0}
+/* 角色牌：宣纸底 + 墨边 + 朱红细线 */
+.pl{background:linear-gradient(#f6eed8,#e4d4ae);border:2px solid var(--ink);border-radius:5px;box-shadow:0 0 0 2px #f4ebd3aa,0 0 0 3px var(--ring,#2a1c10),0 8px 16px #000a,inset 0 0 0 1px #fff8}
+.pl::before{border:1px solid color-mix(in srgb,var(--ring,#b8281e) 80%,transparent);inset:3px;border-radius:3px;box-shadow:none}
+.pl.e{--ring:#b8281e;--ring2:#7a1812}.pl.a{--ring:#2a7a70;--ring2:#154a44}.pl.me{--ring:#b8923a;--ring2:#6a4e12}
+.pl .face{inset:4px 4px 22% 4px;border-radius:2px;box-shadow:0 0 0 1px var(--ink),inset 0 0 14px #0006}
+.pl .face::after{background:linear-gradient(transparent 60%,#000a)}
+.pl .nmv{left:4px;top:4px;bottom:auto;height:62%;width:calc(var(--cw)*.2);padding-top:calc(var(--cw)*.2);background:linear-gradient(90deg,#f4ebdaee,#f4ebd2cc);color:var(--ink);font-family:var(--display);font-size:calc(var(--cw)*.155);letter-spacing:.06em;text-shadow:none;border-right:1.5px solid var(--ink);border-radius:2px 0 0 2px}
+.pl .tm{left:auto;right:3px;top:-5px;width:calc(var(--cw)*.24);height:calc(var(--cw)*.3);background:linear-gradient(var(--ring),var(--ring2));font-size:calc(var(--cw)*.15);filter:drop-shadow(0 2px 2px #0008)}
+.pl.me .tm{color:#fff;text-shadow:0 1px 2px #000}
+.pl .eqs{left:auto;right:6px}
+.pl .eqs q{background:var(--paper);color:var(--ink);border:1px solid var(--ink);box-shadow:1px 1px 0 #0006}
+.pl .eqs q u{background:var(--cin);color:#fff4dc}
+.pl .eqs q.emp{background:#f4ebd366;border-color:#241a1066;box-shadow:none}.pl .eqs q.emp u{background:#241a1055;color:#f4ebd3}
+.pl .eqs q.jd u{background:var(--ink);color:#ffd76a}
+/* 血量：朱砂点 */
+.pl .hpb{background:linear-gradient(#e4d4aecc,#d6c498cc);border:1px solid var(--ink);box-shadow:inset 0 1px 2px #0004;left:4px;right:4px}
+.pl .hpb s{clip-path:circle(50%);height:10px;max-width:10px;background:#bba882;box-shadow:inset 0 1px 2px #0006}
+.pl .hpb s.on{background:radial-gradient(circle at 35% 30%,#ff9a86,#d4382a 45%,#8a1008);filter:none;box-shadow:0 0 0 1px #5a0a04}
+.pl .hpb.mid s.on{background:radial-gradient(circle at 35% 30%,#ffe29a,#e0a030 45%,#8a5a10);box-shadow:0 0 0 1px #5a3a04}
+.pl .hpb.low s.on{background:radial-gradient(circle at 35% 30%,#ffb0a0,#ff2a1a 50%,#a00a00);box-shadow:0 0 0 1px #5a0a04;animation:lowhp .7s infinite alternate}
+.pl .eqs{bottom:calc(20% + 19px)}
+/* 底栏：手牌数、印章、体力 */
+.pl .bar{left:4px;right:4px;bottom:4px;height:19%;background:linear-gradient(#e9dbb8,#d4c196);border:1px solid var(--ink);border-radius:2px;box-shadow:inset 0 1px 0 #fff9}
+.pl .hcn{background:var(--ink);color:var(--paper);font-family:var(--display);box-shadow:none}
+.pl .hpn{background:linear-gradient(var(--cin),var(--cin2));color:#fff4dc;box-shadow:none}.pl .hpn.mid{background:linear-gradient(#d49a2a,#8a5a10)}.pl .hpn.low{background:linear-gradient(#e82a1a,#9a0a00)}
+.pl .sls{gap:2px;padding:1.5px 2px;align-items:center}
+.pl .sls i{aspect-ratio:1;flex:none;width:auto;height:88%;max-width:calc(var(--cw)*.17);border-radius:2px;background:linear-gradient(#cf3a2a,#9a1a12);color:#fff4dc;box-shadow:0 0 0 1px #5a0a04,inset 0 0 0 1px #ff9a8a66;font-family:var(--display)}
+.pl .sls i.s{background:linear-gradient(#3a3a40,#16161a);color:#f4ebd3;box-shadow:0 0 0 1px #000,inset 0 0 0 1px #fff3}
+/* 手牌：宣纸卡面 */
+.card{background:linear-gradient(160deg,#faf3df,#e8d9b4);border:1.5px solid var(--ink);border-radius:5px;box-shadow:0 4px 10px #000a,inset 0 0 0 2px #f4ebd3,inset 0 0 0 3px color-mix(in srgb,var(--k) 55%,transparent)}
+.card::before{border:1px solid color-mix(in srgb,var(--k) 70%,transparent);inset:5px;border-radius:2px}
+.card::after{background:linear-gradient(color-mix(in srgb,var(--k) 18%,transparent),transparent)}
+.card .pic{box-shadow:inset 0 0 0 2px #fff6,0 0 0 2px var(--ink),0 3px 5px #0007}
+.card .cn{left:5px;right:5px;bottom:5px;height:26%;border-top:0;border-radius:2px;background:linear-gradient(color-mix(in srgb,var(--k) 85%,#fff3),color-mix(in srgb,var(--k) 62%,#000));box-shadow:0 0 0 1px var(--ink),inset 0 1px 0 #fff5}
+.card small{color:var(--paper);background:var(--ink);border:0;border-radius:2px;bottom:31%}
+.k-sha{--k:#b3251a}.k-shan{--k:#2a5f86}.k-yao{--k:#2f7a48}.t-trick{--k:#6a3f7a}.t-equip{--k:#8a5a1c}.k-huadi,.k-shoupeng{--k:#a8481c}.k-wuxie{--k:#2a3a5a}.k-fangma,.k-jinma{--k:#5a4026}.k-yuruyi{--k:#23786a}
+#hand::before{background:linear-gradient(#0000,#2a1c1088 40%,#1a1008cc)}
+/* 中间旗与说明 */
+.ban{background:linear-gradient(#c8362a,#7a1812);border-color:#e8c97a;box-shadow:0 4px 12px #000a,inset 0 0 0 3px #7a1812,inset 0 0 0 4px #e8c97a55}
+.ban b{color:#fff1cf;text-shadow:0 2px 0 #3a0a06}.ban.e b{color:#fff1cf}
+.ban::before{background:linear-gradient(#f4e2a0,#b8923a)}
+#show .who{background:var(--paper);color:var(--ink);border:1.5px solid var(--ink);box-shadow:2px 2px 0 #0006}
+#show .who.e{color:var(--cin);border-color:var(--cin)}#show .who.a{color:var(--jade);border-color:var(--jade)}
+/* 日志 / 提示 / 顶栏 */
+#log div{background:linear-gradient(90deg,transparent,#f4ebd3dd 20%,#f4ebd3dd 92%,transparent);color:var(--ink);text-shadow:none;border-radius:0}
+#log div:last-child{color:#000}#log em{color:var(--cin)}#log .e{color:#a02218}#log .a{color:var(--jade)}
+#msg{background:#f4ebd3ee;color:var(--ink);text-shadow:none;border:1.5px solid var(--ink);border-radius:3px;padding:2px 12px;box-shadow:2px 2px 0 #0006;width:max-content;max-width:100%;margin:0 auto}
+#topInfo{color:var(--ink);text-shadow:0 1px 0 #fff8}
+#top .tb{background:linear-gradient(#f8f0da,#e0d0a8);color:var(--ink);border:1.5px solid var(--ink);text-shadow:none;box-shadow:2px 2px 0 #0005}
+#deckBox{background:linear-gradient(#f8f0da,#e0d0a8);color:var(--ink);border:1.5px solid var(--ink);box-shadow:2px 2px 0 #0005}
+/* 按钮：朱红印钮 / 墨色按钮 */
+#btns .btn{background:linear-gradient(#cf3a2a,#8a1a12);color:#fff4dc;border:2px solid var(--ink);border-radius:4px;box-shadow:0 0 0 2px #f4ebd3aa,2px 3px 0 #000a;text-shadow:0 1px 2px #000}
+#btns .btn.pri{background:linear-gradient(#3a9a8a,#1a5a50);color:#fff;text-shadow:0 1px 2px #000}
+#btns .btn[data-a=end]{background:linear-gradient(#4a4a52,#1a1a20);color:#f4ebd3;border-color:#000}
+#btns .btn[data-a=sk]{border-radius:50%;background:radial-gradient(circle at 36% 26%,#ff9a7a,#c8301e 48%,#6a0e06);border:3px solid var(--ink);box-shadow:0 0 0 3px #f4ebd3cc,0 0 0 5px var(--cin2),2px 4px 6px #000a,inset 0 2px 3px #fff8;color:#fff4dc}
+#btns .btn[data-a=sk].on2{background:radial-gradient(circle at 36% 26%,#9ae8d8,#2a9a82 50%,#0a4a3a);box-shadow:0 0 0 3px #f4ebd3cc,0 0 0 5px var(--jade),0 0 18px 4px #6ae0d0}
+/* 选牌弹窗与结算 */
+.box{background:linear-gradient(#f6eed8,#e4d4ae);color:var(--ink);border:2px solid var(--ink);box-shadow:0 0 0 3px #f4ebd3,0 12px 30px #000}
+.box h3{color:var(--cin)}.box p b{color:var(--cin)}.box p.s b{color:var(--jade)}.box p small{color:var(--jade)}
+
+.pl .sls i{flex:1;aspect-ratio:auto;height:auto;width:auto;max-width:none;min-width:0;font-size:calc(var(--cw)*.1)}
+.pl .hpb s:not(.on){background:#bba882;box-shadow:inset 0 1px 2px #0006}
+.pl .hpb{height:14px}.pl .hpb s{height:10px;max-width:11px}
+
+.pl .hpb{height:17px;gap:2px;padding:2px 3px;background:linear-gradient(#2a1c10,#3a2a1c);border:1px solid #000}
+.pl .hpb s{height:12px;max-width:12px;background:#6a5a44;box-shadow:inset 0 1px 2px #000a}
+.pl .hpb s:not(.on){background:#6a5a44;box-shadow:inset 0 1px 2px #000a}
+.pl .hpb s.on{box-shadow:0 0 0 1px #2a0a04,0 0 5px 1px #ff4a3a88}
+.pl .eqs{bottom:calc(20% + 22px)}
+.pl .sls i{font-size:calc(var(--cw)*.115)}
+
+.pl .hpb s.on{background:radial-gradient(circle at 35% 30%,#ff9a86,#e0301e 50%,#8a1008)!important}
+.pl .hpb.mid s.on{background:radial-gradient(circle at 35% 30%,#ffe29a,#e8a030 50%,#8a5a10)!important}
+.pl .hpb.low s.on{background:radial-gradient(circle at 35% 30%,#ffb0a0,#ff2a1a 50%,#a00a00)!important}
 </style>
 </head>
 <body>
@@ -237,6 +358,8 @@ img.ph{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;ob
   <div class="seals" id="mains"></div>
   <h2>辅印 <small id="subN"></small></h2>
   <div class="seals" id="subs"></div>
+  <h2>自定义阵容<small>可选：指定队友和对手的英雄、配印；不选就是随机英雄、默认配印</small></h2>
+  <div id="cust"></div>
   <h2>牌<small>每种牌的作用</small></h2>
   <div class="seals" id="cardHelp"></div>
 </main>
@@ -245,24 +368,25 @@ img.ph{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;ob
 
 <div id="game" class="scr" hidden>
   <svg id="bg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
-<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9dcd8"/><stop offset=".5" stop-color="#e8e6cf"/><stop offset="1" stop-color="#f2dcc0"/></linearGradient>
-<linearGradient id="m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8aa8a0"/><stop offset="1" stop-color="#cfd8c4"/></linearGradient>
-<linearGradient id="m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5f8a62"/><stop offset=".6" stop-color="#9ab070"/><stop offset="1" stop-color="#d8d49a"/></linearGradient>
-<linearGradient id="m3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4a7a50"/><stop offset="1" stop-color="#b8a85a"/></linearGradient>
-<linearGradient id="lk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc8b8"/><stop offset=".55" stop-color="#9ad4c4"/><stop offset="1" stop-color="#e4b2ac"/></linearGradient>
-<radialGradient id="sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff8dc" stop-opacity=".95"/><stop offset="1" stop-color="#fff8dc" stop-opacity="0"/></radialGradient>
-<radialGradient id="vg" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient></defs>
-<rect width="1000" height="500" fill="url(#sky)"/><circle cx="520" cy="130" r="170" fill="url(#sun)"/>
-<path d="M0 230L90 150L170 205L260 120L360 215L470 160L560 220L1000 220V330H0Z" fill="url(#m1)"/>
-<path d="M0 260L70 205L150 250L250 175L350 255L450 215L540 262L1000 262V340H0Z" fill="url(#m2)" opacity=".92"/>
-<path d="M760 250L830 130L880 90L940 40L1000 20V300H760Z" fill="url(#m3)"/><path d="M880 90L905 160L870 230L900 300H1000V20L940 40Z" fill="#3a5a3a" opacity=".45"/>
-<path d="M0 300L120 238L230 292L330 262L430 300Z" fill="#4f7a56"/>
-<rect y="280" width="1000" height="40" fill="#fff" opacity=".28"/><ellipse cx="500" cy="262" rx="420" ry="16" fill="#fff" opacity=".35"/>
-<rect y="300" width="1000" height="200" fill="url(#lk)"/>
-<ellipse cx="190" cy="372" rx="190" ry="26" fill="#d8dca0" opacity=".7"/><ellipse cx="760" cy="350" rx="230" ry="22" fill="#c8d890" opacity=".6"/><ellipse cx="470" cy="445" rx="300" ry="40" fill="#f0c4bc" opacity=".6"/><ellipse cx="120" cy="450" rx="140" ry="30" fill="#e8d890" opacity=".55"/>
-<path d="M0 330Q250 316 500 334T1000 326" stroke="#fff" stroke-opacity=".35" stroke-width="2" fill="none"/><path d="M0 395Q260 380 520 398T1000 388" stroke="#fff" stroke-opacity=".25" stroke-width="2" fill="none"/>
+<linearGradient id="pp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9dfc4"/><stop offset=".55" stop-color="#d9ccaa"/><stop offset="1" stop-color="#bba882"/></linearGradient>
+<linearGradient id="mf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d8580"/><stop offset="1" stop-color="#cfc9b2" stop-opacity="0"/></linearGradient>
+<linearGradient id="mm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a524f"/><stop offset="1" stop-color="#b9b49c" stop-opacity="0"/></linearGradient>
+<linearGradient id="mn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#262c2a"/><stop offset="1" stop-color="#6a6a58"/></linearGradient>
+<linearGradient id="wt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfc8ae"/><stop offset="1" stop-color="#8a8466"/></linearGradient>
+<radialGradient id="sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#d4382a"/><stop offset=".8" stop-color="#b8281e"/><stop offset="1" stop-color="#b8281e" stop-opacity="0"/></radialGradient>
+<radialGradient id="vg" cx=".5" cy=".5" r=".75"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1a1208" stop-opacity=".6"/></radialGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="6"/></filter></defs>
+<rect width="1000" height="500" fill="url(#pp)"/>
+<circle cx="690" cy="118" r="46" fill="url(#sun)"/>
+<path d="M0 250L70 190L120 225L200 150L280 215L360 175L450 235L540 190L640 240L760 180L860 235L1000 200V330H0Z" fill="url(#mf)"/>
+<path d="M0 290L90 230L170 270L260 205L340 262L430 225L520 275L620 232L720 280L820 240L920 275L1000 250V350H0Z" fill="url(#mm)"/>
+<path d="M0 340L110 290L200 322L300 280L380 318L470 296L560 330L1000 330V400H0Z" fill="url(#mn)" opacity=".9"/>
+<g fill="#f3ead4" filter="url(#blur)" opacity=".7"><ellipse cx="250" cy="290" rx="230" ry="16"/><ellipse cx="760" cy="300" rx="260" ry="14"/><ellipse cx="500" cy="236" rx="300" ry="10"/></g>
+<rect y="340" width="1000" height="160" fill="url(#wt)"/>
+<g stroke="#f3ead4" stroke-opacity=".5" stroke-width="1.5" fill="none"><path d="M60 372Q140 366 220 372T380 372"/><path d="M520 392Q620 384 720 392T900 390"/><path d="M180 430Q300 422 420 430T660 428"/><path d="M700 450Q790 444 880 450T990 448"/></g>
+<g fill="#262c2a" opacity=".75"><path d="M300 150q8-8 14 0q6-6 12 2q-6-2-12 3q-4-4-14-5z"/><path d="M345 132q7-7 12 0q5-5 10 1q-5-1-10 3q-3-3-12-4z"/><path d="M388 160q6-6 11 0q5-4 9 1q-4-1-9 2q-3-3-11-3z"/></g>
 <rect width="1000" height="500" fill="url(#vg)"/></svg>
-  <div id="top"><button class="tb" id="spdBtn">速度 ×1</button><button class="tb" id="quitBtn">退出</button><span class="sp"></span><span id="topInfo"></span><div id="deckBox"><i class="back" id="deck"></i><span id="deckN">剩余：0</span></div></div>
+  <div id="top"><button class="tb" id="spdBtn">速度 ×1</button><button class="tb" id="quitBtn">退出</button><button class="tb" id="sndBtn">音效 开</button><span class="sp"></span><span id="topInfo"></span><div id="deckBox"><i class="back" id="deck"></i><span id="deckN">剩余：0</span></div></div>
   <div id="show"></div><div id="log"></div>
   <div id="msg"></div><div id="btns"></div><div id="hand"></div>
 </div>
@@ -358,49 +482,40 @@ const FACE={
 };
 const tone=(hex,t)=>{const v=parseInt(hex.slice(1),16),m=t<0?0:255,k=Math.abs(t);return'#'+[v>>16,v>>8&255,v&255].map(x=>Math.round(x+(m-x)*k).toString(16).padStart(2,'0')).join('')};
 let faceN=0;
-function face(k0){                                          // 传统绣像画的路子：窄眼、有鼻梁和明暗、旧纸底色
-  const k=k0+(faceN++),f=FACE[k0],c=HERO[k0].c,fem=f.f,skin=fem?'#f1dcc8':f.old?'#d6b08a':'#d9b189',sh=tone(skin,-.24),hair=f.hair||'#17110d',bc=f.bc||hair,ln='#2e1c10',o=`stroke="${ln}" stroke-width=".6"`,robe=f.robe;
+function face(k0){                                          // Q版卡通头像：大头、大眼、扁平色块+描边
+  const k=k0+(faceN++),f=FACE[k0],c=HERO[k0].c,fem=f.f,skin=fem?'#ffe4d2':'#fcd9b8',sh=tone(skin,-.13),hair=f.hair||(fem?'#3a2430':'#2e2018'),bc=f.bc||hair,ln='#3b2217',o=`stroke="${ln}" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"`,robe=f.robe,gold='#f4c84e',iris=f.eye||(fem?'#a0507a':'#6a4020');
   const mir=d=>`<path d="${d}"/><path transform="matrix(-1 0 0 1 64 0)" d="${d}"/>`;
-  let s=`<svg viewBox="0 0 64 64" preserveAspectRatio="xMidYMin slice"><defs><linearGradient id="sk${k}" x1="0" x2="1"><stop offset="0" stop-color="${tone(skin,.12)}"/><stop offset=".55" stop-color="${skin}"/><stop offset="1" stop-color="${sh}"/></linearGradient>`+
-    `<radialGradient id="bg${k}" cx=".5" cy=".36" r=".8"><stop offset="0" stop-color="${tone(c,.55)}"/><stop offset=".55" stop-color="${tone(c,-.1)}"/><stop offset="1" stop-color="${tone(c,-.72)}"/></radialGradient>`+
-    `<linearGradient id="rb${k}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${tone(robe,.22)}"/><stop offset="1" stop-color="${tone(robe,-.45)}"/></linearGradient></defs>`+
-    `<rect width="64" height="64" fill="#cdbb92"/><rect width="64" height="64" fill="url(#bg${k})" opacity=".82"/>`;
-  if(f.loose)s+=`<path d="M18 30Q14.5 9.5 32 9.5Q49.5 9.5 46 30L49.5 64H14.5Z" fill="${hair}"/>`;
-  // 衣服：交领
-  s+=`<path d="M1 64Q3 50 19.5 46.4L26.5 44.4H37.5L44.5 46.4Q61 50 63 64Z" fill="url(#rb${k})" ${o}/><path d="M27.4 37H36.6V46.5Q32 50 27.4 46.5Z" fill="${sh}"/><path d="M25.8 44.8L32 55.5L38.2 44.8L36.4 43.6Q32 47.6 27.6 43.6Z" fill="#efe6d2" ${o}/>`+
-     `<path d="M24.2 45.2L33.4 59.4M39.8 45.2L30.8 59" stroke="${tone(robe,robe>'#888'?-.45:.4)}" stroke-width="2.3" fill="none" stroke-linecap="round"/>`;
-  if(f.armor)s+=`<path d="M4 56Q8 47.6 21 46.6L19 56ZM60 56Q56 47.6 43 46.6L45 56Z" fill="#aab0bc" ${o}/><path d="M8 52.5H19.6M44.4 52.5H56" stroke="#6a7080" stroke-width=".7"/>`;
+  const eye=x=>`<ellipse cx="${x}" cy="33.4" rx="3.5" ry="4.3" fill="#2a1810"/><ellipse cx="${x}" cy="35" rx="2.7" ry="2.8" fill="${iris}"/><circle cx="${x-1.1}" cy="31.7" r="1.35" fill="#fff"/><circle cx="${x+1.3}" cy="35.8" r=".65" fill="#fff"/>`;
+  const myM=f.beard==='mus'||f.beard==='goat'?43.4:40.8;
+  let s=`<svg viewBox="0 0 64 64" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="bg${k}" cx=".5" cy=".4" r=".75"><stop offset="0" stop-color="${tone(c,.62)}"/><stop offset="1" stop-color="${tone(c,-.2)}"/></radialGradient></defs>`+
+   `<rect width="64" height="64" fill="url(#bg${k})"/><text x="32" y="50" text-anchor="middle" font-size="52" font-weight="900" font-family="'ZCOOL QingKe HuangYou','Noto Serif SC','Songti SC',serif" fill="#fff" opacity=".09">${HERO[k0].n[0]}</text>`+
+   `<g fill="#fff" opacity=".5"><circle cx="8" cy="12" r="1.3"/><circle cx="56" cy="9" r="1"/><circle cx="55" cy="22" r=".8"/><circle cx="9" cy="26" r=".8"/></g>`;
+  if(f.loose||fem)s+=`<path d="M13.5 30Q11 7.6 32 7.6Q53 7.6 50.5 30L53.5 57Q32 63 10.5 57Z" fill="${hair}" ${o}/>`;
+  // 身体与领口
+  s+=`<path d="M9 64Q10 49.6 32 48Q54 49.6 55 64Z" fill="${robe}" ${o}/><path d="M28 43.6H36V50Q32 53 28 50Z" fill="${sh}" ${o}/><path d="M25 48.8L32 58L39 48.8Q32 52.4 25 48.8Z" fill="#fff6e6" ${o}/><path d="M32 53V64" stroke="${tone(robe,-.3)}" stroke-width="1" opacity=".6"/>`;
+  if(f.hat==='helm')s+=`<path d="M10 56Q12 49.6 24 49L22 58ZM54 56Q52 49.6 40 49L42 58Z" fill="#b8c0cc" ${o}/>`;
   // 头
-  const head=fem?'M22.2 25Q21.8 34.6 26.4 40.4Q29.6 44 32 44Q34.4 44 37.6 40.4Q42.2 34.6 41.8 25Q41.6 14 32 14Q22.4 14 22.2 25Z':'M21.2 25Q20.6 35.6 25.2 41.2Q28.6 45.2 32 45.2Q35.4 45.2 38.8 41.2Q43.4 35.6 42.8 25Q42.6 13.5 32 13.5Q21.4 13.5 21.2 25Z';
-  s+=`<g fill="${sh}" ${o}><ellipse cx="21" cy="30.4" rx="1.5" ry="2.8"/><ellipse cx="43" cy="30.4" rx="1.5" ry="2.8"/></g><path d="${head}" fill="url(#sk${k})" ${o}/>`;
-  s+=`<path d="M21 26.8Q20.2 13.2 32 13.2Q43.8 13.2 43 26.8Q41.4 19.8 37 18.4Q32 17 27 18.4Q22.6 19.8 21 26.8Z" fill="${hair}"/>`;
+  s+=`<g fill="${sh}" ${o}><circle cx="14.4" cy="32.4" r="2.7"/><circle cx="49.6" cy="32.4" r="2.7"/></g><ellipse cx="32" cy="30" rx="17.6" ry="16.6" fill="${skin}" ${o}/>`;
+  s+=`<path d="M14.6 28.4Q13.6 10.6 32 10.6Q50.4 10.6 49.4 28.4Q45.4 20 38.6 20.8Q34.6 15.6 31.4 20Q24.4 19.6 21 24Q17.4 22.4 14.6 28.4Z" fill="${hair}" ${o}/><path d="M21 15.4Q26 12 32 13" stroke="#fff" stroke-opacity=".45" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
   // 五官
-  if(fem)s+=`<g fill="#f6f1ea">${mir('M24.4 29.6Q27 27.7 29.8 29.5Q27 30.7 24.4 29.6Z')}</g><circle cx="27.2" cy="29.3" r="1.15" fill="#1c120c"/><circle cx="36.8" cy="29.3" r="1.15" fill="#1c120c"/>`+
-    `<g fill="none" stroke="${ln}" stroke-width="1" stroke-linecap="round">${mir('M23.6 29.9Q26.8 27.2 30 29.4')}</g><g fill="none" stroke="${hair}" stroke-width=".75" stroke-linecap="round">${mir('M23.6 26.3Q26.8 24.5 30.2 25.9')}</g>`+
-    `<path d="M32.5 30Q31.7 33.4 31.1 34.6Q32 35.3 33 34.7" stroke="${tone(skin,-.34)}" stroke-width=".7" fill="none" stroke-linecap="round"/><path d="M29.9 38.2Q31 37.5 32 38Q33 37.5 34.1 38.2Q32 40.2 29.9 38.2Z" fill="#b22a36"/><path d="M29.9 38.2Q32 38.8 34.1 38.2" stroke="#7a1a24" stroke-width=".4" fill="none"/>`;
-  else s+=`<g fill="#f3ede2">${mir('M24.5 29.5Q27 28 29.6 29.4Q27 30.4 24.5 29.5Z')}</g><circle cx="27.2" cy="29.2" r="1.05" fill="#1a110b"/><circle cx="36.8" cy="29.2" r="1.05" fill="#1a110b"/>`+
-    `<g fill="none" stroke="${ln}" stroke-width=".9" stroke-linecap="round">${mir('M24 29.6Q26.9 27.5 30 29.2')}</g><g fill="${f.old?'#e4e0d8':hair}">${mir(f.brow?'M22.8 25.4Q26.6 23.6 30.6 25.9L30.2 27.3Q26.6 25.6 23.2 26.9Z':'M23.4 26Q26.8 24.6 30.4 25.9L30.2 26.8Q26.8 25.8 23.6 26.8Z')}</g>`+
-    `<path d="M32.7 28.6Q31.6 33 30.5 35Q32 36.3 33.7 35.3" stroke="${tone(skin,-.42)}" stroke-width=".8" fill="none" stroke-linecap="round"/><path d="M34.2 30Q35 33 34.4 35" stroke="${sh}" stroke-width="1.2" fill="none" opacity=".6"/>`;
-  if(f.old)s+=`<g stroke="${tone(skin,-.36)}" stroke-width=".5" fill="none"><path d="M26 21.4Q32 20.4 38 21.4M27 23.2Q32 22.4 37 23.2"/>${mir('M24.4 31.6Q26.6 32.6 29 31.8')}</g>`;
-  // 胡子与嘴
-  if(f.beard==='short')s+=`<path d="M21.5 31Q21 45.8 32 46.4Q43 45.8 42.5 31Q41.2 39.4 37.2 40.6Q34.6 37.2 32 37.6Q29.4 37.2 26.8 40.6Q22.8 39.4 21.5 31Z" fill="${bc}"/>`;
-  if(f.beard==='long')s+=`<path d="M22.4 33Q21.4 44 26.4 52Q30 58 32 63.5Q34 58 37.6 52Q42.6 44 41.6 33Q40.4 39.6 37.2 40.6Q34.6 37.2 32 37.6Q29.4 37.2 26.8 40.6Q23.6 39.6 22.4 33Z" fill="${bc}" stroke="${tone(bc,bc>'#888'?-.3:.25)}" stroke-width=".4"/><path d="M28.6 44Q29.6 52 32 60M35.4 44Q34.4 52 32 60M32 43V58" stroke="${tone(bc,bc>'#888'?-.25:.3)}" stroke-width=".45" fill="none"/>`;
-  if(f.beard==='mus'||f.beard==='goat')s+=`<path d="M26 37.9Q29.4 35.9 32 37.4Q34.6 35.9 38 37.9Q34.8 38.4 32 38.3Q29.2 38.4 26 37.9Z" fill="${bc}"/>`;
-  if(f.beard==='goat')s+=`<path d="M30.3 41.2Q32 40.6 33.7 41.2L32 49Z" fill="${bc}"/>`;
-  if(!fem)s+=`<path d="M29.2 39.3Q32 40.2 34.8 39.3" stroke="${f.beard==='short'||f.beard==='long'?'#b06a58':'#7a3a2c'}" stroke-width=".9" fill="none" stroke-linecap="round"/>`+(f.beard?'':`<path d="M30.2 41Q32 41.7 33.8 41" stroke="${sh}" stroke-width=".7" fill="none"/>`);
+  s+=eye(25)+eye(39);
+  s+=`<g fill="none" stroke="${f.old?'#ccc':hair}" stroke-linecap="round" stroke-width="${f.brow?2.1:1.4}">${f.brow?mir('M20.6 26.2L29 28.6'):mir('M21 27.2Q25 24.4 29.4 26.6')}</g>`+
+     `<ellipse cx="20" cy="38.4" rx="3" ry="1.9" fill="#ff8a78" opacity=".5"/><ellipse cx="44" cy="38.4" rx="3" ry="1.9" fill="#ff8a78" opacity=".5"/>`;
+  // 胡子
+  if(f.beard==='short')s+=`<path d="M16.4 34Q17 50.6 32 50.6Q47 50.6 47.6 34Q44.4 44.4 38.4 44Q32 41.4 25.6 44Q19.6 44.4 16.4 34Z" fill="${bc}" ${o}/>`;
+  if(f.beard==='long')s+=`<path d="M16.8 35Q16.4 50 24 57Q29 62.6 32 64Q35 62.6 40 57Q47.6 50 47.2 35Q43.6 44.4 38 44Q32 41.6 26 44Q20.4 44.4 16.8 35Z" fill="${bc}" ${o}/><path d="M28 48Q29 56 32 62M36 48Q35 56 32 62" stroke="${tone(bc,.3)}" stroke-width=".7" fill="none"/>`;
+  if(f.beard==='mus'||f.beard==='goat')s+=`<path d="M23.4 41.6Q28 37.6 32 40.4Q36 37.6 40.6 41.6Q36 43.2 32 42Q28 43.2 23.4 41.6Z" fill="${bc}" ${o}/>`;
+  if(f.beard==='goat')s+=`<path d="M29 46.4Q32 45.4 35 46.4L32 54.4Z" fill="${bc}" ${o}/>`;
+  s+=`<path d="M29.4 ${myM}Q32 ${myM+2.4} 34.6 ${myM}" stroke="${f.beard==='short'||f.beard==='long'?'#fff':ln}" stroke-width="1.1" fill="none" stroke-linecap="round"/>`;
   // 头饰
-  const h=f.hat,hc=f.hc,gold='#c9a04a';
-  if(h==='helm')s+=`<path d="M32 8.6Q29.6 1 39.4 0Q36 4.6 35 8.6Z" fill="${f.plume||'#b8281e'}" ${o}/><path d="M18.4 25Q18 7.6 32 7.6Q46 7.6 45.6 25Q32 16.8 18.4 25Z" fill="${hc}" ${o}/><path d="M25 10.4Q32 7.6 39 10.4" stroke="${tone(hc,.4)}" stroke-width="1" fill="none"/><path d="M18.4 25Q32 16.8 45.6 25L45.6 21.6Q32 13.6 18.4 21.6Z" fill="${gold}" ${o}/><path d="M18.7 24L16.4 36.6L20.5 37.6L21.6 26ZM45.3 24L47.6 36.6L43.5 37.6L42.4 26Z" fill="${tone(hc,-.2)}" ${o}/><circle cx="32" cy="15.4" r="1.9" fill="${gold}" ${o}/>`;
-  if(h==='crown')s+=`<rect x="25" y="8.6" width="14" height="8.4" rx="1" fill="#14141a" ${o}/><rect x="13.6" y="6" width="36.8" height="3.4" rx="1" fill="#14141a" ${o}/><rect x="25" y="14.2" width="14" height="1.8" fill="${gold}"/>`+[16,20,24,40,44,48].map((x,i)=>`<path d="M${x} 9.4V17.4" stroke="${gold}" stroke-width=".6"/><circle cx="${x}" cy="12" r=".95" fill="${i%2?'#b8281e':'#6ab8c0'}"/><circle cx="${x}" cy="15.2" r=".95" fill="${i%2?'#6ab8c0':'#b8281e'}"/>`).join('');
-  if(h==='knot')s+=`<circle cx="32" cy="9.8" r="4.8" fill="${hair}" ${o}/><rect x="27.4" y="12.8" width="9.2" height="2.2" rx="1" fill="#7a5630"/><path d="M24 11.4H40" stroke="#7a5630" stroke-width="1.3" stroke-linecap="round"/>`;
-  if(h==='pony')s+=`<circle cx="32" cy="9.4" r="4.6" fill="${hair}" ${o}/><path d="M35 7.8Q50.5 5.6 52.4 23Q46 13.8 36 13Z" fill="${hair}"/><path d="M27.2 12.4H36.8L35.8 15H28.2Z" fill="#b8281e" ${o}/><path d="M36 13.6L42 17.6M36 13.6L41 11.6" stroke="#b8281e" stroke-width="1.5" stroke-linecap="round"/>`;
-  if(h==='scholar')s+=`<path d="M19.6 24.4Q19 7.6 32 7.6Q45 7.6 44.4 24.4Q32 16.4 19.6 24.4Z" fill="#17171f" ${o}/><path d="M26 8.8Q32 2.6 38 8.8Z" fill="#17171f" ${o}/><path d="M44 19Q54 16 58 23M20 19Q10 16 6 23" stroke="#17171f" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M24 12Q32 8.6 40 12" stroke="#3a3a48" stroke-width=".8" fill="none"/>`;
-  if(h==='band')s+=`<circle cx="32" cy="10.2" r="4" fill="${hair}"/><path d="M20 22.4Q32 17 44 22.4L44 25.4Q32 20 20 25.4Z" fill="${hc}" ${o}/><path d="M44 23Q52 24 54 32M44 24Q50 28 49 36" stroke="${hc}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
-  if(h==='jin')s+=`<path d="M20 24.4Q18 4.6 32 5.6Q46 4.6 44 24.4Q32 16.4 20 24.4Z" fill="#e6e9ec" ${o}/><path d="M26 7.6Q25 14 24.4 20.4M32 6V17.4M38 7.6Q39 14 39.6 20.4" stroke="#8a9aa8" stroke-width=".7" fill="none"/><path d="M20.4 22.2Q32 14.6 43.6 22.2" stroke="#2f6f88" stroke-width="1.7" fill="none"/>`;
-  if(h==='fem1')s+=`<circle cx="23.4" cy="11" r="5.2" fill="${hair}"/><circle cx="40.6" cy="11" r="5.2" fill="${hair}"/><path d="M22 16.4Q32 11 42 16.4Q32 14 22 16.4Z" fill="${hair}"/><circle cx="32" cy="14.2" r="2" fill="${gold}" ${o}/><circle cx="32" cy="14.2" r=".8" fill="#b8281e"/><path d="M19 9.4L27.6 12.4M45 9.4L36.4 12.4" stroke="${gold}" stroke-width=".9"/><path d="M45.4 14L49.6 20.4" stroke="${gold}" stroke-width=".9"/><circle cx="50" cy="21.4" r="1.3" fill="#6ab8c0"/>`;
-  if(h==='fem2')s+=`<ellipse cx="32" cy="8.8" rx="7" ry="5.4" fill="${hair}"/><path d="M19.6 12.4L46 5.8" stroke="${gold}" stroke-width="1.4" stroke-linecap="round"/><circle cx="46.6" cy="5.6" r="1.6" fill="#b8281e" ${o}/><path d="M24.4 15.6l1.6-2 1.6 2-1.6 1.6Z" fill="${gold}" ${o}/>`;
-  // 如果 kill/heroes/<英雄键名>.jpg 存在就盖在画像上面用它（键名见 HERO，例如 xiangyu.jpg）；没有就用上面画的
-  return s+`<rect width="64" height="64" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="1.5"/></svg><img class="ph" src="heroes/${k0}.jpg" alt="" onerror="this.remove()">`}
+  const h=f.hat,hc=f.hc;
+  if(h==='helm')s+=`<path d="M32 9Q27.6 -.6 39 .4Q34.6 4 35.4 9Z" fill="${f.plume||'#e23a2a'}" ${o}/><path d="M14.4 27Q13 7.6 32 7.6Q51 7.6 49.6 27Q41 19.4 32 19.4Q23 19.4 14.4 27Z" fill="${hc}" ${o}/><path d="M15.2 22.6Q32 12.6 48.8 22.6" stroke="${gold}" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="32" cy="14.8" r="2.2" fill="${gold}" ${o}/><path d="M14.6 25.6L13.2 38.6L18.4 39.4L19.2 28ZM49.4 25.6L50.8 38.6L45.6 39.4L44.8 28Z" fill="${tone(hc,-.12)}" ${o}/>`;
+  if(h==='crown')s+=`<path d="M16.4 22Q17 10.4 32 10.4Q47 10.4 47.6 22Q32 15.6 16.4 22Z" fill="#202028" ${o}/><path d="M14 11L50 11L47 5.4L17 5.4Z" fill="#202028" ${o}/><path d="M17 8.2H47" stroke="${gold}" stroke-width="1.2"/>`+[18,22.5,27,37,41.5,46].map((x,i)=>`<path d="M${x} 11V17" stroke="${gold}" stroke-width=".8"/><circle cx="${x}" cy="18" r="1.3" fill="${i%2?'#e23a2a':'#52c6d0'}" stroke="${ln}" stroke-width=".5"/>`).join('');
+  if(h==='scholar')s+=`<path d="M15.6 24Q15 10 32 10Q49 10 48.4 24Q32 16.6 15.6 24Z" fill="#26346a" ${o}/><path d="M24.6 11.4Q32 .8 39.4 11.4Z" fill="#26346a" ${o}/><path d="M47.6 21.4Q57 20 59 30M16.4 21.4Q7 20 5 30" stroke="#26346a" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="32" cy="6.4" r="1.4" fill="${gold}"/>`;
+  if(h==='band')s+=`<circle cx="32" cy="9" r="4.6" fill="${hair}" ${o}/><path d="M14.6 22.4Q32 13.4 49.4 22.4L49 27Q32 18.6 15 27Z" fill="${hc}" ${o}/><path d="M48.6 24Q57 26 58 38M48.8 25Q54 30 52.8 40" stroke="${hc}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  if(h==='jin')s+=`<path d="M14.4 26Q12.4 4.6 32 5.4Q51.6 4.6 49.6 26Q32 14.6 14.4 26Z" fill="#f2f5f8" ${o}/><path d="M15.4 22.6Q32 12.4 48.6 22.6" stroke="#3a86a6" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M26 7Q25 13 24 18M32 5.6V15M38 7Q39 13 40 18" stroke="#9ab0bf" stroke-width=".8" fill="none"/>`;
+  if(h==='fem2')s+=`<ellipse cx="32" cy="8.4" rx="8.4" ry="5.6" fill="${hair}" ${o}/><path d="M17.6 13.4L47 5" stroke="${gold}" stroke-width="1.8" stroke-linecap="round"/><circle cx="47.4" cy="4.8" r="2" fill="#e23a2a" ${o}/><path d="M32 17.6l2.2 2.4-2.2 2.4-2.2-2.4Z" fill="${gold}" stroke="${ln}" stroke-width=".6"/>`;
+  return s+`<rect x=".5" y=".5" width="63" height="63" fill="none" stroke="#000" stroke-opacity=".3"/></svg>`}
 
 /* ---------- 工具 ---------- */
 let G=null,speed=1,logs=[];
@@ -461,11 +576,11 @@ async function askCard(p,kind,msg,opt){          // 要 p 打出一张 kind（sh
   if(p.ai||HL){c=ok.find(x=>x.k===kind);if(!c){const alt=ok.filter(x=>x.k!=='yao'&&x.k!=='wuxie'&&!(opt&&opt.soft&&VAL[x.k]>4)).sort((a,b)=>VAL[a.k]-VAL[b.k]);c=alt[0]||null}}
   else{c=await UI.askCard(p,ok,msg,kind);if(c==='nomore'){wxSkip=wxCur;c=null}}
   if(c){rm(p.hand,c);UI.render()}return c}
-async function flipCard(who,cap){if(!G.deck.length&&G.disc.length){G.deck=shuffle(G.disc);G.disc=[]}const j=G.deck.pop();if(!j)return null;G.disc.push(j);await UI.show([j],650,who,cap);return j}
+async function flipCard(who,cap){snd('judge');if(!G.deck.length&&G.disc.length){G.deck=shuffle(G.disc);G.disc=[]}const j=G.deck.pop();if(!j)return null;G.disc.push(j);await UI.show([j],650,who,cap);return j}
 async function needDodge(tgt,src,msg,pierce){  // tgt 需要一张闪：玉如意 → 手牌
   if(tgt.eq.a&&tgt.eq.a.k==='yuruyi'&&!pierce){const j=await flipCard(tgt,'玉如意 判定');if(j){const ok=red(j);log(`${tag(tgt)} 的玉如意判定 ${pt(j)}，${ok?'<em>红色，算作一张闪</em>':'没有生效'}`);if(ok)return true}}
   const c=await askCard(tgt,'shan',msg);if(!c)return false;
-  toDisc(c);log(`${tag(tgt)} 打出 ${cn(c)}${c.k!=='shan'?'（当闪）':''}`);await UI.show([c],650,tgt,nm(tgt)+' 打出');
+  toDisc(c);snd('dodge');log(`${tag(tgt)} 打出 ${cn(c)}${c.k!=='shan'?'（当闪）':''}`);await UI.show([c],650,tgt,nm(tgt)+' 打出');
   if(roll(tgt,'s_lingshan'))draw(tgt,1);return true}
 async function heal(p,n){if(p.dead||p.hp>=p.max)return;p.hp=Math.min(p.max,p.hp+n);UI.fx(p,'+'+n,'h','heal');UI.render();await sleep(300)}
 let curCards=null;
@@ -489,7 +604,7 @@ async function dying(p,src){
   log(`${tag(p)} 濒死`);
   const order=[p,...G.ps.slice(p.id+1).concat(G.ps.slice(0,p.id)).filter(q=>!q.dead&&q.team===p.team)];
   for(const q of order){while(p.hp<=0){const c=await askCard(q,'yao',q===p?'你濒死了，要用【药】吗':`${nm(p)} 濒死，要用【药】救吗`);if(!c)break;toDisc(c);p.hp++;log(`${tag(q)} 用 ${cn(c)} 救了 ${tag(p)}`);UI.fx(p,'+1','h','heal');UI.render();await UI.show([c],650,q,nm(q)+' 救 '+nm(p))}if(p.hp>0)return}
-  p.dead=true;toDisc(p.hand);toDisc(SL.map(z=>p.eq[z]));toDisc(p.judge);p.hand=[];p.eq={};p.judge=[];log(`${tag(p)} <em>阵亡</em>`);UI.render();await sleep(800);
+  p.dead=true;toDisc(p.hand);toDisc(SL.map(z=>p.eq[z]));toDisc(p.judge);p.hand=[];p.eq={};p.judge=[];snd('die');log(`${tag(p)} <em>阵亡</em>`);UI.render();await sleep(800);
   if(!mates(p).length){G.over=p.team===0?'lose':'win';return}
   if(src&&src.team!==p.team&&!src.dead){log(`${tag(src)} 击倒对手，摸两张牌`);draw(src,2)}
 }
@@ -542,7 +657,7 @@ async function wuxieOK(src,c,tgt){                              // 这张锦囊�
       else x=await askCard(q,'wuxie',`${nm(src)} 对 ${nm(tgt)} 使用【${CARD[c.k].n}】，要打出【无懈可击】吗`);
       if(G.over)return false;
       if(!x){skip.add(q.id);continue}
-      toDisc(x);on=!on;n++;log(`${tag(q)} 打出 ${cn(x)}，【${CARD[c.k].n}】${on?'重新生效':'被抵消'}`);await UI.show([x],700,q,nm(q)+' 无懈可击');if(has(q,'m_miaoji')){mainFx(q,'m_miaoji');draw(q,1)}skip.clear();again=true;break}}
+      toDisc(x);on=!on;n++;snd('wuxie');log(`${tag(q)} 打出 ${cn(x)}，【${CARD[c.k].n}】${on?'重新生效':'被抵消'}`);await UI.show([x],700,q,nm(q)+' 无懈可击');if(has(q,'m_miaoji')){mainFx(q,'m_miaoji');draw(q,1)}skip.clear();again=true;break}}
   return on}
 async function judgePhase(p){                                  // 回合开始：依次判定贴在身上的延时锦囊；返回 true = 跳过出牌阶段
   let skip=false;
@@ -619,7 +734,7 @@ const handLimit=p=>Math.max(0,p.hp);
 const virt=pr=>({id:-pr[0].id-1,k:'sha',s:red(pr[0])&&red(pr[1])?1:0,r:pr[0].r,virt:1});   // 芦叶枪：两张牌合成的一张杀
 async function act(p,a){if(!(a.type==='luye'||a.as==='sha'||a.card&&(a.card.k==='wanjian'||a.card.k==='langyan')))await UI.endPile();if(a.type==='luye')return useCard(p,virt(a.pair),a.tgts,'sha',a.pair);if(a.sk)return useSkill(p,a);return useCard(p,a.card,a.tgts,a.as)}
 async function turn(p){
-  p.f={};save();UI.render();log(`—— ${tag(p)} 的回合 ——`);await sleep(350);
+  p.f={};save();UI.render();if(p.id===0)snd('turn');log(`—— ${tag(p)} 的回合 ——`);await sleep(350);
   const skip=await judgePhase(p);if(G.over||p.dead)return;
   let n=2;if(roll(p,'s_tanshou'))n++;
   draw(p,n);await sleep(350);
@@ -674,21 +789,53 @@ function aiPick(p){
 /* ---------- 开局 / 存档 ---------- */
 const K_RUN='arcade-kill-run3',K_LO='arcade-kill-loadout',K_ST='arcade-kill-stats';
 const jget=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}},jset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let LO=jget(K_LO,{hero:'yangyanzhao',main:[],sub:[]});if(!HERO[LO.hero])LO.hero='yangyanzhao';LO.main=(LO.main||[]).filter(k=>MAIN[k]&&k!==HERO[LO.hero].inn).slice(0,2);LO.sub=(LO.sub||[]).filter(k=>SUB[k]).slice(0,2);
+let LO=jget(K_LO,{hero:'yangyanzhao',main:[],sub:[]});if(!HERO[LO.hero])LO.hero='yangyanzhao';LO.main=(LO.main||[]).filter(k=>MAIN[k]&&k!==HERO[LO.hero].inn).slice(0,2);LO.sub=(LO.sub||[]).filter(k=>SUB[k]).slice(0,2);LO.cust=LO.cust||{};
 function mkPlayer(id,hero,main,sub){const p={id,team:id%2,hero,main,sub,ai:id!==0,hand:[],eq:{},judge:[],f:{},dead:false};p.max=p.hp=HERO[hero].hp;return p}
 function newGame(lo){
   let id=0;const deck=[];for(const k in CARD)for(let i=0;i<CARD[k].num;i++){deck.push({id,k,s:k==='shan'||k==='yao'?(i%2?3:1):id%4,r:1+(id*7)%13});id++}
-  const pool=shuffle(Object.keys(HERO).filter(h=>h!==lo.hero));
+  const cu=lo.cust||{},pick={},used=new Set([lo.hero]);
+  for(let i=1;i<6;i++){const h=cu[i]&&cu[i].hero;if(h&&HERO[h]&&!used.has(h)){used.add(h);pick[i]=h}}
+  const pool=shuffle(Object.keys(HERO).filter(h=>!used.has(h)));
+  const seals=(want,def,inn,tbl)=>[...new Set([...(want||[]).filter(k=>tbl[k]),...def])].filter(k=>k!==inn).slice(0,2);
   G={ps:[],deck:shuffle(deck),disc:[],turn:0,round:1,over:null};
-  for(let i=0;i<6;i++){const h=i?pool[i-1]:lo.hero;G.ps.push(i?mkPlayer(i,h,HERO[h].main.slice(),HERO[h].sub.slice()):mkPlayer(0,h,lo.main.slice(),lo.sub.slice()))}
+  for(let i=0;i<6;i++){const h=i?(pick[i]||pool.pop()):lo.hero,c=cu[i]||{};G.ps.push(i?mkPlayer(i,h,seals(c.main,HERO[h].main,HERO[h].inn,MAIN),seals(c.sub,HERO[h].sub,null,SUB)):mkPlayer(0,h,lo.main.slice(),lo.sub.slice()))}
   for(const p of G.ps)for(let i=0;i<4;i++)p.hand.push(G.deck.pop());
   logs=[];return G}
 function save(){if(!HL&&G&&!G.over)jset(K_RUN,G)}             // 每个回合开始时存一次；重开后从这个回合的开头继续
 function finish(){
   try{localStorage.removeItem(K_RUN)}catch(e){}
-  if(HL)return;const st=jget(K_ST,{w:0,l:0});if(G.over==='win')st.w++;else st.l++;jset(K_ST,st);UI.end(st)}
+  if(HL)return;snd(G.over==='win'?'win':'lose');const st=jget(K_ST,{w:0,l:0});if(G.over==='win')st.w++;else st.l++;jset(K_ST,st);UI.end(st)}
 
 /* ---------- 界面 ---------- */
+/* ---------- 音效：全部用 WebAudio 现场合成，没有音频文件 ---------- */
+let sndOn=jget('arcade-kill-snd',1)!==0,AC=null,MG=null,NB=null;
+function snd(n){if(HL||!sndOn)return;try{
+  if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.gain.value=.5;MG.connect(AC.destination);NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  if(AC.state==='suspended')AC.resume();const t0=AC.currentTime;
+  const tone=(f,dur,type,v,to,dl)=>{const o=AC.createOscillator(),g=AC.createGain(),t=t0+(dl||0);o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);g.gain.setValueAtTime(v||.2,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(MG);o.start(t);o.stop(t+dur+.02)};
+  const noise=(dur,v,ft,f0,f1,dl)=>{const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain(),t=t0+(dl||0);s.buffer=NB;f.type=ft;f.frequency.setValueAtTime(f0,t);if(f1)f.frequency.exponentialRampToValueAtTime(f1,t+dur);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(f);f.connect(g);g.connect(MG);s.start(t);s.stop(t+dur+.02)};
+  const arp=(fs,type,v,gap)=>fs.forEach((f,i)=>tone(f,.28,type,v,0,i*gap));
+  switch(n){
+   case'tick':tone(760,.04,'square',.05);break;
+   case'card':noise(.06,.18,'highpass',2500);tone(260,.09,'triangle',.18,120);break;
+   case'draw':noise(.05,.12,'highpass',3500);tone(900,.04,'sine',.05);break;
+   case'slash':noise(.2,.3,'bandpass',500,4000);tone(1100,.16,'sawtooth',.08,300);break;
+   case'clash':noise(.14,.25,'bandpass',900,3500);noise(.14,.25,'bandpass',900,3500,.15);tone(1500,.1,'triangle',.1,0,.02);tone(1800,.1,'triangle',.1,0,.17);break;
+   case'arrows':for(let i=0;i<5;i++)noise(.1,.18,'bandpass',1500,5000,i*.06);break;
+   case'fire':noise(.5,.3,'lowpass',1800,300);tone(180,.4,'sawtooth',.06,70);break;
+   case'grab':tone(380,.15,'triangle',.15,760);noise(.08,.12,'highpass',3000,0,.1);break;
+   case'magic':tone(520,.35,'sine',.14,1040);tone(780,.35,'sine',.08,1560,.05);break;
+   case'dodge':noise(.14,.18,'highpass',2000,6000);tone(500,.12,'sine',.1,1100);break;
+   case'hit':tone(170,.28,'square',.28,45);noise(.16,.35,'lowpass',1500,150);break;
+   case'heal':arp([523,659,784,1047],'sine',.14,.08);break;
+   case'equip':tone(1300,.09,'triangle',.14);tone(1950,.16,'triangle',.1,0,.05);noise(.05,.1,'highpass',4000);break;
+   case'wuxie':tone(110,.9,'sine',.3);tone(220,.7,'sine',.15);tone(330,.5,'triangle',.06);break;
+   case'judge':tone(700,.06,'square',.08);tone(1050,.12,'square',.08,0,.07);break;
+   case'die':tone(320,.7,'sawtooth',.2,50);noise(.5,.2,'lowpass',1000,100);break;
+   case'turn':tone(880,.35,'sine',.16);tone(1320,.3,'sine',.07,0,.06);break;
+   case'win':arp([523,659,784,1047,1319],'triangle',.18,.12);break;
+   case'lose':arp([392,330,262,196],'sawtooth',.1,.2);break}
+ }catch(e){}}
 let ui={mode:'idle'},fresh=new Set(),pile=false,wg=null;
 let srcRect=null,showing=false,lastBan='';
 const rectOf=e=>e&&e.getBoundingClientRect?e.getBoundingClientRect():e;
@@ -737,16 +884,16 @@ const cardHTML=(c,cls)=>{const d=CARD[c.k];return`<button class="${cardCls(c,cls
 const rank=c=>RANK[c.r];
 const UI={
   log(){if(HL)return;$('log').innerHTML=logs.slice(-4).map(t=>`<div>${t}</div>`).join('')},
-  fx(p,txt,cls,anim){if(HL)return;const el=$('pl'+p.id);if(!el)return;const s=document.createElement('span');s.className='float '+cls;s.textContent=txt;s.style.top=6+el.querySelectorAll('.float').length*20+'px';el.append(s);setTimeout(()=>s.remove(),1100);
+  fx(p,txt,cls,anim){if(HL)return;if(anim==='hit')snd('hit');else if(anim==='heal')snd('heal');const el=$('pl'+p.id);if(!el)return;const s=document.createElement('span');s.className='float '+cls;s.textContent=txt;s.style.top=6+el.querySelectorAll('.float').length*20+'px';el.append(s);setTimeout(()=>s.remove(),1100);
     if(anim==='hit'){const f=document.createElement('div');f.className='hitfx';f.innerHTML='<i class="s1"></i><i class="s2"></i><i class="rg"></i>';el.append(f);setTimeout(()=>f.remove(),900);const g=$('game');g.classList.remove('quake');void g.offsetWidth;g.classList.add('quake')}
     if(anim){el.classList.remove('hit','heal');void el.offsetWidth;el.classList.add(anim);setTimeout(()=>el.classList.remove(anim),900);if(anim==='hit'&&p.id===0){const g=$('game');g.classList.remove('hurt');void g.offsetWidth;g.classList.add('hurt')}}},
-  drawFx(p,n){if(HL||!n)return;const to=$('pl'+p.id);for(let i=0;i<Math.min(n,5);i++){if(p.id)fly($('deck'),to,'<i class="back"></i>',360*speed,i*90*speed)}
+  drawFx(p,n){if(HL||!n)return;snd('draw');const to=$('pl'+p.id);for(let i=0;i<Math.min(n,5);i++){if(p.id)fly($('deck'),to,'<i class="back"></i>',360*speed,i*90*speed)}
     if(to){const hc=to.querySelector('.hcn');if(hc){hc.classList.remove('bump');void hc.offsetWidth;hc.classList.add('bump')}}},
   aim(ts){if(HL||!ts)return;for(const t of ts){const el=$('pl'+t.id);if(el){el.classList.add('aim');setTimeout(()=>el.classList.remove('aim'),1000)}}},
   startPile(){if(!HL)pile=true},
   async endPile(){if(HL||!pile)return;pile=false;await UI.clearShow()},
   async show(cs,ms,who,cap,keep){                          // 牌从出牌人那里划弧线飞到中央，亮出，停一下，再飞进弃牌堆
-    if(HL)return;const sh=$('show');showing=true;
+    if(HL)return;const sh=$('show');showing=true;snd('card');
     const cont=pile?sh.querySelector('.cs'):null;let els;
     if(cont){const w=sh.querySelector('.who');w.className='who '+(who?(who.team?'e':'a'):'');w.innerHTML=cap||'';const n0=cont.children.length;cont.insertAdjacentHTML('beforeend',cs.map(c=>cardHTML(c,'big')).join(''));const n=cont.children.length;cont.className='cs'+szc(n);els=[...cont.children].slice(n0)}
     else{sh.innerHTML=`<div class="who ${who?(who.team?'e':'a'):''}">${cap||''}</div><div class="cs${szc(cs.length)}">${cs.map(c=>cardHTML(c,'big')).join('')}</div>`;els=[...sh.querySelectorAll('.cs .card')]}
@@ -763,7 +910,7 @@ const UI={
     els.forEach(e=>e.animate([{opacity:1,transform:'none'},{opacity:0,transform:'scale(.92)'}],{duration:180*speed,easing:'ease-out',fill:'forwards'}));
     if(els.length)await sleep(180);showing=false;$('show').innerHTML='';lastBan='';UI.render()},
   async proj(k,p,tgts){                                    // 牌的效果飞向目标：杀飞剑、万箭齐发飞箭雨……落地炸出光环
-    if(HL)return;const d=CARD[k];let ts=tgts;
+    if(HL)return;const d=CARD[k];let ts=tgts;snd(({sha:'slash',juedou:'clash',wanjian:'arrows',langyan:'fire',tannang:'grab',fudi:'grab',jiedao:'magic',huadi:'magic'})[k]||(d.t==='equip'?'equip':''));
     if(k==='wanjian'||k==='langyan')ts=others(p);
     else if(d.t==='equip')ts=[p];
     else if(k==='jiedao')ts=[tgts[0]];else if(!['sha','juedou','tannang','fudi','huadi'].includes(k))return;
@@ -784,9 +931,9 @@ const UI={
     for(const p of G.ps){const el=$('pl'+p.id),h=HERO[p.hero];if(!el)continue;const me=p.id===0,hp=Math.max(0,p.hp);
       el.className='pl '+(p.team?'e':'a')+(me?' me':'')+(p.dead?' dead':'')+(G.turn===p.id&&!p.dead?' act':'')+(ui.tgts&&ui.tgts.includes(p.id)?(ui.picked&&ui.picked.includes(p.id)?' pk':' tg'):'');
       const fs=el.querySelector('.face');
-      if(!fs||fs.dataset.h!==p.hero)el.innerHTML=`<div class="face" data-h="${p.hero}">${face(p.hero)}</div><div class="nmv">${h.n}</div><span class="tm">${me?'你':p.team?'敌':'友'}</span><div class="eqs"></div><div class="bar"><b class="hcn"></b><span class="sls"></span><b class="hpn"></b></div>`;
+      if(!fs||fs.dataset.h!==p.hero)el.innerHTML=`<div class="face" data-h="${p.hero}">${face(p.hero)}</div><div class="nmv">${h.n}</div><span class="tm">${me?'你':p.team?'敌':'友'}</span><div class="eqs"></div><div class="hpb"></div><div class="bar"><b class="hcn"></b><span class="sls"></span><b class="hpn"></b></div>`;
       el.querySelector('.hcn').textContent=p.hand.length;
-      const hb=el.querySelector('.hpn');hb.className='hpn '+(hp*2<=p.max?(hp*4<=p.max?'low':'mid'):'');hb.textContent=hp;
+      const hb=el.querySelector('.hpn'),st=hp*2<=p.max?(hp*4<=p.max?'low':'mid'):'';hb.className='hpn '+st;hb.textContent=hp;const pb=el.querySelector('.hpb');pb.className='hpb '+st;pb.innerHTML=Array.from({length:p.max},(_,i)=>`<s class="${i<hp?'on':''}"></s>`).join('');
       el.querySelector('.eqs').innerHTML=['ho','hd','a','w'].map(z=>{const c=p.eq[z],u={w:'武',a:'衣',hd:'御',ho:'攻'}[z];return c?`<q data-e="${z}" class="${ui.multi&&ui.multi.includes(c)?'pick':''}"><u>${u}</u>${CARD[c.k].n}</q>`:`<q class="emp"><u>${u}</u></q>`}).join('')+p.judge.map(c=>`<q class="jd"><u>判</u>${CARD[c.k].n}</q>`).join('');
       el.querySelector('.sls').innerHTML=p.main.map(k=>`<i>${MAIN[k].n[0]}</i>`).join('')+p.sub.map(k=>`<i class="s">${SUB[k].n[0]}</i>`).join('')}
     const me=G.ps[0],hand=$('hand'),n=me.hand.length,w=hand.clientWidth||340,one=(hand.firstElementChild&&hand.firstElementChild.offsetWidth)||62;
@@ -872,6 +1019,7 @@ if(!HL){
     const zb=e.target.closest('#show [data-z]');if(zb&&ui.mode==='zone'){const z=zb.dataset.z;showing=false;$('show').className='';$('show').innerHTML='';lastBan='';UI.done(z);return}
     if(cb&&ui.mode==='pick'&&cb.closest('#show')){const c=ui.valid.find(x=>x.id==cb.dataset.c);if(c)UI.done(c);return}
     if(cb&&ui.mode==='give'&&cb.closest('#show')){const id=+cb.dataset.c;if(ui.sels.includes(id))rm(ui.sels,id);else ui.sels.push(id);UI.render();return}
+    if(cb&&cb.parentNode.id==='hand'&&ui.mode==='play')snd('tick');
     if(cb&&cb.parentNode.id==='hand'){const c=me.hand.find(x=>x.id==cb.dataset.c);if(!c)return;srcRect=cb.getBoundingClientRect();
       if(ui.mode==='ask'){if(ui.valid.includes(c))UI.done(c);return}
       if(ui.mode==='discard'){if(ui.multi.includes(c))rm(ui.multi,c);else if(ui.multi.length<ui.need)ui.multi.push(c);UI.render();return}
@@ -896,6 +1044,7 @@ if(!HL){
   });
   $('infoOv').onclick=e=>{if(e.target===$('infoOv')||e.target.dataset.x)$('infoOv').hidden=true};
   $('spdBtn').onclick=()=>{speed=speed===1?.45:1;$('spdBtn').textContent='速度 ×'+(speed===1?1:2);jset('arcade-kill-speed',speed)};
+  $('sndBtn').textContent=sndOn?'音效 开':'音效 关';$('sndBtn').onclick=()=>{sndOn=!sndOn;jset('arcade-kill-snd',sndOn?1:0);$('sndBtn').textContent=sndOn?'音效 开':'音效 关';snd('tick')};
   $('quitBtn').onclick=()=>{if(confirm('退出这一局？本局不计胜负。'))quit()};
   $('againBtn').onclick=()=>start(false);$('cfgBtn').onclick=()=>quit();
   $('startBtn').onclick=()=>{if(LO.main.length<2||LO.sub.length<2){toast('还要选满 2 个主印和 2 个辅印');return}start(false)};
@@ -909,12 +1058,18 @@ function setupUI(){
   const owner=k=>Object.keys(HERO).find(x=>HERO[x].inn===k);
   $('mains').innerHTML=Object.keys(MAIN).map(k=>`<button class="seal m${LO.main.includes(k)?' on':''}" data-m="${k}" ${h.inn===k?'style="opacity:.5"':''}><b>${MAIN[k].n}<i>${h.inn===k?'英雄已自带':HERO[owner(k)].n+'自带'}</i></b><span>${MAIN[k].d}</span></button>`).join('');
   $('subs').innerHTML=Object.keys(SUB).map(k=>`<button class="seal s${LO.sub.includes(k)?' on':''}" data-s="${k}"><b>${SUB[k].n}<i>Lv.${SUB_LV} · ${PCT}%</i></b><span>${SUB[k].d}</span></button>`).join('');
+  {const opt=(tbl,sel,ph)=>`<option value="">${ph}</option>`+Object.keys(tbl).map(k=>`<option value="${k}"${sel===k?' selected':''}>${tbl[k].n}</option>`).join('');
+   $('cust').innerHTML=[2,4,1,3,5].map(i=>{const c=LO.cust[i]||{};return`<div class="crow ${i%2?'e':'a'}"><b>${i%2?'敌':'友'} ${i+1}号位</b><select data-cs="${i}" data-f="hero"><option value="">随机英雄</option>${Object.keys(HERO).filter(k=>k!==LO.hero).map(k=>`<option value="${k}"${c.hero===k?' selected':''}>${HERO[k].n}</option>`).join('')}</select>`+
+     [0,1].map(j=>`<select data-cs="${i}" data-f="main" data-j="${j}">${opt(MAIN,(c.main||[])[j],'主印：默认')}</select>`).join('')+[0,1].map(j=>`<select data-cs="${i}" data-f="sub" data-j="${j}">${opt(SUB,(c.sub||[])[j],'辅印：默认')}</select>`).join('')+`</div>`}).join('')+`<button class="btn" id="custReset">全部恢复随机 / 默认</button>`}
   $('cardHelp').innerHTML=Object.keys(CARD).map(k=>`<div class="seal"><b>${CARD[k].n}<i>×${CARD[k].num}</i></b><span>${CARD[k].d}</span></div>`).join('')}
 if(!HL){
   $('setup').addEventListener('click',e=>{const b=e.target.closest('[data-h],[data-m],[data-s]');if(!b)return;const d=b.dataset;
     if(d.h)LO.hero=d.h;if(d.m&&d.m===HERO[LO.hero].inn){toast('这是'+HERO[LO.hero].n+'自带的，不用再选');return}rm(LO.main,HERO[LO.hero].inn);
     for(const[key,arr]of[[d.m,LO.main],[d.s,LO.sub]])if(key){if(arr.includes(key))rm(arr,key);else{if(arr.length>=2)arr.shift();arr.push(key)}}
     jset(K_LO,LO);setupUI()});
+  $('cust').addEventListener('change',e=>{const s=e.target.closest('select[data-cs]');if(!s)return;const i=s.dataset.cs,f=s.dataset.f,c=LO.cust[i]=LO.cust[i]||{};
+    if(f==='hero')c.hero=s.value||undefined;else{const a=c[f]=c[f]||[];a[+s.dataset.j]=s.value||undefined}jset(K_LO,LO);setupUI()});
+  $('cust').addEventListener('click',e=>{if(e.target.id==='custReset'){LO.cust={};jset(K_LO,LO);setupUI()}});
   try{localStorage.setItem('arcade-last','kill')}catch(e){}
   speed=jget('arcade-kill-speed',1)===.45?.45:1;$('spdBtn').textContent='速度 ×'+(speed===1?1:2);
   const sv=jget(K_RUN,null);
