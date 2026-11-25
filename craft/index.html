@@ -31,6 +31,8 @@ canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-acti
 #life small{font-size:11.5px;font-weight:700;text-shadow:0 1px 0 #000,1px 0 0 #000,-1px 0 0 #000,0 -1px 0 #000}
 .rbtn{position:fixed;z-index:3;right:calc(6px + env(safe-area-inset-right,0px));border-radius:10px;border:2px solid var(--slotb);background:var(--slot);padding:4px 12px;font-weight:700;box-shadow:inset 0 0 0 1px #ffffff22}
 #bagBtn{top:calc(52px + env(safe-area-inset-top,0px))}#menuBtn{top:calc(90px + env(safe-area-inset-top,0px))}
+#mini{position:fixed;z-index:3;right:calc(6px + env(safe-area-inset-right,0px));top:calc(130px + env(safe-area-inset-top,0px));width:132px;height:84px;image-rendering:pixelated;border-radius:8px;border:2px solid var(--slotb);background:#0c0c14;box-shadow:0 2px 8px #0008;cursor:pointer}
+#bigmap{width:100%;image-rendering:pixelated;border-radius:6px;background:#0c0c14;display:block}#mapOv .box{width:min(980px,100%)}
 .stick{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom,0px));width:128px;height:128px;border-radius:50%;z-index:3;background:#ffffff12;border:2px solid #ffffff3a;touch-action:none}
 .stick i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px;border-radius:50%;background:#ffffff5a;pointer-events:none}
 .stick small{position:absolute;left:0;right:0;top:-20px;text-align:center;font-size:11px;color:#fffb;text-shadow:0 1px 2px #000;pointer-events:none}
@@ -56,7 +58,8 @@ canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-acti
 @media (max-width:520px){#hot{--s:calc((100vw - 39px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px))/10)}
   #itemName{--hb:calc((100vw - 39px)/10)}
   #life{top:calc((100vw - 39px)/10 + 14px + env(safe-area-inset-top,0px))}
-  #bagBtn{top:calc((100vw - 39px)/10 + 58px + env(safe-area-inset-top,0px))}#menuBtn{top:calc((100vw - 39px)/10 + 96px + env(safe-area-inset-top,0px))}}
+  #bagBtn{top:calc((100vw - 39px)/10 + 58px + env(safe-area-inset-top,0px))}#menuBtn{top:calc((100vw - 39px)/10 + 96px + env(safe-area-inset-top,0px))}
+  #mini{top:calc((100vw - 39px)/10 + 136px + env(safe-area-inset-top,0px));width:110px;height:70px}}
 /* 手机横屏：背包左边格子、右边合成，一屏放下 */
 @media (orientation:landscape) and (max-height:560px){#bagOv .box{width:min(900px,100%);--s:min(40px,calc((100vh - 96px)/4.4))}
   .bag2{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}.bag2 h3{margin-top:0}
@@ -71,6 +74,7 @@ canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-acti
 <div id="life"><canvas id="hearts" width="55" height="11"></canvas><small id="infoV"></small></div>
 <button class="rbtn" id="bagBtn">背包</button>
 <button class="rbtn" id="menuBtn">菜单</button>
+<canvas id="mini" width="66" height="42" title="点开大地图"></canvas>
 <div class="stick" id="joyL"><small>移动</small><i></i></div>
 <div class="stick" id="joyR"><small>瞄准 · 使用</small><i></i></div>
 <button id="jump">跳</button>
@@ -86,13 +90,14 @@ canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-acti
     <div class="recs" id="recs"></div>
   </div></div>
 </div></div>
+<div class="ov" id="mapOv" hidden><div class="box"><h2>地图<button class="xb" id="mapX">✕</button></h2><canvas id="bigmap"></canvas><div class="how">白点是你，红点是怪物，粉点是床（重生点）。没去过的地方是黑的。</div></div></div>
 <div class="ov" id="menuOv" hidden><div class="box">
   <h2>方块拓荒<button class="xb" id="menuX">✕</button></h2>
   <div class="how">
     <b>手机</b>：左摇杆移动（往上推也是跳），<b>点屏幕上的格子</b>最准：拿镐点一下就自动挖完那一格，拿方块点哪放哪，点太远会自动换成够得着的格子。右摇杆朝哪推就往哪用手里的东西，推得浅用近处、推到底用远处，虚线和黄框就是要作用的格子。<br>
     <b>电脑</b>：A/D 移动，W/空格跳，S 穿过平台；鼠标指哪用哪，按住左键连续用；数字键或滚轮换物品栏，E 开背包。<br>
     <b>背包</b>：第一行就是物品栏。点一格拿起，再点另一格放下或交换。下面是合成列表，靠近工作台、熔炉才能做后面的东西。<br>
-    <b>床</b>点一下设重生点，夜里点可以睡到天亮。夜里和洞里的暗处会出怪，放上火把就不刷了。
+    <b>打怪</b>：点怪物身上或右摇杆朝着它推就会打，拿剑伤害最高（开局送一把木剑），拿镐也能打。右上角是小地图，点它看大地图。<br><b>床</b>点一下设重生点，夜里点可以睡到天亮。夜里和洞里的暗处会出怪，放上火把就不刷了。
   </div>
   <div class="btns">
     <button id="resumeBtn" style="border-color:var(--brass)">继续</button><button id="modeBtn"></button><button id="sndBtn"></button><button id="newBtn">新世界</button><a href="../index.html">‹ 大厅</a>
@@ -177,16 +182,18 @@ function genWorld(seed){
 }
 function rle(a){const o=[];for(let i=0;i<a.length;){let v=a[i],n=1;while(i+n<a.length&&a[i+n]===v&&n<255)n++;o.push(n,v);i+=n}let s='';for(let i=0;i<o.length;i+=8000)s+=String.fromCharCode.apply(null,o.slice(i,i+8000));return btoa(s)}
 function unrle(str,len){const s=atob(str),a=new Uint8Array(len);let p=0;for(let i=0;i<s.length;i+=2){const n=s.charCodeAt(i),v=s.charCodeAt(i+1);a.fill(v,p,p+n);p+=n}return a}
-const SAVE='arcade-craft-world';
-function save(){if(!S)return;try{localStorage.setItem(SAVE,JSON.stringify({v:2,S:Object.assign({},S,{mobs:[],fx:[],drops:[],mine:null}),t:rle(tiles),w:rle(walls),h:Array.from(h0)}))}catch(e){}}
+const SAVE='arcade-craft-world';let seen=null;
+function save(){if(!S)return;try{localStorage.setItem(SAVE,JSON.stringify({v:2,S:Object.assign({},S,{mobs:[],fx:[],drops:[],mine:null}),t:rle(tiles),w:rle(walls),sn:rle(seen),h:Array.from(h0)}))}catch(e){}}
 function load(){try{const d=JSON.parse(localStorage.getItem(SAVE)||'null');if(!d||!d.S||!d.t)return false;tiles=unrle(d.t,WW*WH);walls=unrle(d.w,WW*WH);h0=Uint8Array.from(d.h);S=d.S;S.mobs=[];S.fx=[];S.drops=[];S.mine=null;
   if(!Array.isArray(S.slots)){const inv=S.inv||{};S.slots=Array(NS).fill(null);S.hot=0;delete S.inv;delete S.sel;for(const k of ORDER)if(inv[k])give(k,inv[k])}   // 旧存档：背包从"物品:数量"换成格子
   S.slots=S.slots.slice(0,NS).map(q=>q&&ITEMS[q.k]&&q.n>0?q:null);while(S.slots.length<NS)S.slots.push(null);S.hot=Math.max(0,Math.min(HB-1,S.hot|0));
+  if(!S.gotSword){S.gotSword=1;if(!S.slots.some(q=>q&&ITEMS[q.k].sword))give('sword1',1)}
+  seen=d.sn?unrle(d.sn,WW*WH):new Uint8Array(WW*WH);
   Object.assign(S.p,{vx:0,vy:0,swing:0,stepV:0,coyote:0,buf:0});return true}catch(e){return false}}
 function newWorld(creative){
   const seed=Math.random()*1e9|0;genWorld(seed);const sx=WW/2|0;
   S={v:2,seed,creative:!!creative,time:DAY*.3,p:{x:sx*T+T/2,y:(h0[sx]-1)*T,vx:0,vy:0,hp:100,face:1,inv:0,walk:0,swing:0,hurtT:9,stepV:0,coyote:0,buf:0},spawn:[sx,h0[sx]-1],slots:Array(NS).fill(null),hot:0,mobs:[],fx:[],drops:[],mine:null,spawnT:4};
-  S.slots[0]={k:'pick1',n:1};
+  S.slots[0]={k:'pick1',n:1};S.slots[1]={k:'sword1',n:1};S.gotSword=1;seen=new Uint8Array(WW*WH);
   for(let dy=1;dy<=3;dy++)for(let dx=-1;dx<=1;dx++){const i=idx(sx+dx,h0[sx]-dy);if(tiles[i]!==B.air)tiles[i]=B.air}
   chunks.clear();save();
 }
@@ -269,6 +276,15 @@ function smart(dx,dy,lim){
     for(let y=cy-2;y<=cy+2;y++)for(let x=cx-2;x<=cx+2;x++)if(it.wall?canWall(x,y):canPlace(x,y,it.place)){const q=Math.hypot((x+.5)*T-ex,(y+.5)*T-ey);if(q<bd){bd=q;best={x,y}}}}
   return best||(it&&it.sword?{x:Math.floor((ox+dx*40)/T),y:Math.floor((oy+dy*40)/T)}:last);
 }
+// 瞄准的地方有没有怪：手指/鼠标点在怪身上，或者右摇杆大致朝着怪
+function aimMob(){const p=S.p,ox=p.x,oy=p.y-22,RM=3.4*T;let best=null,bd=1e9;
+  for(const m of S.mobs){if(m.dead)continue;const r=MOB[m.id].r,mx=m.x,my=m.y-r,dp=Math.hypot(mx-ox,my-oy);if(dp>RM)continue;
+    if(aim.ptr){const w=toWorld(aim.sx,aim.sy),d=Math.hypot(w.x-mx,w.y-my);if(d<r+22&&d<bd){bd=d;best=m}}
+    else if(aim.stick){const c=((mx-ox)*aim.stick.x+(my-oy)*aim.stick.y)/(dp||1);if(c>.55&&dp<bd){bd=dp;best=m}}}
+  return best}
+function melee(m){const p=S.p,k=selK(),it=k&&ITEMS[k];p.face=m.x>=p.x?1:-1;if(p.swing>0)return;
+  const dmg=it&&it.sword?it.sword:it&&it.pick?2+it.pick*2:2;p.swing=p.swingT=.28;tone('sw','triangle',700,300,.08,.12);hitMob(m,dmg,p.face);
+  if(it&&it.sword)for(const o of S.mobs){if(o===m||o.dead)continue;const dx=o.x-p.x;if(dx*p.face>-10&&Math.abs(dx)<66&&Math.abs(o.y-p.y)<64)hitMob(o,it.sword,p.face)}}
 function hitMob(m,d,dir){m.hp-=d;m.hit=.15;m.vx=dir*200;m.vy=-170;tone('hit','square',240,120,.06,.14);S.fx.push({k:'txt',x:m.x,y:m.y-30,txt:''+d,t:0,life:.6,col:'#ffb040'});if(m.hp<=0){m.dead=true;for(let i=0;i<8;i++)S.fx.push({k:'p',x:m.x,y:m.y-12,vx:(Math.random()-.5)*220,vy:-Math.random()*200,r:2.5,t:0,life:.5,col:MOB[m.id].col})}}
 
 /* ---------- 物理 ---------- */
@@ -309,7 +325,9 @@ function step(dt){
     if(!aim.ptr.mouse)aim.lock={x:tx,y:ty};aim.tx=tx;aim.ty=ty;aim.has=true;if(aim.on)p.face=w.x>=p.x?1:-1}
   else if(aim.stick){const q=smart(aim.stick.x,aim.stick.y,T*(1.2+aim.stick.l*(REACH-1)));if(q){aim.tx=q.x;aim.ty=q.y;aim.has=true}p.face=aim.stick.x>=0?1:-1}
   else if(input.mx)p.face=input.mx>0?1:-1;
-  if(aim.on&&aim.has){const r=useAt(aim.tx,aim.ty,aim.first);aim.first=false;if(r==='done')aim.on=false}
+  const tm=aim.on?aimMob():null;
+  if(tm){melee(tm);aim.first=false;S.mine=null}
+  else if(aim.on&&aim.has){const r=useAt(aim.tx,aim.ty,aim.first);aim.first=false;if(r==='done')aim.on=false}
   if(aim.upLater){aim.upLater=false;relAim()}   // 很快的点按：至少用一次再松开
   if(aim.auto){const a=aim.auto,it=selK()&&ITEMS[selK()];
     if(aim.on||aim.stick||!it||!it.pick||!inReach(a.x,a.y)||(a.wall?!walls[idx(a.x,a.y)]||tAt(a.x,a.y):!tAt(a.x,a.y)))aim.auto=null;
@@ -552,13 +570,29 @@ function buildBag(){
   $('palWrap').hidden=!S.creative;if(S.creative){const pal=$('pal');pal.innerHTML='';for(const k of ORDER){const b=slotEl({k,n:1});b.onclick=()=>{give(k,isTool(k)?1:99);toast('拿了 '+ITEMS[k].n);buildUI()};pal.append(b)}}
 }
 const HEART=['.XX.XX.','XXXXXXX','XXXXXXX','XXXXXXX','.XXXXX.','..XXX..','...X...'];
-function syncHUD(){const p=S.p,py=p.y/T|0,x=Math.max(0,Math.min(WW-1,p.x/T|0)),dep=py-h0[x],g=$('hearts').getContext('2d');g.clearRect(0,0,55,11);
+const MCOL={dirt:'#8a5a34',grass:'#5cb040',stone:'#7a7a86',sand:'#e0c878',log:'#7a5230',plank:'#b08850',brick:'#a8503e',glass:'#bfe6f0',coal:'#34343c',iron:'#d0946a',gold:'#f4c440',crys:'#c070f0',bedrock:'#1a1a1e',bench:'#d0a060',furnace:'#9a9aa6',torch:'#ffd040',door:'#9a6a3a',dooro:'#9a6a3a',plat:'#a07a48',bed:'#ff6aa0',trunk:'#7a5230',leaf:'#3e8a36',table:'#c09060',chair:'#c09060',lamp:'#ffe080',flower:'#e86aa0'};
+const TRGB=TILE.map(d=>{const c=MCOL[d.k];return c?[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]:null});
+function reveal(){const p=S.p,cx=p.x/T|0,cy=(p.y-20)/T|0,R=13;for(let y=Math.max(0,cy-R);y<=Math.min(WH-1,cy+R);y++)for(let x=Math.max(0,cx-R);x<=Math.min(WW-1,cx+R);x++)if((x-cx)*(x-cx)+(y-cy)*(y-cy)<=R*R)seen[idx(x,y)]=1;
+  for(let x=Math.max(0,cx-40);x<=Math.min(WW-1,cx+40);x++)for(let y=0;y<=h0[x]&&y<WH;y++)seen[idx(x,y)]=1}   // 地表一大片看得到
+function paintMap(cv2,x0,y0,w,h){const g=cv2.getContext('2d'),im=g.createImageData(w,h),a=im.data;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const X=x0+x,Y=y0+y,o=(y*w+x)*4;let c;
+    if(X<0||Y<0||X>=WW||Y>=WH||!seen[idx(X,Y)])c=[12,12,20];
+    else{const tt=tiles[idx(X,Y)];c=TRGB[tt]||(Y<h0[X]?[120,180,236]:walls[idx(X,Y)]?[92,66,48]:[40,32,48])}
+    a[o]=c[0];a[o+1]=c[1];a[o+2]=c[2];a[o+3]=255}
+  g.putImageData(im,0,0);const dot=(x,y,col,s)=>{g.fillStyle=col;g.fillRect(Math.round(x-x0-s/2),Math.round(y-y0-s/2),s,s)};
+  const s=w>100?3:2;if(S.spawn)dot(S.spawn[0]+.5,S.spawn[1]+.5,'#ff6aa0',s);
+  for(const m of S.mobs)if(seen[idx(Math.max(0,Math.min(WW-1,m.x/T|0)),Math.max(0,Math.min(WH-1,(m.y-10)/T|0)))])dot(m.x/T,(m.y-10)/T,'#ff3a30',s);
+  g.fillStyle='#000';g.fillRect(Math.round(S.p.x/T-x0-s/2-1),Math.round((S.p.y-30)/T-y0-s/2-1),s+2,s+2);dot(S.p.x/T,(S.p.y-30)/T,'#fff',s)}
+function drawMini(){if(!seen)seen=new Uint8Array(WW*WH);reveal();const mc=$('mini');paintMap(mc,Math.round(S.p.x/T-mc.width/2),Math.round((S.p.y-30)/T-mc.height/2),mc.width,mc.height);
+  if(!$('mapOv').hidden){const bm=$('bigmap');if(bm.width!==WW){bm.width=WW;bm.height=WH}paintMap(bm,0,0,WW,WH)}}
+function syncHUD(){drawMini();const p=S.p,py=p.y/T|0,x=Math.max(0,Math.min(WW-1,p.x/T|0)),dep=py-h0[x],g=$('hearts').getContext('2d');g.clearRect(0,0,55,11);
   for(let i=0;i<5;i++){const f=Math.max(0,Math.min(1,(p.hp-i*20)/20));for(let yy=0;yy<7;yy++)for(let xx=0;xx<7;xx++)if(HEART[yy][xx]==='X'){g.fillStyle='#000';g.fillRect(i*11+xx+1,yy+2,2,2)}
     for(let yy=0;yy<7;yy++)for(let xx=0;xx<7;xx++)if(HEART[yy][xx]==='X'){g.fillStyle=xx/7<f?(yy<2&&xx<3?'#ff9a8e':'#e8443a'):'#4a3038';g.fillRect(i*11+xx+1,yy+1,1,1)}}
   $('infoV').textContent=(S.creative?'创造 · ':'')+(dayK()>.5?'白天':'夜晚')+' · '+(dep>3?'地下 '+dep+' 格':'地表')}
 function setPaused(v){paused=v;$('menuOv').hidden=!v;if(v){$('modeBtn').textContent=S.creative?'切到生存模式':'切到创造模式';$('sndBtn').textContent='音效 '+(AU.on?'开':'关')}}
 function openBag(v){$('bagOv').hidden=!v;held=null;if(v)buildBag()}
 $('menuBtn').onclick=()=>{audioInit();setPaused(true)};$('menuX').onclick=$('resumeBtn').onclick=()=>{audioInit();setPaused(false)};
+$('mini').addEventListener('pointerdown',e=>{e.stopPropagation();audioInit();$('mapOv').hidden=false;drawMini()});$('mapX').onclick=()=>{$('mapOv').hidden=true};$('mapOv').addEventListener('pointerdown',e=>{if(e.target===$('mapOv'))$('mapOv').hidden=true});
 $('bagBtn').onclick=()=>{audioInit();openBag(true)};$('bagX').onclick=()=>openBag(false);$('bagOv').addEventListener('pointerdown',e=>{if(e.target===$('bagOv'))openBag(false)});
 $('trashBtn').onclick=()=>{if(held!=null){S.slots[held]=null;held=null;buildUI()}else toast('先点一格拿起物品，再点丢弃')};
 $('modeBtn').onclick=()=>{S.creative=!S.creative;S.mobs=[];uiDirty=true;setPaused(true);toast(S.creative?'创造模式：物品无限、秒挖、能飞、没有怪物':'生存模式')};
@@ -568,7 +602,7 @@ $('newBtn').onclick=()=>{if(confirm('生成一个全新的世界？现在这个�
 /* ---------- 输入 ---------- */
 const keys={};let joyX=0,joyDown=false,joyUp=false,jumpHeld=false;
 function keyMove(){input.mx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)||joyX;input.jump=!!(keys.w||keys[' ']||keys.arrowup)||jumpHeld||joyUp;input.down=!!(keys.s||keys.arrowdown)||joyDown}
-addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k===' ')e.preventDefault();keys[k]=true;keyMove();if(k==='e'||k==='i')openBag($('bagOv').hidden);if(k==='escape'){if(!$('bagOv').hidden)openBag(false);else setPaused(!paused)}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k===' ')e.preventDefault();keys[k]=true;keyMove();if(k==='e'||k==='i')openBag($('bagOv').hidden);if(k==='m'&&S){$('mapOv').hidden=!$('mapOv').hidden;drawMini()}if(k==='escape'){if(!$('bagOv').hidden)openBag(false);else setPaused(!paused)}
   if(k>='0'&&k<='9'&&S)selectHot((+k+9)%10)});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;keyMove()});
 addEventListener('wheel',e=>{if(S&&$('bagOv').hidden&&!paused)selectHot((S.hot+(e.deltaY>0?1:HB-1))%HB)},{passive:true});
