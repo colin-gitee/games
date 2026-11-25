@@ -433,6 +433,14 @@ const CARD={
  longlin:{n:'龙鳞刀',t:'equip',slot:'w',ic:'🔪',num:1,d:'武器（攻击范围 2）：【杀】命中后，可以改为弃掉对方 2 张手牌，若如此则不造成伤害。'},
  luye:{n:'芦叶枪',t:'equip',slot:'w',ic:'🔱',num:1,d:'武器（攻击范围 3）：出牌阶段，可以把任意两张手牌当一张【杀】使用。'},
 };
+// 牌堆：按花色、点数一张张列出来（♠ ♥ ♣ ♦，A–K）。改牌只改这里，每种牌的张数会自动算
+const DECK_TXT={
+ 0:['hufu juedou','sha yuruyi','fudi sha','fudi sha','fangma sha','huadi sha','langyan sha','sha sha','sha sha','sha sha','sha sha','jiedao sha','jiedao wuxie'],
+ 1:['juedou hufu','shan shan','tannang yao','tannang yao','bayegong fangma','sha yao','wuzhong yao','wuzhong yao','wuzhong yao','sha sha','sha wuzhong','langya wuxie yao','jinma shan'],
+ 2:['shoupeng juedou','yuruyi longlin','tannang fudi','tannang fudi','fangma panlong','yuchang huadi','langyan sha','sha sha','sha sha','sha sha','tannang wuxie','fudi luye','langyan jinma'],
+ 3:['wanjian xiuyang','shan shan','shan wugu','shan wugu','bolang shan','huadi shan','sha shan','sha shan','sha shan','shan shan','shan wuxie','fudi shoupeng yao','jinma sha']};
+const DECK=[];for(const s in DECK_TXT)DECK_TXT[s].forEach((row,i)=>row.split(' ').forEach(k=>DECK.push({k,s:+s,r:i+1})));
+for(const k in CARD)CARD[k].num=DECK.filter(c=>c.k===k).length;
 const HERO={
  xiangyu:{n:'项羽',hp:8,c:'#b8442e',sk:'霸王',d:'你的【杀】需要两张【闪】才能抵消。',main:['m_tianlang','m_fanji'],sub:['s_qianghua','s_lianji']},
  liubang:{n:'刘邦',hp:8,c:'#c9962e',inn:'m_yuren',main:['m_miaoji','m_fanji'],sub:['s_shouhu','s_tanshou']},
@@ -443,6 +451,8 @@ const HERO={
  yuji:{n:'虞姬',hp:7,c:'#d86a6a',sk:'舍身',d:'每受到 1 点伤害摸 2 张牌，然后可以把任意数量的手牌交给任意英雄。',main:['m_aojian','m_xiadan'],sub:['s_lingshan','s_shangxie']},
  qinqiong:{n:'秦琼',hp:8,c:'#a83a3a',inn:'m_fanji',main:['m_aojian','m_miaoji'],sub:['s_qianghua','s_xixue']},
  zhuge:{n:'诸葛亮',hp:7,c:'#3a8aa8',inn:'m_miaoji',main:['m_yuren','m_fanji'],sub:['s_shouhu','s_tanshou']},
+ shangguan:{n:'上官婉儿',hp:7,c:'#b85a9a',inn:['m_qicuo','m_hongmei'],main:['m_miaoji','m_aojian'],sub:['s_lingshan','s_tanshou']},
+ lianpo:{n:'廉颇',hp:8,c:'#8a6a3a',inn:'m_fujing',main:['m_fanji','m_tianlang'],sub:['s_shouhu','s_qianghua']},
 };
 // 主印：必定生效。辅印：按几率触发，等级 1–50，50 级 79%。
 const MAIN={
@@ -452,6 +462,9 @@ const MAIN={
  m_yuren:{n:'驭人印',d:'出牌阶段限一次：弃掉任意张牌（手牌和装备区都行），再摸同样多的牌。'},
  m_tianlang:{n:'天狼印',d:'出【杀】不限次数。'},
  m_aojian:{n:'傲剑印',d:'红色的牌都可以当【杀】使用或打出。'},
+ m_qicuo:{n:'绮错印',d:'每回合限一次（谁的回合都行）：有角色的牌被弃置后（弃牌阶段、驭人换牌、被拆等），你可以选一项：令他立即结束回合（只在他自己的出牌阶段有效）；或把弃掉的牌中的一张交还给他。'},
+ m_hongmei:{n:'红梅印',d:'受到伤害后，你可以展示一张手牌，然后选任意名其他角色：他们各自选择展示一张同花色的手牌，或弃置一张手牌。'},
+ m_fujing:{n:'负荆印',d:'出牌阶段可以主动失去 1 点体力，立即摸 2 张牌（不限次数，体力只剩 1 时不能用）。'},
 };
 const SUB={
  s_jingzhun:{n:'精准印',d:'你的【杀】强制命中，对方不能出【闪】。'},
@@ -464,7 +477,8 @@ const SUB={
  s_lingshan:{n:'轻灵印',d:'打出【闪】后摸一张牌。'},
  s_shouhu:{n:'重甲印',d:'一次受到 2 点以上伤害时，伤害 -1。'},
 };
-for(const k in HERO){const h=HERO[k];if(h.inn){h.sk=MAIN[h.inn].n.slice(0,2);h.d=MAIN[h.inn].d}}   // 六个主印各有一位英雄自带：自带的不占印位
+const innOf=h=>[].concat(HERO[h]&&HERO[h].inn||[]);   // 英雄自带的主印（可以有两个）
+for(const k in HERO){const h=HERO[k],I=innOf(k);if(I.length){h.sk=I.map(x=>MAIN[x].n.slice(0,2)).join('·');h.d=I.length>1?I.map(x=>`【${MAIN[x].n.slice(0,2)}】${MAIN[x].d}`).join(' '):MAIN[I[0]].d}}   // 六个主印各有一位英雄自带：自带的不占印位
 const SUB_MAX=50,subChance=lv=>Math.round(30+lv*.98)/100;   // 1 级 31%，50 级 79%
 const SUB_LV=SUB_MAX,PCT=Math.round(subChance(SUB_LV)*100);  // 所有辅印直接满级
 
@@ -479,6 +493,8 @@ const FACE={
  yuji:{f:1,hat:'fem2',robe:'#b83a4a',loose:1},
  qinqiong:{hat:'helm',hc:'#b8862a',robe:'#7a1c1c',beard:'mus'},
  zhuge:{hat:'jin',robe:'#d8e4ea',beard:'long'},
+ shangguan:{f:1,hat:'fem1',robe:'#7a4aa0',loose:1,eye:'#6a4aa0'},
+ lianpo:{hat:'helm',hc:'#6a5a3a',plume:'#c8a040',robe:'#5a3a1a',beard:'long',bc:'#ececf2',old:1,brow:1},
 };
 const tone=(hex,t)=>{const v=parseInt(hex.slice(1),16),m=t<0?0:255,k=Math.abs(t);return'#'+[v>>16,v>>8&255,v&255].map(x=>Math.round(x+(m-x)*k).toString(16).padStart(2,'0')).join('')};
 let faceN=0;
@@ -514,6 +530,8 @@ function face(k0){                                          // Q版卡通头像�
   if(h==='scholar')s+=`<path d="M15.6 24Q15 10 32 10Q49 10 48.4 24Q32 16.6 15.6 24Z" fill="#26346a" ${o}/><path d="M24.6 11.4Q32 .8 39.4 11.4Z" fill="#26346a" ${o}/><path d="M47.6 21.4Q57 20 59 30M16.4 21.4Q7 20 5 30" stroke="#26346a" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="32" cy="6.4" r="1.4" fill="${gold}"/>`;
   if(h==='band')s+=`<circle cx="32" cy="9" r="4.6" fill="${hair}" ${o}/><path d="M14.6 22.4Q32 13.4 49.4 22.4L49 27Q32 18.6 15 27Z" fill="${hc}" ${o}/><path d="M48.6 24Q57 26 58 38M48.8 25Q54 30 52.8 40" stroke="${hc}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
   if(h==='jin')s+=`<path d="M14.4 26Q12.4 4.6 32 5.4Q51.6 4.6 49.6 26Q32 14.6 14.4 26Z" fill="#f2f5f8" ${o}/><path d="M15.4 22.6Q32 12.4 48.6 22.6" stroke="#3a86a6" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M26 7Q25 13 24 18M32 5.6V15M38 7Q39 13 40 18" stroke="#9ab0bf" stroke-width=".8" fill="none"/>`;
+  if(h==='fem1'){s+=`<circle cx="20.6" cy="11.4" r="5.6" fill="${hair}" ${o}/><circle cx="43.4" cy="11.4" r="5.6" fill="${hair}" ${o}/><path d="M18.4 15.2Q32 9.4 45.6 15.2" stroke="${gold}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    for(let i=0;i<5;i++){const a=i*1.2566-1.57;s+=`<circle cx="${(44+3*Math.cos(a)).toFixed(1)}" cy="${(16+3*Math.sin(a)).toFixed(1)}" r="2.3" fill="#e8445a" stroke="${ln}" stroke-width=".5"/>`}s+=`<circle cx="44" cy="16" r="1.3" fill="${gold}"/>`}
   if(h==='fem2')s+=`<ellipse cx="32" cy="8.4" rx="8.4" ry="5.6" fill="${hair}" ${o}/><path d="M17.6 13.4L47 5" stroke="${gold}" stroke-width="1.8" stroke-linecap="round"/><circle cx="47.4" cy="4.8" r="2" fill="#e23a2a" ${o}/><path d="M32 17.6l2.2 2.4-2.2 2.4-2.2-2.4Z" fill="${gold}" stroke="${ln}" stroke-width=".6"/>`;
   return s+`<rect x=".5" y=".5" width="63" height="63" fill="none" stroke="#000" stroke-opacity=".3"/></svg>`}
 
@@ -523,7 +541,7 @@ const sleep=ms=>HL?Promise.resolve():new Promise(r=>setTimeout(r,ms*speed));
 const rnd=a=>a[Math.random()*a.length|0];
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const nm=p=>HERO[p.hero].n,tag=p=>`<span class="${p.team?'e':'a'}">${nm(p)}</span>`,cn=c=>`<em>【${CARD[c.k].n}】</em>`,pt=c=>SUITS[c.s]+RANK[c.r];
-const has=(p,k)=>p.hero===k||HERO[p.hero].inn===k||p.main.includes(k)||p.sub.includes(k);
+const has=(p,k)=>p.hero===k||innOf(p.hero).includes(k)||p.main.includes(k)||p.sub.includes(k);
 const foes=p=>G.ps.filter(q=>!q.dead&&q.team!==p.team),mates=p=>G.ps.filter(q=>!q.dead&&q.team===p.team);
 const red=c=>c.s%2===1;
 const others=(p,self)=>(self?[p]:[]).concat(G.ps.slice(p.id+1),G.ps.slice(0,p.id)).filter(q=>!q.dead);   // 从 p 的下家开始按座位顺序
@@ -533,6 +551,37 @@ function mainFx(p,k){UI.fx(p,MAIN[k].n,'s')}
 function draw(p,n){let k=0;for(let i=0;i<n;i++){if(!G.deck.length){if(!G.disc.length)break;G.deck=shuffle(G.disc);G.disc=[]}const c=G.deck.pop();p.hand.push(c);k++;if(p.id===0)fresh.add(c.id)}UI.drawFx(p,k);UI.render()}
 function toDisc(cs){for(const c of [].concat(cs))if(c)G.disc.push(c)}
 const rm=(arr,c)=>{const i=arr.indexOf(c);if(i>=0)arr.splice(i,1)};
+async function onDisc(o,cs){                                   // 绮错印：o 的牌 cs 刚被弃置
+  cs=[].concat(cs).filter(Boolean);if(G.over||!o||!cs.length)return;
+  for(const q of others(G.ps[G.turn],1)){
+    if(q.dead||!has(q,'m_qicuo')||q.qcT===G.tn)continue;
+    const back=cs.filter(c=>G.disc.includes(c)),canEnd=q!==o&&!o.dead&&o===G.ps[G.turn]&&G.phase==='play'&&!o.f.stop,canGive=!o.dead&&back.length>0;
+    if(!canEnd&&!canGive)continue;
+    let ch='no';
+    if(q.ai||HL){const best=back.slice().sort((a,b)=>VAL[b.k]-VAL[a.k])[0];
+      if(o.team===q.team){if(canGive&&VAL[best.k]>=2.5)ch='give'}else if(canEnd&&o.hand.length>=2)ch='end'}
+    else{const op=[];if(canEnd)op.push({k:'end',t:'令他结束回合',pri:1});if(canGive)op.push({k:'give',t:back.length>1?'还他一张牌':'把牌还给他',pri:!canEnd});op.push({k:'no',t:'不发动'});
+      ch=await UI.choose(`绮错：${o===q?'你':nm(o)} 弃置了 ${cs.map(cn).join('')}`,op);if(G.over)return}
+    if(ch==='no')continue;
+    q.qcT=G.tn;mainFx(q,'m_qicuo');
+    if(ch==='end'){o.f.stop=1;log(`${tag(q)} 发动<em>绮错</em>：${tag(o)} 立即结束回合`);UI.fx(o,'结束回合','s')}
+    else{let c=back[0];if(back.length>1)c=q.ai||HL?back.slice().sort((a,b)=>VAL[b.k]-VAL[a.k])[0]:await UI.pickFrom(back,`绮错：选一张还给 ${o===q?'自己':nm(o)}`);if(G.over)return;
+      rm(G.disc,c);o.hand.push(c);if(o.id===0)fresh.add(c.id);UI.drawFx(o,1);log(`${tag(q)} 发动<em>绮错</em>：把 ${cn(c)} 还给了 ${o===q?'自己':tag(o)}`)}
+    UI.render();await sleep(400);return}}
+async function hongmei(p){                                    // 红梅印：受到伤害后
+  if(G.over||p.dead||!has(p,'m_hongmei')||!p.hand.length)return;
+  const cand=G.ps.filter(q=>q!==p&&!q.dead&&q.hand.length);if(!cand.length)return;
+  let c,ts;
+  if(p.ai||HL){c=aiJunk(p)[0];ts=cand.filter(q=>q.team!==p.team);if(!ts.length)return}
+  else{if(!(await UI.confirm('红梅：展示一张手牌，令其他角色展示同花色手牌或弃一张手牌？'))||G.over)return;
+    c=await UI.askCard(p,p.hand.slice(),'红梅：选一张手牌展示','any',true);if(G.over)return;if(!c)c=p.hand[0];
+    ts=await UI.pickPlayers(cand,`红梅：展示了 ${SUITS[c.s]}，点选要波及的角色（可多选），再按「确定」`);if(G.over||!ts.length)return}
+  mainFx(p,'m_hongmei');log(`${tag(p)} 发动<em>红梅</em>：展示 ${pt(c)} ${cn(c)}，波及 ${ts.map(tag).join('、')}`);await UI.show([c],800,p,nm(p)+' 红梅 '+SUITS[c.s]);
+  for(const q of ts){if(G.over)return;if(q.dead||!q.hand.length)continue;const same=q.hand.filter(x=>x.s===c.s);let x=null;
+    if(q.ai||HL)x=same.sort((a,b)=>VAL[a.k]-VAL[b.k])[0]||null;
+    else if(same.length){x=await UI.askCard(q,same,`红梅：展示一张 ${SUITS[c.s]} 手牌，否则弃一张手牌`,'any');if(G.over)return}
+    if(x){log(`${tag(q)} 展示了 ${pt(x)} ${cn(x)}`);await UI.show([x],650,q,nm(q)+' 展示')}
+    else{const d=q.ai||HL?aiJunk(q)[0]:(await UI.askDiscard(q,1,`红梅：没有展示 ${SUITS[c.s]}，弃一张手牌`))[0];if(G.over)return;if(!d)continue;rm(q.hand,d);toDisc(d);log(`${tag(q)} 弃掉 ${cn(d)}`);UI.render();await UI.show([d],600,q,nm(q)+' 弃牌');await onDisc(q,[d])}}}
 
 /* ---------- 规则 ---------- */
 const SL=['w','a','hd','ho'],WK=p=>p.eq.w&&p.eq.w.k;
@@ -596,9 +645,10 @@ async function damage(src,tgt,n,kind,cards){
   if(!tgt.dead){
     if(tgt.hero==='yingzheng'&&cards){const got=[];for(const c of cards){const i=G.disc.indexOf(c);if(i>=0){G.disc.splice(i,1);tgt.hand.push(c);got.push(c);if(tgt.id===0)fresh.add(c.id)}}if(got.length){UI.fx(tgt,'集权','s');log(`${tag(tgt)} <em>集权</em>：收回了 ${got.map(cn).join('')}`);UI.render()}}
     if(tgt.hero==='yuji'){UI.fx(tgt,'舍身','s');await yiji(tgt,2*n)}
+    if(!G.over&&!tgt.dead)await hongmei(tgt);
     if(kind==='sha'&&src&&!src.dead){
-      if(['a','w','hd','ho'].some(z=>src.eq[z])&&roll(tgt,'s_shangxie')){const z=['a','w','hd','ho'].find(z=>src.eq[z]),c=src.eq[z];delete src.eq[z];toDisc(c);log(`${tag(src)} 的 ${cn(c)} 被卸掉`);UI.render()}
-      if(src.hand.length&&roll(tgt,'s_shangxue')){const c=rnd(src.hand);rm(src.hand,c);toDisc(c);log(`${tag(src)} 被削掉 ${cn(c)}`);UI.render()}}}
+      if(['a','w','hd','ho'].some(z=>src.eq[z])&&roll(tgt,'s_shangxie')){const z=['a','w','hd','ho'].find(z=>src.eq[z]),c=src.eq[z];delete src.eq[z];toDisc(c);log(`${tag(src)} 的 ${cn(c)} 被卸掉`);UI.render();await onDisc(src,[c])}
+      if(src.hand.length&&roll(tgt,'s_shangxue')){const c=rnd(src.hand);rm(src.hand,c);toDisc(c);log(`${tag(src)} 被削掉 ${cn(c)}`);UI.render();await onDisc(src,[c])}}}
 }
 async function dying(p,src){
   log(`${tag(p)} 濒死`);
@@ -624,19 +674,19 @@ async function slashOne(src,tgt,card,counter){
         const yes=ai?(tgt.hp<=2||src.hand.length>=5):await UI.confirm(`博浪锤：弃两张手牌，强行命中 ${nm(tgt)}？`);
         if(G.over)return;
         if(yes){const cs=ai?aiJunk(src).slice(0,2):await UI.askDiscard(src,2,'博浪锤：选两张手牌弃掉');if(G.over)return;
-          if(cs.length===2){for(const x of cs)rm(src.hand,x);toDisc(cs);UI.fx(src,'博浪锤','s');log(`${tag(src)} 的<em>博浪锤</em>：弃掉两张牌，强行命中`);UI.render();hit=true}}}
+          if(cs.length===2){for(const x of cs)rm(src.hand,x);toDisc(cs);UI.fx(src,'博浪锤','s');log(`${tag(src)} 的<em>博浪锤</em>：弃掉两张牌，强行命中`);UI.render();hit=true;await onDisc(src,cs);if(G.over)return}}}
       if(!hit&&!counter){if(W==='panlong'){src.f.bonus=(src.f.bonus||0)+1;UI.fx(src,'盘龙棍','s');log(`${tag(src)} 的<em>盘龙棍</em>：可以继续出【杀】`)}}}}
   if(G.over)return;
   if(hit&&W==='longlin'&&tgt.hand.length&&!src.dead){                                          // 龙鳞刀：拆两张手牌，不造成伤害
     const yes=ai?(tgt.hand.length>=2&&tgt.hp>2):await UI.confirm(`龙鳞刀：改为弃掉 ${nm(tgt)} 的 2 张手牌（不造成伤害）？`);
     if(G.over)return;
-    if(yes){const cs=[];for(let i=Math.min(2,tgt.hand.length);i>0;i--){const x=rnd(tgt.hand);rm(tgt.hand,x);cs.push(x)}toDisc(cs);UI.fx(src,'龙鳞刀','s');log(`${tag(src)} 的<em>龙鳞刀</em>：弃掉 ${tag(tgt)} ${cs.length} 张手牌，不造成伤害`);UI.render();await sleep(500);hit=false;ended=true}}
+    if(yes){const cs=[];for(let i=Math.min(2,tgt.hand.length);i>0;i--){const x=rnd(tgt.hand);rm(tgt.hand,x);cs.push(x)}toDisc(cs);UI.fx(src,'龙鳞刀','s');log(`${tag(src)} 的<em>龙鳞刀</em>：弃掉 ${tag(tgt)} ${cs.length} 张手牌，不造成伤害`);UI.render();await sleep(500);hit=false;ended=true;await onDisc(tgt,cs);if(G.over)return}}
   if(hit){let n=1;if(roll(src,'s_qianghua'))n++;
     await damage(src,tgt,n,'sha',card.virt?curCards:[card]);
     if(!G.over&&!src.dead&&!tgt.dead&&W==='bayegong'&&(tgt.eq.hd||tgt.eq.ho)){                // 霸王弓：拆一匹马
       const yes=ai||await UI.confirm(`霸王弓：弃掉 ${nm(tgt)} 的一匹马？`);
       if(G.over)return;
-      if(yes&&(tgt.eq.hd||tgt.eq.ho)){const z=tgt.eq.hd?'hd':'ho',c=tgt.eq[z];delete tgt.eq[z];toDisc(c);UI.fx(src,'霸王弓','s');log(`${tag(src)} 的<em>霸王弓</em>：弃掉 ${tag(tgt)} 的 ${cn(c)}`);UI.render()}}
+      if(yes&&(tgt.eq.hd||tgt.eq.ho)){const z=tgt.eq.hd?'hd':'ho',c=tgt.eq[z];delete tgt.eq[z];toDisc(c);UI.fx(src,'霸王弓','s');log(`${tag(src)} 的<em>霸王弓</em>：弃掉 ${tag(tgt)} 的 ${cn(c)}`);UI.render();await onDisc(tgt,[c])}}
     if(!G.over&&!src.dead&&src.hp<src.max&&roll(src,'s_xixue'))await heal(src,1)}
   if(!counter&&hit)await counterAttack(tgt,src);
   return hit||ended
@@ -683,7 +733,7 @@ async function takeFrom(p,tgt,steal){                       // 探囊取物 / �
   const ao=opts.filter(o=>o[0]!=='j');if((p.ai||HL)&&!ao.length)return;
   let z=ao.includes('hd')?'hd':ao[ao.length-1];if(!p.ai&&!HL){z=await UI.askZone(tgt,opts,steal);if(G.over)return}
   let c;if(z==='hand'){c=rnd(tgt.hand);rm(tgt.hand,c)}else if(z[0]==='j'){c=tgt.judge.find(x=>'j'+x.id===z);rm(tgt.judge,c)}else{c=tgt.eq[z];delete tgt.eq[z]}
-  if(steal){p.hand.push(c);if(p.id===0)fresh.add(c.id);log(`${tag(p)} 拿走了 ${tag(tgt)} 的${z==='hand'?'一张手牌':cn(c)}`)}else{toDisc(c);log(`${tag(tgt)} 的 ${cn(c)} 被弃掉`)}UI.render()}
+  if(steal){p.hand.push(c);if(p.id===0)fresh.add(c.id);log(`${tag(p)} 拿走了 ${tag(tgt)} 的${z==='hand'?'一张手牌':cn(c)}`)}else{toDisc(c);log(`${tag(tgt)} 的 ${cn(c)} 被弃掉`)}UI.render();if(!steal)await onDisc(tgt,[c])}
 async function useCard(p,c,tgts,as,pair){
   if(pair)for(const x of pair)rm(p.hand,x);else rm(p.hand,c);UI.render();
   const d=CARD[c.k],k=as==='sha'?'sha':c.k,tgt=tgts&&tgts[0],eq=k!=='sha'&&d.t==='equip';
@@ -724,7 +774,8 @@ async function useCard(p,c,tgts,as,pair){
 // 主动技能：华佗青囊 / 驭人印 / 侠胆印
 async function useSkill(p,a){
   if(a.sk==='huatuo'){p.f.huatuo=1;rm(p.hand,a.card);toDisc(a.card);log(`${tag(p)} 发动<em>青囊</em>，弃掉 ${cn(a.card)} 为 ${tag(a.tgt)} 疗伤`);await UI.show([a.card],700,p,nm(p)+' 青囊 ▸ '+nm(a.tgt));await heal(a.tgt,1)}
-  else if(a.sk==='yuren'){p.f.yuren=1;for(const c of a.cards){const z=SL.find(z=>p.eq[z]===c);if(z)delete p.eq[z];else rm(p.hand,c)}toDisc(a.cards);mainFx(p,'m_yuren');log(`${tag(p)} 发动<em>驭人印</em>，换掉 ${a.cards.length} 张牌`);await UI.show(a.cards,750,p,nm(p)+' 驭人');draw(p,a.cards.length)}
+  else if(a.sk==='yuren'){p.f.yuren=1;for(const c of a.cards){const z=SL.find(z=>p.eq[z]===c);if(z)delete p.eq[z];else rm(p.hand,c)}toDisc(a.cards);mainFx(p,'m_yuren');log(`${tag(p)} 发动<em>驭人印</em>，换掉 ${a.cards.length} 张牌`);await UI.show(a.cards,750,p,nm(p)+' 驭人');draw(p,a.cards.length);await onDisc(p,a.cards)}
+  else if(a.sk==='fujing'){if(p.hp<=1)return;p.hp--;p.f.fj=(p.f.fj||0)+1;mainFx(p,'m_fujing');log(`${tag(p)} 发动<em>负荆</em>：失去 1 点体力，摸 2 张牌`);UI.fx(p,'-1','d','hit');UI.render();await sleep(500);draw(p,2)}
   else if(a.sk==='xiadan'){p.f.xiadan=1;const t=a.tgt,c=a.card;rm(p.hand,c);let d;
     if(t.ai||HL)d=t.hand.slice().sort((x,y)=>t.team===p.team?x.r-y.r:y.r-x.r)[0];else{d=await UI.askCard(t,t.hand.slice(),`${nm(p)} 向你拼点：选一张手牌比大小（A 最小，K 最大）`,'any',true);if(!d){if(G.over)return;d=t.hand[0]}}
     rm(t.hand,d);toDisc([c,d]);mainFx(p,'m_xiadan');log(`${tag(p)} 向 ${tag(t)} 拼点：${pt(c)} 对 ${pt(d)}`);await UI.show([c,d],1200,p,nm(p)+' 拼点 '+nm(t));
@@ -734,17 +785,19 @@ const handLimit=p=>Math.max(0,p.hp);
 const virt=pr=>({id:-pr[0].id-1,k:'sha',s:red(pr[0])&&red(pr[1])?1:0,r:pr[0].r,virt:1});   // 芦叶枪：两张牌合成的一张杀
 async function act(p,a){if(!(a.type==='luye'||a.as==='sha'||a.card&&(a.card.k==='wanjian'||a.card.k==='langyan')))await UI.endPile();if(a.type==='luye')return useCard(p,virt(a.pair),a.tgts,'sha',a.pair);if(a.sk)return useSkill(p,a);return useCard(p,a.card,a.tgts,a.as)}
 async function turn(p){
-  p.f={};save();UI.render();if(p.id===0)snd('turn');log(`—— ${tag(p)} 的回合 ——`);await sleep(350);
+  p.f={};G.tn=(G.tn||0)+1;G.phase='start';save();UI.render();if(p.id===0)snd('turn');log(`—— ${tag(p)} 的回合 ——`);await sleep(350);
   const skip=await judgePhase(p);if(G.over||p.dead)return;
   let n=2;if(roll(p,'s_tanshou'))n++;
   draw(p,n);await sleep(350);
+  G.phase='play';
   if(skip)await sleep(600);
-  else if(p.ai||HL)for(let i=0;i<80&&!G.over&&!p.dead;i++){const a=aiPick(p);if(!a)break;await sleep(520);await act(p,a)}
-  else while(!G.over&&!p.dead){const a=await UI.playPhase(p);if(a.type==='end'||G.over)break;await act(p,a)}
+  else if(p.ai||HL)for(let i=0;i<80&&!G.over&&!p.dead&&!p.f.stop;i++){const a=aiPick(p);if(!a)break;await sleep(520);await act(p,a)}
+  else while(!G.over&&!p.dead&&!p.f.stop){const a=await UI.playPhase(p);if(a.type==='end'||G.over)break;await act(p,a)}
+  G.phase='end';
   if(G.over||p.dead)return;
   await UI.endPile();
   const over=p.hand.length-handLimit(p);
-  if(over>0){const cs=p.ai||HL?aiJunk(p).slice(0,over):await UI.askDiscard(p,over);if(G.over)return;for(const c of cs)rm(p.hand,c);toDisc(cs);log(`${tag(p)} 弃掉 ${cs.length} 张牌`);UI.render();await sleep(300)}
+  if(over>0){const cs=p.ai||HL?aiJunk(p).slice(0,over):await UI.askDiscard(p,over);if(G.over)return;for(const c of cs)rm(p.hand,c);toDisc(cs);log(`${tag(p)} 弃掉 ${cs.length} 张牌`);UI.render();await sleep(300);G.phase='discard';await onDisc(p,cs)}
 }
 let running=null;
 async function run(){
@@ -765,6 +818,7 @@ function aiPick(p){
   for(const c of H){const d=CARD[c.k];if(d.t!=='equip')continue;const cur=p.eq[d.slot];if(!cur||d.slot==='w'&&ev(c.k)>ev(cur.k))return{card:c}}
   let c;if(c=f('wuzhong'))return{card:c};
   if(p.hp<p.max&&(c=f('yao')))return{card:c};
+  if(has(p,'m_fujing')&&p.hp>=5&&p.hp*2>p.max&&(p.f.fj||0)<2&&H.length<=4)return{sk:'fujing'};
   if(has(p,'m_yuren')&&!p.f.yuren){let sh=0,sa=0;const lim=noLimit(p)?9:slashLimit(p)+1;
     const j=H.filter(c=>c.k==='shan'&&!has(p,'m_aojian')&&++sh>2||c.k==='sha'&&++sa>lim||CARD[c.k].t==='equip'&&!(has(p,'m_aojian')&&red(c)));
     if(j.length)return{sk:'yuren',cards:j}}
@@ -789,16 +843,16 @@ function aiPick(p){
 /* ---------- 开局 / 存档 ---------- */
 const K_RUN='arcade-kill-run3',K_LO='arcade-kill-loadout',K_ST='arcade-kill-stats';
 const jget=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}},jset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let LO=jget(K_LO,{hero:'yangyanzhao',main:[],sub:[]});if(!HERO[LO.hero])LO.hero='yangyanzhao';LO.main=(LO.main||[]).filter(k=>MAIN[k]&&k!==HERO[LO.hero].inn).slice(0,2);LO.sub=(LO.sub||[]).filter(k=>SUB[k]).slice(0,2);LO.cust=LO.cust||{};
+let LO=jget(K_LO,{hero:'yangyanzhao',main:[],sub:[]});if(!HERO[LO.hero])LO.hero='yangyanzhao';LO.main=(LO.main||[]).filter(k=>MAIN[k]&&!innOf(LO.hero).includes(k)).slice(0,2);LO.sub=(LO.sub||[]).filter(k=>SUB[k]).slice(0,2);LO.cust=LO.cust||{};
 function mkPlayer(id,hero,main,sub){const p={id,team:id%2,hero,main,sub,ai:id!==0,hand:[],eq:{},judge:[],f:{},dead:false};p.max=p.hp=HERO[hero].hp;return p}
 function newGame(lo){
-  let id=0;const deck=[];for(const k in CARD)for(let i=0;i<CARD[k].num;i++){deck.push({id,k,s:k==='shan'||k==='yao'?(i%2?3:1):id%4,r:1+(id*7)%13});id++}
+  const deck=DECK.map((c,id)=>({id,k:c.k,s:c.s,r:c.r}));
   const cu=lo.cust||{},pick={},used=new Set([lo.hero]);
   for(let i=1;i<6;i++){const h=cu[i]&&cu[i].hero;if(h&&HERO[h]&&!used.has(h)){used.add(h);pick[i]=h}}
   const pool=shuffle(Object.keys(HERO).filter(h=>!used.has(h)));
-  const seals=(want,def,inn,tbl)=>[...new Set([...(want||[]).filter(k=>tbl[k]),...def])].filter(k=>k!==inn).slice(0,2);
+  const seals=(want,def,inn,tbl)=>[...new Set([...(want||[]).filter(k=>tbl[k]),...def])].filter(k=>!innOf(inn).includes(k)).slice(0,2);
   G={ps:[],deck:shuffle(deck),disc:[],turn:0,round:1,over:null};
-  for(let i=0;i<6;i++){const h=i?(pick[i]||pool.pop()):lo.hero,c=cu[i]||{};G.ps.push(i?mkPlayer(i,h,seals(c.main,HERO[h].main,HERO[h].inn,MAIN),seals(c.sub,HERO[h].sub,null,SUB)):mkPlayer(0,h,lo.main.slice(),lo.sub.slice()))}
+  for(let i=0;i<6;i++){const h=i?(pick[i]||pool.pop()):lo.hero,c=cu[i]||{};G.ps.push(i?mkPlayer(i,h,seals(c.main,HERO[h].main,h,MAIN),seals(c.sub,HERO[h].sub,null,SUB)):mkPlayer(0,h,lo.main.slice(),lo.sub.slice()))}
   for(const p of G.ps)for(let i=0;i<4;i++)p.hand.push(G.deck.pop());
   logs=[];return G}
 function save(){if(!HL&&G&&!G.over)jset(K_RUN,G)}             // 每个回合开始时存一次；重开后从这个回合的开头继续
@@ -956,6 +1010,7 @@ const UI={
       if(!ui.skill||ui.skill==='huatuo')if(me.hero==='huatuo'&&!me.f.huatuo)sk('huatuo','青囊');
       if(!ui.skill||ui.skill==='xiadan')if(has(me,'m_xiadan')&&!me.f.xiadan&&me.hand.length)sk('xiadan','侠胆');
       if(!ui.skill||ui.skill==='yuren')if(has(me,'m_yuren')&&!me.f.yuren)sk('yuren','驭人');
+      if(!ui.skill&&has(me,'m_fujing')&&me.hp>1)b+=`<button class="btn" data-a="fujing">负荆（-1血 摸2）</button>`;
       if(!ui.skill||ui.skill==='luye')if(WK(me)==='luye'&&me.hand.length>=2&&!cantLuye(me))sk('luye','芦叶枪');
       if(ui.skill==='luye'&&ui.multi.length===2&&ui.picked.length)b+=`<button class="btn pri" data-a="goluye">出牌</button>`;
       if(ui.skill==='yuren')b+=`<button class="btn pri" data-a="yuren" ${ui.multi.length?'':'disabled'}>换 ${ui.multi.length} 张</button>`;
@@ -964,6 +1019,8 @@ const UI={
         if(!ui.tgts||ui.picked.length&&c.k!=='jiedao')b+=`<button class="btn pri" data-a="go">出牌</button>`}
       if(!ui.skill)b+=`<button class="btn" data-a="end">结束回合</button>`}
     else if(ui.mode==='confirm')b=`<button class="btn pri" data-a="yes">发动</button><button class="btn" data-a="no">不发动</button>`;
+    else if(ui.mode==='choice')b=ui.opts.map(o=>`<button class="btn${o.pri?' pri':''}" data-a="ch" data-k="${o.k}">${o.t}</button>`).join('');
+    else if(ui.mode==='tsel')b=`<button class="btn pri" data-a="tok" ${ui.picked.length?'':'disabled'}>确定（${ui.picked.length} 人）</button><button class="btn" data-a="tno">不发动</button>`;
     else if(ui.mode==='ask'&&!ui.must)b=`<button class="btn" data-a="pass">不出</button>`+(ui.kind==='wuxie'?`<button class="btn" data-a="nomore">本次不再询问</button>`:'');
     else if(ui.mode==='discard')b=`<button class="btn pri" data-a="disc" ${ui.multi.length===ui.need?'':'disabled'}>弃牌 ${ui.multi.length}/${ui.need}</button>`;
     $('btns').innerHTML=b},
@@ -973,12 +1030,16 @@ const UI={
     return new Promise(r=>{ui={mode:'ask',valid:ok,must,kind,res:r,msg};UI.render()})},
   askDiscard(p,n,msg){return new Promise(r=>{ui={mode:'discard',multi:[],need:n,res:r,msg:msg||`手牌超过体力值，请弃掉 ${n} 张`};UI.render()})},
   confirm(msg){return new Promise(r=>{ui={mode:'confirm',res:r,msg};UI.render()})},
+  choose(msg,opts){return new Promise(r=>{ui={mode:'choice',opts,res:r,msg};UI.render()})},
+  pickPlayers(cand,msg){return new Promise(r=>{ui={mode:'tsel',tgts:cand.map(q=>q.id),picked:[],res:r,msg};UI.render()})},
+  async pickFrom(cards,msg){const c=await new Promise(r=>{ui={mode:'pick',res:r,msg,valid:cards.slice(),pool:cards.slice()};UI.render()});showing=false;$('show').className='';$('show').innerHTML='';lastBan='';UI.render();return c},
   askZone(t,opts,steal){return new Promise(r=>{ui={mode:'zone',zt:t,steal,res:r,msg:`点中间的一张牌，${steal?'拿走':'弃掉'}（手牌看不到是什么）`};UI.render()})},
   poolHTML(){
     const cs=(a,cls)=>`<div class="cs${szc(a)}">${cls}</div>`;
     if(ui.mode==='give')return`<div class="who a">舍身 · 只有你看得到</div>`+cs(ui.pool.length,ui.pool.map(c=>cardHTML(c,'big'+(ui.sels.includes(c.id)?' sel':''))).join(''));
     if(ui.mode==='zone'){const t=ui.zt,eq=SL.filter(z=>t.eq[z]),n=t.hand.length+eq.length+t.judge.length;
       return`<div class="who ${t.team?'e':'a'}">${ui.steal?'拿走':'弃掉'} ${nm(t)} 的一张牌</div>`+cs(n,'<button class="card cback big" data-z="hand"></button>'.repeat(t.hand.length)+eq.map(z=>cardHTML(t.eq[z],'big').replace('<button','<button data-z="'+z+'"')).join('')+t.judge.map(c=>cardHTML(c,'big').replace('<button','<button data-z="j'+c.id+'"')).join(''))}
+    if(ui.mode==='pick'&&ui.pool)return`<div class="who a">绮错 · 选一张</div>`+cs(ui.pool.length,ui.pool.map(c=>cardHTML(c,'big ok')).join(''));
     if(wg)return`<div class="who a">五谷丰登</div>`+cs(wg.cards.length,wg.cards.map(c=>{const o=wg.own[c.id];let h=cardHTML(c,'big'+(o?' taken':ui.mode==='pick'?' ok':''));if(o)h=h.replace(/<\/button>$/,`<u class="own">${o}</u></button>`);return h}).join(''));
     return''},
   wuguStart(cards){if(HL)return;wg={cards:cards.slice(),own:{}};UI.render();return sleep(900)},
@@ -998,7 +1059,7 @@ function mount(){                                           // 六个角色面�
   for(const p of G.ps){const el=document.createElement('button');el.id='pl'+p.id;el.dataset.p=p.id;$('game').append(el)}
   $('setup').hidden=true;$('endOv').hidden=true;$('game').hidden=false;showing=false;lastBan='';$('show').innerHTML='';$('show').className='';wg=null;ui={mode:'idle'};UI.render();UI.log()}
 function start(resume){if(!resume)newGame(LO);mount();running=run()}
-async function quit(){if(G&&!G.over){G.over='quit';$('pickOv').hidden=true;UI.done(ui.mode==='play'?{type:'end'}:ui.mode==='discard'?[]:ui.mode==='zone'?'hand':ui.mode==='confirm'?false:ui.mode==='give'?(ui.pool.forEach(c=>ui.onGive(c,G.ps[0])),ui.fin(),undefined):null);await running}try{localStorage.removeItem(K_RUN)}catch(e){}G=null;$('game').hidden=true;$('endOv').hidden=true;$('setup').hidden=false;setupUI()}
+async function quit(){if(G&&!G.over){G.over='quit';$('pickOv').hidden=true;UI.done(ui.mode==='play'?{type:'end'}:ui.mode==='discard'?[]:ui.mode==='zone'?'hand':ui.mode==='confirm'?false:ui.mode==='choice'?'no':ui.mode==='tsel'?[]:ui.mode==='give'?(ui.pool.forEach(c=>ui.onGive(c,G.ps[0])),ui.fin(),undefined):null);await running}try{localStorage.removeItem(K_RUN)}catch(e){}G=null;$('game').hidden=true;$('endOv').hidden=true;$('setup').hidden=false;setupUI()}
 function pickCard(me,c,as){                                 // 出牌阶段选中一张牌
   const t=targets(me,c,as);ui.sel=c.id;ui.as=as;ui.picked=[];ui.tgts=t?t.map(q=>q.id):null;ui.maxT=as==='sha'?maxTargets(me):1;
   ui.msg=(as==='sha'&&c.k!=='sha'?'当【杀】用：':CARD[c.k].n+'：')+(as==='sha'?CARD.sha.d.replace(/每回合.*/,''):CARD[c.k].d)+(t?(ui.maxT>1?` 可以点 ${ui.maxT} 个目标，只打一部分就点完再按「出牌」。`:c.k==='jiedao'?' 先点一名有武器的角色。':' 点一个发光的目标。'):' 点「出牌」。');UI.render()}
@@ -1007,7 +1068,7 @@ if(!HL){
   $('game').addEventListener('click',e=>{
     const me=G&&G.ps[0],cb=e.target.closest('.card[data-c]'),pb=e.target.closest('.pl'),ab=e.target.closest('[data-a]'),eb=e.target.closest('q[data-e]');
     if(ab){const a=ab.dataset.a,c=me.hand.find(x=>x.id===ui.sel);
-      if(a==='end')UI.done({type:'end'});else if(a==='pass')UI.done(null);else if(a==='disc')UI.done(ui.multi);else if(a==='nomore')UI.done('nomore');else if(a==='yes')UI.done(true);else if(a==='no')UI.done(false);
+      if(a==='end')UI.done({type:'end'});else if(a==='pass')UI.done(null);else if(a==='disc')UI.done(ui.multi);else if(a==='nomore')UI.done('nomore');else if(a==='yes')UI.done(true);else if(a==='no')UI.done(false);else if(a==='ch')UI.done(ab.dataset.k);else if(a==='tok')UI.done(ui.picked.map(i=>G.ps[i]));else if(a==='tno')UI.done([]);else if(a==='fujing')UI.done({type:'skill',sk:'fujing'});
       else if(a==='goluye')UI.done({type:'luye',pair:ui.multi.slice(),tgts:ui.picked.map(i=>G.ps[i])});
       else if(a==='go')UI.done({type:'card',card:c,as:ui.as,tgts:ui.tgts?ui.picked.map(i=>G.ps[i]):null});
       else if(a==='as')pickCard(me,c,ui.as==='sha'?undefined:'sha');
@@ -1032,6 +1093,7 @@ if(!HL){
       const u=usableAs(me,c);if(!u){toast(cantUse(me,c,defAs(me,c)));return}
       pickCard(me,c,u.as);return}
     if(pb&&G){const p=G.ps[pb.dataset.p];
+      if(ui.mode==='tsel'){if(ui.tgts.includes(p.id)){if(ui.picked.includes(p.id))rm(ui.picked,p.id);else ui.picked.push(p.id);UI.render()}else UI.info(p);return}
       if(ui.mode==='give'){if(!ui.sels.length){toast('先点中间的牌（可以多选）');return}const cs=ui.pool.filter(x=>ui.sels.includes(x.id));for(const c of cs){rm(ui.pool,c);ui.onGive(c,p)}ui.sels=[];if(ui.pool.length)UI.render();else ui.fin();return}
       if(ui.mode==='play'&&ui.skill==='luye'&&ui.tgts&&ui.tgts.includes(p.id)){if(ui.picked.includes(p.id))rm(ui.picked,p.id);else ui.picked.push(p.id);if(ui.picked.length>=Math.min(ui.maxT,ui.tgts.length))UI.done({type:'luye',pair:ui.multi.slice(),tgts:ui.picked.map(i=>G.ps[i])});else UI.render();return}
       if(ui.mode==='play'&&!ui.skill&&ui.tgts&&ui.tgts.includes(p.id)&&ui.sel!=null&&me.hand.find(x=>x.id===ui.sel).k==='jiedao'){const card=me.hand.find(x=>x.id===ui.sel);
@@ -1055,8 +1117,8 @@ function setupUI(){
   $('heroes').innerHTML=Object.keys(HERO).map(k=>{const h=HERO[k];return`<button class="hero${LO.hero===k?' on':''}" data-h="${k}">${face(k)}<b>${h.n}</b><small>体力 ${h.hp}</small></button>`}).join('');
   const h=HERO[LO.hero];$('heroDesc').innerHTML=`<b>${h.n} · ${h.sk}</b>　${h.d}`;
   $('mainN').textContent=`必定生效 · 已选 ${LO.main.length}/2`;$('subN').textContent=`全部 Lv.${SUB_LV}（最高 ${SUB_MAX} 级）· ${PCT}% 触发 · 已选 ${LO.sub.length}/2`;
-  const owner=k=>Object.keys(HERO).find(x=>HERO[x].inn===k);
-  $('mains').innerHTML=Object.keys(MAIN).map(k=>`<button class="seal m${LO.main.includes(k)?' on':''}" data-m="${k}" ${h.inn===k?'style="opacity:.5"':''}><b>${MAIN[k].n}<i>${h.inn===k?'英雄已自带':HERO[owner(k)].n+'自带'}</i></b><span>${MAIN[k].d}</span></button>`).join('');
+  const owner=k=>Object.keys(HERO).find(x=>innOf(x).includes(k)),mine=innOf(LO.hero);
+  $('mains').innerHTML=Object.keys(MAIN).map(k=>`<button class="seal m${LO.main.includes(k)?' on':''}" data-m="${k}" ${mine.includes(k)?'style="opacity:.5"':''}><b>${MAIN[k].n}<i>${mine.includes(k)?'英雄已自带':owner(k)?HERO[owner(k)].n+'自带':''}</i></b><span>${MAIN[k].d}</span></button>`).join('');
   $('subs').innerHTML=Object.keys(SUB).map(k=>`<button class="seal s${LO.sub.includes(k)?' on':''}" data-s="${k}"><b>${SUB[k].n}<i>Lv.${SUB_LV} · ${PCT}%</i></b><span>${SUB[k].d}</span></button>`).join('');
   {const opt=(tbl,sel,ph)=>`<option value="">${ph}</option>`+Object.keys(tbl).map(k=>`<option value="${k}"${sel===k?' selected':''}>${tbl[k].n}</option>`).join('');
    $('cust').innerHTML=[2,4,1,3,5].map(i=>{const c=LO.cust[i]||{};return`<div class="crow ${i%2?'e':'a'}"><b>${i%2?'敌':'友'} ${i+1}号位</b><select data-cs="${i}" data-f="hero"><option value="">随机英雄</option>${Object.keys(HERO).filter(k=>k!==LO.hero).map(k=>`<option value="${k}"${c.hero===k?' selected':''}>${HERO[k].n}</option>`).join('')}</select>`+
@@ -1064,7 +1126,7 @@ function setupUI(){
   $('cardHelp').innerHTML=Object.keys(CARD).map(k=>`<div class="seal"><b>${CARD[k].n}<i>×${CARD[k].num}</i></b><span>${CARD[k].d}</span></div>`).join('')}
 if(!HL){
   $('setup').addEventListener('click',e=>{const b=e.target.closest('[data-h],[data-m],[data-s]');if(!b)return;const d=b.dataset;
-    if(d.h)LO.hero=d.h;if(d.m&&d.m===HERO[LO.hero].inn){toast('这是'+HERO[LO.hero].n+'自带的，不用再选');return}rm(LO.main,HERO[LO.hero].inn);
+    if(d.h)LO.hero=d.h;if(d.m&&innOf(LO.hero).includes(d.m)){toast('这是'+HERO[LO.hero].n+'自带的，不用再选');return}for(const k of innOf(LO.hero))rm(LO.main,k);
     for(const[key,arr]of[[d.m,LO.main],[d.s,LO.sub]])if(key){if(arr.includes(key))rm(arr,key);else{if(arr.length>=2)arr.shift();arr.push(key)}}
     jset(K_LO,LO);setupUI()});
   $('cust').addEventListener('change',e=>{const s=e.target.closest('select[data-cs]');if(!s)return;const i=s.dataset.cs,f=s.dataset.f,c=LO.cust[i]=LO.cust[i]||{};
