@@ -77,9 +77,9 @@ canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-acti
 <button class="rbtn" id="bagBtn">背包</button>
 <button class="rbtn" id="menuBtn">菜单</button>
 <canvas id="mini" width="66" height="42" title="点开大地图"></canvas>
-<div class="stick" id="joyL"><small>移动</small><i></i></div>
-<div class="stick" id="joyR"><small>瞄准</small><i></i></div>
-<button id="jump">跳</button><button id="useBtn">挖</button>
+<div class="stick" id="joyL"><small>移动 · 上推跳</small><i></i></div>
+<div class="stick" id="joyR"><small>瞄准 = 挖/放/砍</small><i></i></div>
+
 <div id="toast" hidden></div>
 
 <div class="ov" id="bagOv" hidden><div class="box">
@@ -96,7 +96,7 @@ canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-acti
 <div class="ov" id="menuOv" hidden><div class="box">
   <h2>方块拓荒<button class="xb" id="menuX">✕</button></h2>
   <div class="how">
-    <b>手机</b>：左摇杆移动（往上推也是跳；左下角一大片都能当摇杆用）。<b>先选格子，再按「挖」</b>：点屏幕上的格子或推右摇杆只是选中（黄框），按住右下的「挖」按钮才会动手——拿镐挖、拿方块放、拿剑砍，按钮上的字会跟着变。黄框里有怪，或者怪贴在身边时，按「挖」就是打它。<br><b>电脑</b>：A/D 移动，W/空格跳，S 穿过平台；鼠标指哪用哪，按住左键连续用；数字键或滚轮换物品栏，E 开背包。<br>
+    <b>手机</b>：左摇杆移动，往上推就是跳（左下角一大片都能当摇杆用）。<b>右摇杆就是挖</b>：朝哪推就对哪用手里的东西——拿镐挖、拿方块放、拿剑砍，推得浅用近处、推到底用远处，黄框是要作用的格子；朝着怪推就是打怪。也可以手指按住屏幕上的格子挖，松手就停。<br><b>电脑</b>：A/D 移动，W/空格跳，S 穿过平台；鼠标指哪用哪，按住左键连续用；数字键或滚轮换物品栏，E 开背包。<br>
     <b>背包</b>：第一行就是物品栏。点一格拿起，再点另一格放下或交换。下面是合成列表，靠近工作台、熔炉才能做后面的东西。<br>
     <b>打怪</b>：点怪物身上或右摇杆朝着它推就会打，拿剑伤害最高（开局送一把木剑），拿镐也能打。右上角是小地图，点它看大地图。<br><b>床</b>点一下设重生点，夜里点可以睡到天亮。夜里和洞里的暗处会出怪，放上火把就不刷了。
   </div>
@@ -281,8 +281,7 @@ function smart(dx,dy,lim){
 function aimMob(){const p=S.p,ox=p.x,oy=p.y-22,RM=3.4*T;let best=null,bd=1e9;
   for(const m of S.mobs){if(m.dead)continue;const r=MOB[m.id].r,mx=m.x,my=m.y-r,dp=Math.hypot(mx-ox,my-oy);if(dp>RM)continue;
     if(aim.ptr){const w=toWorld(aim.sx,aim.sy),d=Math.hypot(w.x-mx,w.y-my);if(d<r+22&&d<bd){bd=d;best=m}}
-    else if(aim.has){const d=Math.hypot((aim.tx+.5)*T-mx,(aim.ty+.5)*T-my);if(d<r+26&&d<bd){bd=d;best=m}}
-    if(!best&&useHeld&&dp<2.2*T&&dp+1e4<bd)best=m}
+    else if(aim.stick){const c=((mx-ox)*aim.stick.x+(my-oy)*aim.stick.y)/(dp||1);if((c>.55||dp<1.6*T&&(mx-ox)*aim.stick.x>0)&&dp<bd){bd=dp;best=m}}}
   return best}
 function melee(m){const p=S.p,k=selK(),it=k&&ITEMS[k];p.face=m.x>=p.x?1:-1;if(p.swing>0)return;
   const dmg=it&&it.sword?it.sword:it&&it.pick?2+it.pick*2:2;p.swing=p.swingT=.28;tone('sw','triangle',700,300,.08,.12);hitMob(m,dmg,p.face);
@@ -326,13 +325,13 @@ function step(dt){
       if(q){tx=q.x;ty=q.y}else{tx=Math.floor((ox+vx/l*(REACH-.6)*T)/T);ty=Math.floor((oy+vy/l*(REACH-.6)*T)/T)}}
     if(!aim.ptr.mouse){aim.lock={x:tx,y:ty};aim.sel={x:tx,y:ty};aim.dir=null}aim.tx=tx;aim.ty=ty;aim.has=true;if(aim.on)p.face=w.x>=p.x?1:-1}
   else if(aim.stick){const q=smart(aim.stick.x,aim.stick.y,T*(1.2+aim.stick.l*(REACH-1)));if(q){aim.tx=q.x;aim.ty=q.y;aim.has=true;aim.sel={x:q.x,y:q.y}}aim.dir={x:aim.stick.x,y:aim.stick.y,l:aim.stick.l};p.face=aim.stick.x>=0?1:-1}
-  else if(aim.sel){if(useHeld&&aim.dir){const q=smart(aim.dir.x,aim.dir.y,T*(1.2+aim.dir.l*(REACH-1)));if(q)aim.sel={x:q.x,y:q.y}}aim.tx=aim.sel.x;aim.ty=aim.sel.y;aim.has=true}   // 选好的格子一直留着，按「挖」才动手
+  else if(aim.sel&&useHeld){if(aim.dir){const q=smart(aim.dir.x,aim.dir.y,T*(1.2+aim.dir.l*(REACH-1)));if(q)aim.sel={x:q.x,y:q.y}}aim.tx=aim.sel.x;aim.ty=aim.sel.y;aim.has=true}   // 选好的格子一直留着，按「挖」才动手
   if(!aim.ptr&&!aim.stick&&input.mx)p.face=input.mx>0?1:-1;
-  if(useHeld){if(!aim.on){aim.on=true;aim.first=true}}else if(!(aim.ptr&&aim.ptr.mouse))aim.on=false;   // 手机：只有按住「挖」才会用手里的东西
+  if(useHeld&&!aim.on){aim.on=true;aim.first=true}
   const tm=aim.on?aimMob():null;
   if(tm){melee(tm);aim.first=false;S.mine=null}
   else if(aim.on&&aim.has){if(useHeld)p.face=(aim.tx+.5)*T>=p.x?1:-1;const r=useAt(aim.tx,aim.ty,aim.first);aim.first=false;if(r==='done'){aim.on=false;if(useHeld)useHeld=false}}
-  if(aim.upLater){aim.upLater=false;aim.on=false}   // 鼠标很快的单击：至少用一次
+  if(aim.upLater){aim.upLater=false;aim.on=false}   // 很快的点按：至少用一次
   if(S.mine){const m=S.mine;
     if(!aim.on||!aim.has||aim.tx!==m.x||aim.ty!==m.y||!(selK()&&ITEMS[selK()].pick))S.mine=null;
     else{m.t+=dt;if(Math.random()<dt*9)debris(m.x,m.y,m.wall?B.plank:tAt(m.x,m.y));tone('dig','square',150+Math.random()*70,90,.04,.07,.13);
@@ -586,7 +585,7 @@ function paintMap(cv2,x0,y0,w,h){const g=cv2.getContext('2d'),im=g.createImageDa
   g.fillStyle='#000';g.fillRect(Math.round(S.p.x/T-x0-s/2-1),Math.round((S.p.y-30)/T-y0-s/2-1),s+2,s+2);dot(S.p.x/T,(S.p.y-30)/T,'#fff',s)}
 function drawMini(){if(!seen)seen=new Uint8Array(WW*WH);reveal();const mc=$('mini');paintMap(mc,Math.round(S.p.x/T-mc.width/2),Math.round((S.p.y-30)/T-mc.height/2),mc.width,mc.height);
   if(!$('mapOv').hidden){const bm=$('bigmap');if(bm.width!==WW){bm.width=WW;bm.height=WH}paintMap(bm,0,0,WW,WH)}}
-function syncHUD(){drawMini();{const it=selK()&&ITEMS[selK()];$('useBtn').textContent=!it?'用':it.pick?'挖':it.sword?'砍':it.place||it.wall?'放':'用'}const p=S.p,py=p.y/T|0,x=Math.max(0,Math.min(WW-1,p.x/T|0)),dep=py-h0[x],g=$('hearts').getContext('2d');g.clearRect(0,0,55,11);
+function syncHUD(){drawMini();const p=S.p,py=p.y/T|0,x=Math.max(0,Math.min(WW-1,p.x/T|0)),dep=py-h0[x],g=$('hearts').getContext('2d');g.clearRect(0,0,55,11);
   for(let i=0;i<5;i++){const f=Math.max(0,Math.min(1,(p.hp-i*20)/20));for(let yy=0;yy<7;yy++)for(let xx=0;xx<7;xx++)if(HEART[yy][xx]==='X'){g.fillStyle='#000';g.fillRect(i*11+xx+1,yy+2,2,2)}
     for(let yy=0;yy<7;yy++)for(let xx=0;xx<7;xx++)if(HEART[yy][xx]==='X'){g.fillStyle=xx/7<f?(yy<2&&xx<3?'#ff9a8e':'#e8443a'):'#4a3038';g.fillRect(i*11+xx+1,yy+1,1,1)}}
   $('infoV').textContent=(S.creative?'创造 · ':'')+(dayK()>.5?'白天':'夜晚')+' · '+(dep>3?'地下 '+dep+' 格':'地表')}
@@ -610,22 +609,20 @@ addEventListener('wheel',e=>{if(S&&$('bagOv').hidden&&!paused)selectHot((S.hot+(
 const spos=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
 let floatMv=null;
 cv.addEventListener('pointerdown',e=>{audioInit();if(paused)return;const[sx,sy]=spos(e);
-  if(e.pointerType==='touch'&&!floatMv&&sx<cv.clientWidth*.4&&sy>cv.clientHeight*.45){floatMv={id:e.pointerId,x:sx,y:sy};try{cv.setPointerCapture(e.pointerId)}catch(_){}return}const ms=e.pointerType==='mouse';aim.ptr={id:e.pointerId,mouse:ms};aim.lock=null;aim.upLater=false;aim.stick=null;aim.sx=sx;aim.sy=sy;aim.on=ms;aim.first=ms;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+  if(e.pointerType==='touch'&&!floatMv&&sx<cv.clientWidth*.4&&sy>cv.clientHeight*.45){floatMv={id:e.pointerId,x:sx,y:sy};try{cv.setPointerCapture(e.pointerId)}catch(_){}return}const ms=e.pointerType==='mouse';aim.ptr={id:e.pointerId,mouse:ms};aim.lock=null;aim.upLater=false;aim.stick=null;aim.sx=sx;aim.sy=sy;aim.on=true;aim.first=true;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
 cv.addEventListener('pointermove',e=>{const[sx,sy]=spos(e);if(floatMv&&floatMv.id===e.pointerId){let dx=(sx-floatMv.x)/56,dy=(sy-floatMv.y)/56;const l=Math.hypot(dx,dy);if(l>1){dx/=l;dy/=l}$('joyL').querySelector('i').style.transform=`translate(${dx*36}px,${dy*36}px)`;leftMv(dx,dy);return}if(aim.ptr&&aim.ptr.id===e.pointerId){aim.sx=sx;aim.sy=sy}else if(e.pointerType==='mouse'&&!aim.stick){aim.ptr={id:e.pointerId,mouse:true};aim.sx=sx;aim.sy=sy}});
-const pup=e=>{if(floatMv&&floatMv.id===e.pointerId){floatMv=null;$('joyL').querySelector('i').style.transform='';leftEnd();return}if(aim.ptr&&aim.ptr.id===e.pointerId){if(aim.ptr.mouse){if(aim.first)aim.upLater=true;else aim.on=false}else{aim.ptr=null;aim.lock=null}}};cv.addEventListener('pointerup',pup);cv.addEventListener('pointercancel',pup);
+const pup=e=>{if(floatMv&&floatMv.id===e.pointerId){floatMv=null;$('joyL').querySelector('i').style.transform='';leftEnd();return}if(aim.ptr&&aim.ptr.id===e.pointerId){if(aim.first)aim.upLater=true;else aim.on=false;if(!aim.ptr.mouse){aim.ptr=null;aim.lock=null}}};cv.addEventListener('pointerup',pup);cv.addEventListener('pointercancel',pup);
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 function stick(el,onMove,onEnd){let id=null;const knob=el.querySelector('i');
   const mv=e=>{const r=el.getBoundingClientRect();let dx=(e.clientX-r.left-r.width/2)/(r.width/2),dy=(e.clientY-r.top-r.height/2)/(r.height/2);const l=Math.hypot(dx,dy);if(l>1){dx/=l;dy/=l}knob.style.transform=`translate(${dx*36}px,${dy*36}px)`;onMove(dx,dy,Math.min(1,l))};
   el.addEventListener('pointerdown',e=>{audioInit();id=e.pointerId;try{el.setPointerCapture(id)}catch(_){}mv(e)});el.addEventListener('pointermove',e=>{if(e.pointerId===id)mv(e)});
   const end=e=>{if(e.pointerId===id){id=null;knob.style.transform='';onEnd()}};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end)}
-function leftMv(dx,dy){joyX=Math.abs(dx)<.2?0:Math.sign(dx)*Math.min(1,Math.abs(dx)*1.35);joyDown=dy>.62;joyUp=dy<-.62;keyMove()}
+function leftMv(dx,dy){joyX=Math.abs(dx)<.2?0:Math.sign(dx)*Math.min(1,Math.abs(dx)*1.35);joyDown=dy>.62;joyUp=dy<-.5;keyMove()}
 function leftEnd(){joyX=0;joyDown=joyUp=false;keyMove()}
 stick($('joyL'),leftMv,leftEnd);
-stick($('joyR'),(dx,dy,l)=>{if(l>.2){aim.stick={x:dx/l,y:dy/l,l:Math.min(1,(l-.2)/.7)};aim.ptr=null}else aim.stick=null},()=>{aim.stick=null});
-let useHeld=false;const ub=$('useBtn');ub.addEventListener('pointerdown',e=>{audioInit();useHeld=true;ub.classList.add('dn');try{ub.setPointerCapture(e.pointerId)}catch(_){}});
-const ubu=()=>{useHeld=false;ub.classList.remove('dn')};ub.addEventListener('pointerup',ubu);ub.addEventListener('pointercancel',ubu);
-const jb=$('jump');jb.addEventListener('pointerdown',e=>{audioInit();jumpHeld=true;jb.classList.add('dn');try{jb.setPointerCapture(e.pointerId)}catch(_){}keyMove()});
-const jbu=()=>{jumpHeld=false;jb.classList.remove('dn');keyMove()};jb.addEventListener('pointerup',jbu);jb.addEventListener('pointercancel',jbu);
+stick($('joyR'),(dx,dy,l)=>{if(l>.2){const was=!!aim.stick;aim.stick={x:dx/l,y:dy/l,l:Math.min(1,(l-.2)/.7)};aim.ptr=null;if(!was)aim.first=true;aim.on=true}else{aim.stick=null;aim.on=false}},()=>{aim.stick=null;aim.on=false});
+let useHeld=false;
+
 addEventListener('resize',resize);
 setInterval(save,8000);document.addEventListener('visibilitychange',()=>{if(document.hidden){save();Object.keys(keys).forEach(k=>keys[k]=false);keyMove()}});addEventListener('pagehide',save);
 let last=0,hudT=0;
