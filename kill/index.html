@@ -154,6 +154,7 @@ h2 small{font:12px 'Noto Sans SC',sans-serif;color:var(--dim);letter-spacing:0}
 /* 牌面：象牙色卡面 + 描金双边，左上点数花色，右上圆章画面，底部彩色牌名条 */
 .card{position:relative;flex:none;display:block;padding:0;width:var(--hw);height:var(--hh);border-radius:6px;border:1.5px solid #3a2a18;background:radial-gradient(ellipse at 30% 18%,#fffbee,#efe3c2 62%,#d9c698);color:#1c2026;box-shadow:0 3px 8px #000a,inset 0 0 0 1.5px #c9a45a;overflow:hidden;transition:transform .12s,filter .12s}
 #hand .card{margin-left:var(--ov,4px)}#hand .card:first-child{margin-left:0}
+#hand.scroll{justify-content:flex-start;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}#hand.scroll .card{flex:none}
 .card::before{content:'';position:absolute;inset:3px;border-radius:4px;border:1px solid #a8844099;pointer-events:none;z-index:1}
 .card::after{content:'';position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(color-mix(in srgb,var(--k) 24%,transparent),transparent);pointer-events:none}
 .card i{letter-spacing:-.06em;position:absolute;left:7%;top:5%;z-index:2;font:700 calc(var(--hw)*.27)/1 Georgia,'Times New Roman',serif;font-style:normal;text-align:center;color:#1c2026}
@@ -345,6 +346,7 @@ body,#game{background:#cfc2a0}
 .pl .hpb s.on{background:radial-gradient(circle at 35% 30%,#ff9a86,#e0301e 50%,#8a1008)!important}
 .pl .hpb.mid s.on{background:radial-gradient(circle at 35% 30%,#ffe29a,#e8a030 50%,#8a5a10)!important}
 .pl .hpb.low s.on{background:radial-gradient(circle at 35% 30%,#ffb0a0,#ff2a1a 50%,#a00a00)!important}
+.pl .sls i.sd{color:#ffe07a;background:linear-gradient(#4a4a7a,#1c1c34);flex:1.5}
 </style>
 </head>
 <body>
@@ -452,6 +454,7 @@ const HERO={
  qinqiong:{n:'秦琼',hp:8,c:'#a83a3a',inn:'m_fanji',main:['m_aojian','m_miaoji'],sub:['s_qianghua','s_xixue']},
  zhuge:{n:'诸葛亮',hp:7,c:'#3a8aa8',inn:'m_miaoji',main:['m_yuren','m_fanji'],sub:['s_shouhu','s_tanshou']},
  shangguan:{n:'上官婉儿',hp:7,c:'#b85a9a',inn:['m_qicuo','m_hongmei'],main:['m_miaoji','m_aojian'],sub:['s_lingshan','s_tanshou']},
+ baozheng:{n:'包拯',hp:7,c:'#3a3a5a',inn:['m_pingyuan','m_shenduan'],main:['m_fanji','m_miaoji'],sub:['s_shouhu','s_tanshou']},
  lianpo:{n:'廉颇',hp:8,c:'#8a6a3a',inn:'m_fujing',main:['m_fanji','m_tianlang'],sub:['s_shouhu','s_qianghua']},
 };
 // 主印：必定生效。辅印：按几率触发，等级 1–50，50 级 79%。
@@ -464,6 +467,8 @@ const MAIN={
  m_aojian:{n:'傲剑印',d:'红色的牌都可以当【杀】使用或打出。'},
  m_qicuo:{n:'绮错印',d:'每回合限一次（谁的回合都行）：有角色的牌被弃置后（弃牌阶段、驭人换牌、被拆等），你可以选一项：令他立即结束回合（只在他自己的出牌阶段有效）；或把弃掉的牌中的一张交还给他。'},
  m_hongmei:{n:'红梅印',d:'受到伤害后，你可以展示一张手牌，然后选任意名其他角色：他们各自选择展示一张同花色的手牌，或弃置一张手牌。'},
+ m_pingyuan:{n:'平冤印',d:'体力减少（受伤或失去体力）或回复时，摸一张牌。'},
+ m_shenduan:{n:'神断印',d:'出牌阶段可以弃一张手牌，获得一个「神断」标记（最多 2 个）。任何角色判定时，你可以弃一个标记，把这次判定牌改成任意花色（只改判定结果，牌本身不变）。'},
  m_fujing:{n:'负荆印',d:'出牌阶段可以主动失去 1 点体力，立即摸 2 张牌（不限次数，体力只剩 1 时不能用）。'},
 };
 const SUB={
@@ -494,12 +499,13 @@ const FACE={
  qinqiong:{hat:'helm',hc:'#b8862a',robe:'#7a1c1c',beard:'mus'},
  zhuge:{hat:'jin',robe:'#d8e4ea',beard:'long'},
  shangguan:{f:1,hat:'fem1',robe:'#7a4aa0',loose:1,eye:'#6a4aa0'},
+ baozheng:{hat:'scholar',hc:'#1c1c24',skin:'#7a5440',robe:'#8a2a2a',beard:'long',moon:1,brow:1},
  lianpo:{hat:'helm',hc:'#6a5a3a',plume:'#c8a040',robe:'#5a3a1a',beard:'long',bc:'#ececf2',old:1,brow:1},
 };
 const tone=(hex,t)=>{const v=parseInt(hex.slice(1),16),m=t<0?0:255,k=Math.abs(t);return'#'+[v>>16,v>>8&255,v&255].map(x=>Math.round(x+(m-x)*k).toString(16).padStart(2,'0')).join('')};
 let faceN=0;
 function face(k0){                                          // Q版卡通头像：大头、大眼、扁平色块+描边
-  const k=k0+(faceN++),f=FACE[k0],c=HERO[k0].c,fem=f.f,skin=fem?'#ffe4d2':'#fcd9b8',sh=tone(skin,-.13),hair=f.hair||(fem?'#3a2430':'#2e2018'),bc=f.bc||hair,ln='#3b2217',o=`stroke="${ln}" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"`,robe=f.robe,gold='#f4c84e',iris=f.eye||(fem?'#a0507a':'#6a4020');
+  const k=k0+(faceN++),f=FACE[k0],c=HERO[k0].c,fem=f.f,skin=f.skin||(fem?'#ffe4d2':'#fcd9b8'),sh=tone(skin,-.13),hair=f.hair||(fem?'#3a2430':'#2e2018'),bc=f.bc||hair,ln='#3b2217',o=`stroke="${ln}" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"`,robe=f.robe,gold='#f4c84e',iris=f.eye||(fem?'#a0507a':'#6a4020');
   const mir=d=>`<path d="${d}"/><path transform="matrix(-1 0 0 1 64 0)" d="${d}"/>`;
   const eye=x=>`<ellipse cx="${x}" cy="33.4" rx="3.5" ry="4.3" fill="#2a1810"/><ellipse cx="${x}" cy="35" rx="2.7" ry="2.8" fill="${iris}"/><circle cx="${x-1.1}" cy="31.7" r="1.35" fill="#fff"/><circle cx="${x+1.3}" cy="35.8" r=".65" fill="#fff"/>`;
   const myM=f.beard==='mus'||f.beard==='goat'?43.4:40.8;
@@ -527,12 +533,13 @@ function face(k0){                                          // Q版卡通头像�
   const h=f.hat,hc=f.hc;
   if(h==='helm')s+=`<path d="M32 9Q27.6 -.6 39 .4Q34.6 4 35.4 9Z" fill="${f.plume||'#e23a2a'}" ${o}/><path d="M14.4 27Q13 7.6 32 7.6Q51 7.6 49.6 27Q41 19.4 32 19.4Q23 19.4 14.4 27Z" fill="${hc}" ${o}/><path d="M15.2 22.6Q32 12.6 48.8 22.6" stroke="${gold}" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="32" cy="14.8" r="2.2" fill="${gold}" ${o}/><path d="M14.6 25.6L13.2 38.6L18.4 39.4L19.2 28ZM49.4 25.6L50.8 38.6L45.6 39.4L44.8 28Z" fill="${tone(hc,-.12)}" ${o}/>`;
   if(h==='crown')s+=`<path d="M16.4 22Q17 10.4 32 10.4Q47 10.4 47.6 22Q32 15.6 16.4 22Z" fill="#202028" ${o}/><path d="M14 11L50 11L47 5.4L17 5.4Z" fill="#202028" ${o}/><path d="M17 8.2H47" stroke="${gold}" stroke-width="1.2"/>`+[18,22.5,27,37,41.5,46].map((x,i)=>`<path d="M${x} 11V17" stroke="${gold}" stroke-width=".8"/><circle cx="${x}" cy="18" r="1.3" fill="${i%2?'#e23a2a':'#52c6d0'}" stroke="${ln}" stroke-width=".5"/>`).join('');
-  if(h==='scholar')s+=`<path d="M15.6 24Q15 10 32 10Q49 10 48.4 24Q32 16.6 15.6 24Z" fill="#26346a" ${o}/><path d="M24.6 11.4Q32 .8 39.4 11.4Z" fill="#26346a" ${o}/><path d="M47.6 21.4Q57 20 59 30M16.4 21.4Q7 20 5 30" stroke="#26346a" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="32" cy="6.4" r="1.4" fill="${gold}"/>`;
+  if(h==='scholar')s+=`<path d="M15.6 24Q15 10 32 10Q49 10 48.4 24Q32 16.6 15.6 24Z" fill="${hc||'#26346a'}" ${o}/><path d="M24.6 11.4Q32 .8 39.4 11.4Z" fill="${hc||'#26346a'}" ${o}/><path d="M47.6 21.4Q57 20 59 30M16.4 21.4Q7 20 5 30" stroke="${hc||'#26346a'}" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="32" cy="6.4" r="1.4" fill="${gold}"/>`;
   if(h==='band')s+=`<circle cx="32" cy="9" r="4.6" fill="${hair}" ${o}/><path d="M14.6 22.4Q32 13.4 49.4 22.4L49 27Q32 18.6 15 27Z" fill="${hc}" ${o}/><path d="M48.6 24Q57 26 58 38M48.8 25Q54 30 52.8 40" stroke="${hc}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
   if(h==='jin')s+=`<path d="M14.4 26Q12.4 4.6 32 5.4Q51.6 4.6 49.6 26Q32 14.6 14.4 26Z" fill="#f2f5f8" ${o}/><path d="M15.4 22.6Q32 12.4 48.6 22.6" stroke="#3a86a6" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M26 7Q25 13 24 18M32 5.6V15M38 7Q39 13 40 18" stroke="#9ab0bf" stroke-width=".8" fill="none"/>`;
   if(h==='fem1'){s+=`<circle cx="20.6" cy="11.4" r="5.6" fill="${hair}" ${o}/><circle cx="43.4" cy="11.4" r="5.6" fill="${hair}" ${o}/><path d="M18.4 15.2Q32 9.4 45.6 15.2" stroke="${gold}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
     for(let i=0;i<5;i++){const a=i*1.2566-1.57;s+=`<circle cx="${(44+3*Math.cos(a)).toFixed(1)}" cy="${(16+3*Math.sin(a)).toFixed(1)}" r="2.3" fill="#e8445a" stroke="${ln}" stroke-width=".5"/>`}s+=`<circle cx="44" cy="16" r="1.3" fill="${gold}"/>`}
   if(h==='fem2')s+=`<ellipse cx="32" cy="8.4" rx="8.4" ry="5.6" fill="${hair}" ${o}/><path d="M17.6 13.4L47 5" stroke="${gold}" stroke-width="1.8" stroke-linecap="round"/><circle cx="47.4" cy="4.8" r="2" fill="#e23a2a" ${o}/><path d="M32 17.6l2.2 2.4-2.2 2.4-2.2-2.4Z" fill="${gold}" stroke="${ln}" stroke-width=".6"/>`;
+  if(f.moon)s+=`<path d="M29.6 20.4A3.2 3.2 0 1 0 34.4 20.4A2.6 2.6 0 1 1 29.6 20.4Z" fill="#ffe07a" stroke="${ln}" stroke-width=".6"/>`;   // 包拯额头的月牙
   return s+`<rect x=".5" y=".5" width="63" height="63" fill="none" stroke="#000" stroke-opacity=".3"/></svg>`}
 
 /* ---------- 工具 ---------- */
@@ -625,13 +632,27 @@ async function askCard(p,kind,msg,opt){          // 要 p 打出一张 kind（sh
   if(p.ai||HL){c=ok.find(x=>x.k===kind);if(!c){const alt=ok.filter(x=>x.k!=='yao'&&x.k!=='wuxie'&&!(opt&&opt.soft&&VAL[x.k]>4)).sort((a,b)=>VAL[a.k]-VAL[b.k]);c=alt[0]||null}}
   else{c=await UI.askCard(p,ok,msg,kind);if(c==='nomore'){wxSkip=wxCur;c=null}}
   if(c){rm(p.hand,c);UI.render()}return c}
-async function flipCard(who,cap){snd('judge');if(!G.deck.length&&G.disc.length){G.deck=shuffle(G.disc);G.disc=[]}const j=G.deck.pop();if(!j)return null;G.disc.push(j);await UI.show([j],650,who,cap);return j}
+async function flipCard(who,cap,kind){snd('judge');if(!G.deck.length&&G.disc.length){G.deck=shuffle(G.disc);G.disc=[]}const j=G.deck.pop();if(!j)return null;G.disc.push(j);await UI.show([j],650,who,cap);return await shenduan(j,who,cap,kind)}
+// 判定结果对 who 是好是坏：玉如意要红色，画地为牢要红桃，手捧雷怕 ♠2–9
+const jGood=(kind,c)=>kind==='yuruyi'?red(c):kind==='huadi'?c.s===1:kind==='shoupeng'?!(c.s===0&&c.r>=2&&c.r<=9):true;
+async function shenduan(j,who,cap,kind){                      // 神断印：弃一个标记，改这次判定的花色
+  let r=j;
+  for(const q of others(G.ps[G.turn],1)){
+    if(G.over||q.dead||!(q.sd>0)||!has(q,'m_shenduan'))continue;
+    let s=null;
+    if(q.ai||HL){const want=q.team===who.team;if(jGood(kind,r)!==want){for(const x of[1,0,3,2])if(jGood(kind,{...r,s:x})===want){s=x;break}}}
+    else{const op=SUITS.map((x,i)=>({k:String(i),t:'改成 '+x,pri:!jGood(kind,r)&&jGood(kind,{...r,s:i})===(who.team===0)})).filter(o=>+o.k!==r.s);op.push({k:'no',t:'不改'});
+      const ch=await UI.choose(`神断（剩 ${q.sd} 个）：${nm(who)} 的${cap}是 ${pt(r)}，要改花色吗`,op);if(G.over)return r;if(ch!=='no')s=+ch}
+    if(s==null||s===r.s)continue;
+    q.sd--;r={...r,s};mainFx(q,'m_shenduan');log(`${tag(q)} 发动<em>神断</em>：判定改为 ${pt(r)}`);UI.fx(who,'判定 '+SUITS[s],'s');UI.render();await sleep(500)}
+  return r}
 async function needDodge(tgt,src,msg,pierce){  // tgt 需要一张闪：玉如意 → 手牌
-  if(tgt.eq.a&&tgt.eq.a.k==='yuruyi'&&!pierce){const j=await flipCard(tgt,'玉如意 判定');if(j){const ok=red(j);log(`${tag(tgt)} 的玉如意判定 ${pt(j)}，${ok?'<em>红色，算作一张闪</em>':'没有生效'}`);if(ok)return true}}
+  if(tgt.eq.a&&tgt.eq.a.k==='yuruyi'&&!pierce){const j=await flipCard(tgt,'玉如意 判定','yuruyi');if(j){const ok=red(j);log(`${tag(tgt)} 的玉如意判定 ${pt(j)}，${ok?'<em>红色，算作一张闪</em>':'没有生效'}`);if(ok)return true}}
   const c=await askCard(tgt,'shan',msg);if(!c)return false;
   toDisc(c);snd('dodge');log(`${tag(tgt)} 打出 ${cn(c)}${c.k!=='shan'?'（当闪）':''}`);await UI.show([c],650,tgt,nm(tgt)+' 打出');
   if(roll(tgt,'s_lingshan'))draw(tgt,1);return true}
-async function heal(p,n){if(p.dead||p.hp>=p.max)return;p.hp=Math.min(p.max,p.hp+n);UI.fx(p,'+'+n,'h','heal');UI.render();await sleep(300)}
+function pingyuan(p){if(!p.dead&&!G.over&&has(p,'m_pingyuan')){mainFx(p,'m_pingyuan');log(`${tag(p)} 的<em>平冤</em>：摸一张牌`);draw(p,1)}}
+async function heal(p,n){if(p.dead||p.hp>=p.max)return;p.hp=Math.min(p.max,p.hp+n);UI.fx(p,'+'+n,'h','heal');UI.render();await sleep(300);pingyuan(p)}
 let curCards=null;
 async function damage(src,tgt,n,kind,cards){
   if(tgt.dead||G.over)return;
@@ -639,6 +660,7 @@ async function damage(src,tgt,n,kind,cards){
   tgt.hp-=n;log(`${tag(tgt)} 受到 <em>${n}</em> 点伤害`);UI.fx(tgt,'-'+n,'d','hit');UI.render();await sleep(950);
   if(tgt.hp<=0)await dying(tgt,src);
   if(G.over)return;
+  pingyuan(tgt);
   if(src&&!src.dead&&kind==='sha'){
         if(roll(src,'s_lianji'))draw(src,1);
 }
@@ -653,7 +675,7 @@ async function damage(src,tgt,n,kind,cards){
 async function dying(p,src){
   log(`${tag(p)} 濒死`);
   const order=[p,...G.ps.slice(p.id+1).concat(G.ps.slice(0,p.id)).filter(q=>!q.dead&&q.team===p.team)];
-  for(const q of order){while(p.hp<=0){const c=await askCard(q,'yao',q===p?'你濒死了，要用【药】吗':`${nm(p)} 濒死，要用【药】救吗`);if(!c)break;toDisc(c);p.hp++;log(`${tag(q)} 用 ${cn(c)} 救了 ${tag(p)}`);UI.fx(p,'+1','h','heal');UI.render();await UI.show([c],650,q,nm(q)+' 救 '+nm(p))}if(p.hp>0)return}
+  for(const q of order){while(p.hp<=0){const c=await askCard(q,'yao',q===p?'你濒死了，要用【药】吗':`${nm(p)} 濒死，要用【药】救吗`);if(!c)break;toDisc(c);p.hp++;log(`${tag(q)} 用 ${cn(c)} 救了 ${tag(p)}`);UI.fx(p,'+1','h','heal');UI.render();await UI.show([c],650,q,nm(q)+' 救 '+nm(p));if(p.hp>0)pingyuan(p)}if(p.hp>0)return}
   p.dead=true;toDisc(p.hand);toDisc(SL.map(z=>p.eq[z]));toDisc(p.judge);p.hand=[];p.eq={};p.judge=[];snd('die');log(`${tag(p)} <em>阵亡</em>`);UI.render();await sleep(800);
   if(!mates(p).length){G.over=p.team===0?'lose':'win';return}
   if(src&&src.team!==p.team&&!src.dead){log(`${tag(src)} 击倒对手，摸两张牌`);draw(src,2)}
@@ -713,7 +735,7 @@ async function judgePhase(p){                                  // 回合开始�
   let skip=false;
   for(const j of p.judge.slice().reverse()){
     if(p.dead||G.over)break;rm(p.judge,j);UI.render();
-    const f=await flipCard(p,CARD[j.k].n+' 判定');if(!f){toDisc(j);continue}
+    const f=await flipCard(p,CARD[j.k].n+' 判定',j.k);if(!f){toDisc(j);continue}
     if(j.k==='huadi'){toDisc(j);if(f.s!==1){skip=true;UI.fx(p,'画地为牢','s');log(`${tag(p)} 判定 ${pt(f)}，<em>被困在原地</em>，跳过出牌`)}else log(`${tag(p)} 判定 ${pt(f)}（红桃），逃出了画地为牢`)}
     else if(j.k==='shoupeng'){
       if(f.s===0&&f.r>=2&&f.r<=9){toDisc(j);log(`${tag(p)} 判定 ${pt(f)}，<em>手捧雷炸了</em>`);await damage(null,p,3,'bomb')}
@@ -775,7 +797,8 @@ async function useCard(p,c,tgts,as,pair){
 async function useSkill(p,a){
   if(a.sk==='huatuo'){p.f.huatuo=1;rm(p.hand,a.card);toDisc(a.card);log(`${tag(p)} 发动<em>青囊</em>，弃掉 ${cn(a.card)} 为 ${tag(a.tgt)} 疗伤`);await UI.show([a.card],700,p,nm(p)+' 青囊 ▸ '+nm(a.tgt));await heal(a.tgt,1)}
   else if(a.sk==='yuren'){p.f.yuren=1;for(const c of a.cards){const z=SL.find(z=>p.eq[z]===c);if(z)delete p.eq[z];else rm(p.hand,c)}toDisc(a.cards);mainFx(p,'m_yuren');log(`${tag(p)} 发动<em>驭人印</em>，换掉 ${a.cards.length} 张牌`);await UI.show(a.cards,750,p,nm(p)+' 驭人');draw(p,a.cards.length);await onDisc(p,a.cards)}
-  else if(a.sk==='fujing'){if(p.hp<=1)return;p.hp--;p.f.fj=(p.f.fj||0)+1;mainFx(p,'m_fujing');log(`${tag(p)} 发动<em>负荆</em>：失去 1 点体力，摸 2 张牌`);UI.fx(p,'-1','d','hit');UI.render();await sleep(500);draw(p,2)}
+  else if(a.sk==='fujing'){if(p.hp<=1)return;p.hp--;p.f.fj=(p.f.fj||0)+1;mainFx(p,'m_fujing');log(`${tag(p)} 发动<em>负荆</em>：失去 1 点体力，摸 2 张牌`);UI.fx(p,'-1','d','hit');UI.render();await sleep(500);draw(p,2);pingyuan(p)}
+  else if(a.sk==='shenduan'){if((p.sd||0)>=2||!p.hand.includes(a.card))return;rm(p.hand,a.card);toDisc(a.card);p.sd=(p.sd||0)+1;mainFx(p,'m_shenduan');log(`${tag(p)} 发动<em>神断</em>：弃掉 ${cn(a.card)}，获得一个神断标记（${p.sd}/2）`);await UI.show([a.card],600,p,nm(p)+' 神断');UI.render();await onDisc(p,[a.card])}
   else if(a.sk==='xiadan'){p.f.xiadan=1;const t=a.tgt,c=a.card;rm(p.hand,c);let d;
     if(t.ai||HL)d=t.hand.slice().sort((x,y)=>t.team===p.team?x.r-y.r:y.r-x.r)[0];else{d=await UI.askCard(t,t.hand.slice(),`${nm(p)} 向你拼点：选一张手牌比大小（A 最小，K 最大）`,'any',true);if(!d){if(G.over)return;d=t.hand[0]}}
     rm(t.hand,d);toDisc([c,d]);mainFx(p,'m_xiadan');log(`${tag(p)} 向 ${tag(t)} 拼点：${pt(c)} 对 ${pt(d)}`);await UI.show([c,d],1200,p,nm(p)+' 拼点 '+nm(t));
@@ -838,6 +861,7 @@ function aiPick(p){
   c=aiShaCard(p);
   if(c&&!cantUse(p,c,'sha')&&aiT(p,c,'sha').length)return{card:c,as:'sha',tgts:aiT(p,c,'sha').sort(weak).slice(0,maxTargets(p))};
   if(WK(p)==='luye'&&H.length>=4&&!cantLuye(p)){const pr=aiJunk(p).filter(x=>x.k!=='yao'&&x.k!=='wuxie'&&x.k!=='shan').slice(0,2);if(pr.length===2&&aiT(p,pr[0],'sha').length)return{type:'luye',pair:pr,tgts:aiT(p,pr[0],'sha').sort(weak).slice(0,maxTargets(p))}}
+  if(has(p,'m_shenduan')&&(p.sd||0)<2&&H.length>=2){const j=aiJunk(p)[0];if(j&&VAL[j.k]<=3)return{sk:'shenduan',card:j}}
   return null}
 
 /* ---------- 开局 / 存档 ---------- */
@@ -989,9 +1013,10 @@ const UI={
       el.querySelector('.hcn').textContent=p.hand.length;
       const hb=el.querySelector('.hpn'),st=hp*2<=p.max?(hp*4<=p.max?'low':'mid'):'';hb.className='hpn '+st;hb.textContent=hp;const pb=el.querySelector('.hpb');pb.className='hpb '+st;pb.innerHTML=Array.from({length:p.max},(_,i)=>`<s class="${i<hp?'on':''}"></s>`).join('');
       el.querySelector('.eqs').innerHTML=['ho','hd','a','w'].map(z=>{const c=p.eq[z],u={w:'武',a:'衣',hd:'御',ho:'攻'}[z];return c?`<q data-e="${z}" class="${ui.multi&&ui.multi.includes(c)?'pick':''}"><u>${u}</u>${CARD[c.k].n}</q>`:`<q class="emp"><u>${u}</u></q>`}).join('')+p.judge.map(c=>`<q class="jd"><u>判</u>${CARD[c.k].n}</q>`).join('');
-      el.querySelector('.sls').innerHTML=p.main.map(k=>`<i>${MAIN[k].n[0]}</i>`).join('')+p.sub.map(k=>`<i class="s">${SUB[k].n[0]}</i>`).join('')}
+      el.querySelector('.sls').innerHTML=p.main.map(k=>`<i>${MAIN[k].n[0]}</i>`).join('')+p.sub.map(k=>`<i class="s">${SUB[k].n[0]}</i>`).join('')+(p.sd>0?`<i class="sd">断${p.sd}</i>`:'')}
     const me=G.ps[0],hand=$('hand'),n=me.hand.length,w=hand.clientWidth||340,one=(hand.firstElementChild&&hand.firstElementChild.offsetWidth)||62;
-    hand.style.setProperty('--ov',Math.min(4,n>1?(w-one*n)/(n-1):4)+'px');
+    {const ov=Math.min(4,Math.max(3,n>1?(w-one*n)/(n-1):4));hand.style.setProperty('--ov',ov+'px');   // 牌不再互相盖住；再多就横向滑动
+     const sc=one*n+ov*(n-1)>w+1;if(hand.classList.contains('scroll')!==sc)hand.classList.toggle('scroll',sc)}
     const have=new Map([...hand.children].map(e=>[e.dataset.c,e])),ids=new Set(me.hand.map(c=>String(c.id)));
     for(const[id,e]of have)if(!ids.has(id))e.remove();
     me.hand.forEach((c,i)=>{let cls='';
@@ -1003,13 +1028,14 @@ const UI={
       if(e&&e.parentNode===hand){e.className=cardCls(c,cls+(e.classList.contains('new')?' new':''))}
       else{if(fresh.has(c.id))cls+=' new';const t=document.createElement('div');t.innerHTML=cardHTML(c,cls);e=t.firstChild;e.addEventListener('animationend',()=>e.classList.remove('new'))}
       if(hand.children[i]!==e)hand.insertBefore(e,hand.children[i]||null)});fresh.clear();
-    $('msg').textContent=ui.msg||'';
+    $('msg').textContent=(ui.msg||'')+(hand.classList.contains('scroll')&&ui.msg?`（手牌 ${n} 张，左右滑动查看）`:'');
     let b='';
     if(ui.mode==='play'){
       const sk=(k,name)=>b+=`<button class="btn${ui.skill===k?' on2':''}" data-a="sk" data-k="${k}">${ui.skill===k?'取消':name}</button>`;
       if(!ui.skill||ui.skill==='huatuo')if(me.hero==='huatuo'&&!me.f.huatuo)sk('huatuo','青囊');
       if(!ui.skill||ui.skill==='xiadan')if(has(me,'m_xiadan')&&!me.f.xiadan&&me.hand.length)sk('xiadan','侠胆');
       if(!ui.skill||ui.skill==='yuren')if(has(me,'m_yuren')&&!me.f.yuren)sk('yuren','驭人');
+      if((!ui.skill||ui.skill==='shenduan')&&has(me,'m_shenduan')&&(me.sd||0)<2&&me.hand.length)sk('shenduan','神断');
       if(!ui.skill&&has(me,'m_fujing')&&me.hp>1)b+=`<button class="btn" data-a="fujing">负荆（-1血 摸2）</button>`;
       if(!ui.skill||ui.skill==='luye')if(WK(me)==='luye'&&me.hand.length>=2&&!cantLuye(me))sk('luye','芦叶枪');
       if(ui.skill==='luye'&&ui.multi.length===2&&ui.picked.length)b+=`<button class="btn pri" data-a="goluye">出牌</button>`;
@@ -1074,7 +1100,7 @@ if(!HL){
       else if(a==='as')pickCard(me,c,ui.as==='sha'?undefined:'sha');
       else if(a==='yuren')UI.done({type:'skill',sk:'yuren',cards:ui.multi});
       else if(a==='sk'){const k=ab.dataset.k;ui.skill=ui.skill===k?null:k;ui.sel=null;ui.tgts=null;ui.picked=[];ui.multi=[];
-        ui.msg=!ui.skill?PLAY_MSG:k==='huatuo'?'青囊：先点一张要弃掉的手牌，再点受伤的己方角色':k==='xiadan'?'侠胆：先点一张用来拼点的手牌（点数越大越好），再点一名有手牌的英雄':k==='luye'?'芦叶枪：点两张手牌当一张【杀】，再点目标':'驭人：点选要换掉的牌（手牌和自己的装备都可以），再按「换 n 张」';UI.render()}
+        ui.msg=!ui.skill?PLAY_MSG:k==='huatuo'?'青囊：先点一张要弃掉的手牌，再点受伤的己方角色':k==='xiadan'?'侠胆：先点一张用来拼点的手牌（点数越大越好），再点一名有手牌的英雄':k==='shenduan'?'神断：点一张要弃掉的手牌，换一个神断标记（最多 2 个）':k==='luye'?'芦叶枪：点两张手牌当一张【杀】，再点目标':'驭人：点选要换掉的牌（手牌和自己的装备都可以），再按「换 n 张」';UI.render()}
       return}
     if(eb&&pb&&pb.dataset.p==='0'&&ui.mode==='play'&&ui.skill==='yuren'){const c=me.eq[eb.dataset.e];if(ui.multi.includes(c))rm(ui.multi,c);else ui.multi.push(c);UI.render();return}
     const zb=e.target.closest('#show [data-z]');if(zb&&ui.mode==='zone'){const z=zb.dataset.z;showing=false;$('show').className='';$('show').innerHTML='';lastBan='';UI.done(z);return}
@@ -1086,6 +1112,7 @@ if(!HL){
       if(ui.mode==='discard'){if(ui.multi.includes(c))rm(ui.multi,c);else if(ui.multi.length<ui.need)ui.multi.push(c);UI.render();return}
       if(ui.mode!=='play')return;
       if(ui.skill==='yuren'){if(ui.multi.includes(c))rm(ui.multi,c);else ui.multi.push(c);UI.render();return}
+      if(ui.skill==='shenduan'){UI.done({type:'skill',sk:'shenduan',card:c});return}
       if(ui.skill==='luye'){if(ui.multi.includes(c))rm(ui.multi,c);else if(ui.multi.length<2)ui.multi.push(c);ui.picked=[];if(ui.multi.length===2){ui.tgts=targets(me,c,'sha').map(q=>q.id);ui.maxT=maxTargets(me);ui.msg='点发光的目标，把这两张牌当【杀】打出'}else{ui.tgts=null;ui.msg='芦叶枪：再选一张手牌'}UI.render();return}
       if(ui.sel===c.id){ui.sel=null;ui.tgts=null;ui.picked=[];if(!ui.skill)ui.msg=PLAY_MSG;UI.render();return}
       if(ui.skill==='huatuo'){const t=mates(me).filter(q=>q.hp<q.max);if(!t.length){toast('己方没有人受伤');return}ui.sel=c.id;ui.tgts=t.map(q=>q.id);ui.msg='点一名发光的己方角色，为他回复 1 点体力';UI.render();return}
