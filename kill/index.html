@@ -474,7 +474,7 @@ const MAIN={
  m_yuren:{n:'驭人印',d:'出牌阶段限一次：弃掉任意张牌（手牌和装备区都行），再摸同样多的牌。'},
  m_tianlang:{n:'天狼印',d:'出【杀】不限次数。'},
  m_aojian:{n:'傲剑印',d:'红色的牌都可以当【杀】使用或打出。'},
- m_qicuo:{n:'绮错印',d:'每回合限一次（谁的回合都行）：有角色的牌被弃置后（弃牌阶段、被拆、被削等；驭人换牌不算），你可以选一项：令他立即结束回合（只在他自己的出牌阶段有效）；或把弃掉的牌中的一张交还给他。'},
+ m_qicuo:{n:'绮错印',d:'每回合限一次（谁的回合都行）：有角色的牌被弃置后（弃牌阶段、驭人换牌、被拆、被削等），你可以选一项：令他立即结束回合（只在他自己的出牌阶段有效）；或把弃掉的牌中的一张交还给他。'},
  m_hongmei:{n:'红梅印',d:'受到伤害后，你可以展示一张手牌，然后选任意名其他角色：他们各自选择展示一张同花色的手牌，或弃置一张手牌。'},
  m_pingyuan:{n:'平冤印',d:'体力减少（受伤或失去体力）或回复时，摸一张牌。'},
  m_shenduan:{n:'神断印',d:'出牌阶段可以弃一张手牌，获得一个「神断」标记（最多 2 个）。任何角色判定时，你可以弃一个标记，把这次判定牌改成任意花色（只改判定结果，牌本身不变）。'},
@@ -827,7 +827,7 @@ async function useCard(p,c,tgts,as,pair){
 // 主动技能：华佗青囊 / 驭人印 / 侠胆印
 async function useSkill(p,a){
   if(a.sk==='huatuo'){p.f.huatuo=1;rm(p.hand,a.card);toDisc(a.card);log(`${tag(p)} 发动<em>青囊</em>，弃掉 ${cn(a.card)} 为 ${tag(a.tgt)} 疗伤`);await UI.show([a.card],700,p,nm(p)+' 青囊 ▸ '+nm(a.tgt));await heal(a.tgt,1)}
-  else if(a.sk==='yuren'){p.f.yuren=1;for(const c of a.cards){const z=SL.find(z=>p.eq[z]===c);if(z)delete p.eq[z];else rm(p.hand,c)}toDisc(a.cards);mainFx(p,'m_yuren');log(`${tag(p)} 发动<em>驭人印</em>，换掉 ${a.cards.length} 张牌`);await UI.show(a.cards,750,p,nm(p)+' 驭人');draw(p,a.cards.length)}   // 驭人是换牌，不算弃置，不触发绮错
+  else if(a.sk==='yuren'){p.f.yuren=1;for(const c of a.cards){const z=SL.find(z=>p.eq[z]===c);if(z)delete p.eq[z];else rm(p.hand,c)}toDisc(a.cards);mainFx(p,'m_yuren');log(`${tag(p)} 发动<em>驭人印</em>，换掉 ${a.cards.length} 张牌`);await UI.show(a.cards,750,p,nm(p)+' 驭人');draw(p,a.cards.length);await onDisc(p,a.cards)}   // 驭人也算弃置：绮错没发动就照常继续出牌
   else if(a.sk==='fujing'){if(p.hp<=1)return;p.hp--;p.f.fj=(p.f.fj||0)+1;mainFx(p,'m_fujing');log(`${tag(p)} 发动<em>负荆</em>：失去 1 点体力，摸 2 张牌`);UI.fx(p,'-1','d','hit');UI.render();await sleep(500);draw(p,2);pingyuan(p)}
   else if(a.sk==='shenduan'){if((p.sd||0)>=2||!p.hand.includes(a.card))return;rm(p.hand,a.card);toDisc(a.card);p.sd=(p.sd||0)+1;mainFx(p,'m_shenduan');log(`${tag(p)} 发动<em>神断</em>：弃掉 ${cn(a.card)}，获得一个神断标记（${p.sd}/2）`);await UI.show([a.card],600,p,nm(p)+' 神断');UI.render();await onDisc(p,[a.card])}
   else if(a.sk==='xiadan'){p.f.xiadan=1;const t=a.tgt,c=a.card;rm(p.hand,c);let d;
